@@ -1,0 +1,81 @@
+/* Case study template: Stage header with the cover as a TV, a 20-second brief, then the story with a chapter index. */
+.case-page { padding-top: calc(var(--navh) + env(safe-area-inset-top, 0px)); }
+
+/* ---------- header (Stage) ---------- */
+.case-hero { border: 1px solid var(--line); display: grid; gap: clamp(32px, 4vw, 56px); padding: clamp(24px, 4.4vw, 60px) clamp(20px, 4.4vw, 64px); }
+.case-hero-inner { display: grid; gap: 20px; }
+.case-hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; }
+.back { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 13px; letter-spacing: .01em; text-transform: uppercase; color: var(--fg-secondary); text-decoration: none; }
+.back:hover { color: var(--fg-primary); }
+.case-ch { font-size: clamp(28px, 3vw, 40px); animation: ch-out .6s var(--ease-signal) 1.6s both; }
+@keyframes ch-out { to { opacity: 0; } }
+.case-hero .display-m { max-width: 18ch; margin-top: 8px; }
+.case-sub { max-width: 52ch; }
+.case-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 12px 0 0; border-top: 1px solid var(--line); }
+.case-facts > div { padding: 16px 20px 0 0; display: grid; gap: 4px; min-width: 0; }
+.case-facts > div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+.case-facts dd { margin: 0; color: var(--fg-intro); }
+@media (max-width: 760px) {
+  .case-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
+  .case-facts > div:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+.case-cover { width: 100%; }
+
+/* ---------- brief: the 20-second summary ---------- */
+.case-brief { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 48px; padding-block: clamp(48px, 6vw, 80px) 0; }
+.brief-item { display: grid; gap: 12px; align-content: start; padding-top: 20px; border-top: 1px solid var(--fg-primary); }
+.brief-text { font-size: clamp(20px, 1.8vw, 24px); line-height: 1.45; font-weight: 300; text-wrap: pretty; }
+.brief-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 760px) { .case-brief { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- body: chapter index + story ---------- */
+.case-body { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 64px; padding-block: clamp(64px, 8vw, 112px) 0; align-items: start; }
+.case-body.no-toc { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 1100px) { .case-body { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+.toc { position: sticky; top: calc(var(--navh) + 32px); display: grid; gap: 16px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; border-left: 1px solid var(--line); }
+.toc a { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; padding: 8px 0 8px 16px; margin-left: -1px; border-left: 1px solid transparent; font-size: 14px; line-height: 1.4; color: var(--fg-secondary); text-decoration: none; transition: color var(--dur-quick), border-color var(--dur-quick); }
+.toc a:hover { color: var(--fg-primary); }
+.toc a[aria-current="true"] { color: var(--fg-primary); border-left-color: var(--fg-primary); }
+
+.prose { display: grid; gap: 24px; min-width: 0; max-width: 960px; }
+.prose > * { max-width: 68ch; }
+.prose > [data-reveal="wipe"]:has(h2) { margin-top: 48px; max-width: none; }
+.prose > [data-reveal="wipe"]:first-child:has(h2) { margin-top: 0; }
+.prose h2 { scroll-margin-top: calc(var(--navh) + 24px); }
+.prose h3 { margin-top: 24px; }
+.prose p, .prose li { font-size: 18px; line-height: 1.7; color: var(--fg-secondary); }
+.prose strong { color: var(--fg-primary); font-weight: 600; }
+.prose a { color: var(--fg-primary); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.prose a:hover { text-decoration-thickness: 2px; }
+.list { margin: 0; padding-left: 1.2em; display: grid; gap: 10px; }
+.list li::marker { color: var(--fg-tertiary); }
+.pull { padding: 8px 0 8px 24px; border-left: 2px solid var(--fg-primary); max-width: 52ch !important; }
+.pull p { font-size: clamp(22px, 2vw, 28px); line-height: 1.35; font-weight: 600; color: var(--fg-primary); letter-spacing: -0.01em; }
+
+/* figures: real screenshots on Stage (design.md §8, "Imagery") */
+.prose > .figure { max-width: none; margin-block: 16px; }
+.figure-frame { display: block; padding: clamp(8px, 1.2vw, 16px); border: 1px solid var(--line); cursor: zoom-in; transition: border-color var(--dur-quick) var(--ease-signal); }
+.figure-frame:hover { border-color: var(--line-strong); }
+.figure-frame img { display: block; width: 100%; height: auto; }
+
+/* prototypes: a TV that's off until you tune in */
+.prose > [data-reveal]:has(.embed) { max-width: none; }
+.embed { display: grid; gap: 10px; margin-block: 16px; }
+.embed-screen { position: relative; aspect-ratio: 16 / 10; border: 1px solid var(--line); overflow: hidden; isolation: isolate; }
+.embed-tall .embed-screen { aspect-ratio: 4 / 5; max-width: 520px; }
+.embed-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.embed-off { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 20px; padding: 24px; text-align: center;
+             background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(255,255,255,.025) 2px 3px), var(--surface); }
+.embed-osd { font-size: clamp(28px, 3vw, 40px); padding: 10px 18px 8px; border: 2px solid var(--white); }
+
+/* ---------- next case ---------- */
+.next-case-wrap { padding-block: clamp(80px, 10vw, 144px) 0; }
+.next-case { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 32px 48px; align-items: center; padding-top: 24px; border-top: 1px solid var(--fg-primary); text-decoration: none; color: inherit; }
+.next-text { display: grid; gap: 14px; justify-items: start; }
+.next-title { text-wrap: balance; }
+.next-text b { color: var(--fg-primary); font-weight: 600; }
+.next-thumb { width: 100%; aspect-ratio: 16 / 10 !important; }
+.next-case:hover .screen { border-color: var(--line-strong); }
+@media (max-width: 860px) { .next-case { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .case-ch { animation: none; opacity: 0; } }

@@ -1,0 +1,141 @@
+/* Base: page, type, buttons, tags, reveal, TV pieces, nav, footer, channel switch. */
+* { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--navh) + 16px + env(safe-area-inset-top, 0px)); }
+body { margin: 0; background: var(--bg); color: var(--fg-primary); font-family: var(--font-display); font-size: 16px; line-height: 1.625; overflow-x: clip; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; height: auto; }
+[hidden] { display: none !important; }
+.page { padding-inline: var(--g); padding-block: 0 24px; max-width: calc(var(--maxw) + 2 * 24px); margin: 0 auto; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+[tabindex="-1"]:focus { outline: none; }
+h1, h2, h3, p, figure, blockquote { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: fixed; left: var(--g); top: -100px; z-index: 50; background: var(--cta-bg); color: var(--cta-fg); padding: 12px 16px; }
+.skip:focus { top: 12px; }
+
+/* ---------- type ---------- */
+.label { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: .01em; text-transform: uppercase; color: var(--fg-tertiary); }
+.caption { font-family: var(--font-mono); font-size: 12px; line-height: 18px; letter-spacing: .01em; color: var(--fg-tertiary); }
+.display-m { font-weight: 700; font-size: clamp(44px, 5.5vw, 72px); line-height: .95; letter-spacing: -0.02em;
+             text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
+.h-1 { font-size: clamp(34px, 3.4vw, 48px); line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; }
+.h-2 { font-size: clamp(26px, 2.3vw, 32px); line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; }
+.h-3 { font-size: 24px; line-height: 1.3; font-weight: 600; }
+.body-l { font-weight: 300; font-size: clamp(18px, 1.55vw, 22px); line-height: 1.55; color: var(--fg-intro); text-wrap: pretty; }
+.muted { color: var(--fg-secondary); }
+
+/* ---------- buttons, tag (design.md §9) ---------- */
+.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 28px; font: 500 17px/24px var(--font-display); text-decoration: none; border: 0; cursor: pointer; background: none; color: var(--fg-primary); }
+.btn.primary { background: var(--cta-bg); color: var(--cta-fg); box-shadow: -3px 0 0 var(--anaglyph-left), 3px 0 0 var(--anaglyph-right); transition: box-shadow var(--dur-quick) var(--ease-signal); }
+.btn.primary:hover { box-shadow: -5px 0 0 var(--anaglyph-left), 5px 0 0 var(--anaglyph-right); }
+.btn.primary:active { box-shadow: 0 0 0 transparent, 0 0 0 transparent; }
+.btn.primary:focus-visible { outline-offset: 7px; }
+.btn.ghost { box-shadow: inset 0 0 0 1px var(--line-strong); transition: box-shadow var(--dur-quick) var(--ease-signal); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1px var(--fg-tertiary); }
+.ctas { display: flex; gap: 16px; flex-wrap: wrap; padding-inline: 5px; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 2px 10px; border: 1px solid var(--line-strong); font-family: var(--font-mono); font-size: 12px; line-height: 18px; letter-spacing: .01em; color: var(--fg-secondary); white-space: nowrap; }
+.arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line-strong); transition: transform var(--dur-quick) var(--ease-signal), background-color var(--dur-quick), color var(--dur-quick); }
+
+/* ---------- reveal on scroll (only under html.motion) ---------- */
+.motion [data-reveal] { transition: opacity .8s var(--ease-signal) var(--d, 0ms), transform .9s var(--ease-signal) var(--d, 0ms); }
+.motion [data-reveal="up"]:not(.in) { opacity: 0; transform: translate3d(0, 20px, 0); }
+/* the wipe clips the child, never the observed element (a fully clipped target never intersects) */
+[data-reveal="wipe"] > * { clip-path: inset(-12% 0 -25% 0); }
+.motion [data-reveal="wipe"] > * { transition: clip-path 1.1s var(--ease-signal) var(--d, 0ms); }
+.motion [data-reveal="wipe"]:not(.in) > * { clip-path: inset(-12% 100% -25% 0); }
+.rule { height: 1px; background: var(--line); transform-origin: left center; }
+.rule.strong { background: var(--fg-primary); }
+.motion .rule[data-reveal] { transition: transform 1.2s var(--ease-signal) var(--d, 0ms); }
+.motion .rule[data-reveal]:not(.in) { transform: scaleX(0); }
+/* guided sequences (Seq in reveal.tsx): JS reveals the items one by one; inside a "parts" item its direct children follow
+   each other. Keyframes (not transitions) and `translate`, so the parts keep their own transitions and transforms. */
+.motion [data-seq="parts"]:not(.in) > *, .motion [data-seq="self"]:not(.in) { opacity: 0; }
+.motion [data-seq="parts"].in > *, .motion [data-seq="self"].in { animation: seq-in .75s var(--ease-signal) calc(var(--k, 0) * 140ms) both; }
+[data-seq] > * { --k: 0; } [data-seq] > :nth-child(2) { --k: 1; } [data-seq] > :nth-child(3) { --k: 2; } [data-seq] > :nth-child(4) { --k: 3; } [data-seq] > :nth-child(5) { --k: 4; }
+@keyframes seq-in { from { opacity: 0; translate: 0 14px; } }
+
+/* ---------- TV pieces ---------- */
+.static { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; pointer-events: none; z-index: 3; mix-blend-mode: screen; }
+.scan { position: absolute; inset: 0; pointer-events: none; z-index: 4; opacity: var(--scan, 0); background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.9) 2px 3px); }
+.vig { position: absolute; inset: 0; pointer-events: none; z-index: 4; opacity: var(--vig, 0); background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,.75) 100%); }
+.osd { font-family: var(--font-osd); line-height: 1; color: var(--white); letter-spacing: .04em; pointer-events: none;
+       text-shadow: 0 0 6px rgba(255,255,255,.6), -2px 0 0 var(--rose-400), 2px 0 0 var(--cyan-400); }
+.screen { position: relative; max-width: 100%; border: 1px solid var(--line); overflow: hidden; isolation: isolate; transition: border-color var(--dur-quick) var(--ease-signal); }
+.screen-layer { position: absolute; inset: 0; background: var(--bg); }
+/* off until it tunes in; a starting state in CSS so the prerendered HTML is the same with or without motion */
+.motion .screen > .screen-layer { opacity: 0; }
+.screen-layer > svg, .screen-layer > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.screen .scan, .screen .vig { transition: opacity .5s var(--ease-signal); --scan: 0; --vig: 0; }
+.screen.tuning .scan { --scan: .35; }
+.screen.tuning .vig { --vig: .8; }
+.screen-ch { position: absolute; top: 16px; right: 18px; z-index: 5; font-size: 30px; opacity: 0; transition: opacity .35s var(--ease-signal); }
+.screen.tuning .screen-ch, a:hover .screen-ch, a:focus-visible .screen-ch { opacity: 1; }
+
+/* ---------- nav ---------- */
+.nav-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding-top: env(safe-area-inset-top, 0px); background: var(--bg); transition: background-color var(--dur-base) var(--ease-signal); }
+/* three states, set by the Hero on home: .stage over the full-screen hero (transparent), .paper over the room around it,
+   and the default (Stage) over everything else */
+.nav-wrap.stage { background: transparent; }
+/* hairline under the nav, so it separates from the content; hidden while the nav sits on the hero */
+.nav-wrap::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--line); pointer-events: none; transition: opacity var(--dur-base) var(--ease-signal); }
+.nav-wrap.stage::after { opacity: 0; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--navh); max-width: calc(var(--maxw) + 48px); margin: 0 auto; padding-inline: var(--g); }
+.nav-wrap .lockup, .nav-wrap .text-link { transition: color var(--dur-base) var(--ease-signal); }
+.nav-wrap .lockup path { transition: stroke var(--dur-base) var(--ease-signal); }
+.lockup { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; font-size: 18px; color: var(--fg-primary); text-decoration: none; white-space: nowrap; }
+.lockup svg { flex: none; }
+.lockup path { stroke: var(--fg-primary); }
+.links { display: flex; align-items: center; gap: 40px; }
+.links a { text-decoration: none; font-size: 16px; }
+.text-link { position: relative; color: var(--fg-primary); }
+.text-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-base) var(--ease-signal); }
+.text-link:hover::after, .text-link[aria-current="true"]::after { transform: scaleX(1); }
+.talk { display: inline-flex; align-items: center; min-height: 48px; background: var(--cta-bg); color: var(--cta-fg); padding: 0 28px; font-weight: 500; transition: background-color var(--dur-base) var(--ease-signal), color var(--dur-base) var(--ease-signal); }
+.talk:hover { background: var(--grey-800); color: var(--white); }
+@media (max-width: 860px) { .links { gap: 24px; } .links .text-link { display: none; } }
+
+/* ---------- sections ---------- */
+.section { padding-block: clamp(80px, 10vw, 144px) 0; display: grid; gap: clamp(32px, 4vw, 48px); }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px 48px; flex-wrap: wrap; }
+.section-head > div { display: grid; gap: 12px; max-width: 760px; min-width: 0; }
+.section-head .lede { color: var(--fg-secondary); max-width: 62ch; }
+
+/* ---------- contact (Stage) ---------- */
+/* a Stage card on the Stage page: the hairline is its frame */
+.contact { position: relative; overflow: hidden; isolation: isolate; border: 1px solid var(--line); margin-top: clamp(80px, 10vw, 144px); }
+.contact-layer { position: relative; background: var(--bg); }
+.motion .contact-layer { opacity: 0; }
+.contact-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: center; padding: clamp(32px, 4.4vw, 64px); }
+@media (max-width: 860px) { .contact-inner { grid-template-columns: minmax(0, 1fr); } .bigmark { display: none; } }
+.contact-text { display: grid; gap: 28px; min-width: 0; }
+.display-l { font-weight: 700; font-size: clamp(56px, 8.5vw, 120px); line-height: .9; letter-spacing: -0.03em;
+             text-shadow: calc(-1 * var(--ag, max(2px, .02em))) 0 0 var(--anaglyph-left), var(--ag, max(2px, .02em)) 0 0 var(--anaglyph-right); }
+.email output { display: block; font-size: clamp(20px, 2.3vw, 32px); font-weight: 600; letter-spacing: -0.01em; user-select: all; overflow-wrap: anywhere; }
+.bigmark { width: 300px; height: 300px; }
+.bigmark path { fill: none; stroke: var(--fg-primary); stroke-linejoin: round; stroke-linecap: round; }
+.bigmark .ghosts { transition: opacity 1.2s var(--ease-signal) .2s; }
+.motion .contact:not(.locked) .bigmark .ghosts { opacity: 0; }
+
+/* ---------- footer ---------- */
+.footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px 32px; padding-block: 32px 8px; }
+.footer .lockup { font-size: 16px; }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-size: 14px; color: var(--fg-secondary); text-underline-offset: 4px; }
+
+/* ---------- channel switch ---------- */
+.ch-static { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 40; pointer-events: none; opacity: 0; image-rendering: pixelated; }
+.ch-osd { position: fixed; z-index: 41; top: calc(var(--navh) + 20px + env(safe-area-inset-top, 0px)); right: max(var(--g), calc((100vw - var(--maxw)) / 2 + 24px));
+          font-family: var(--font-osd); font-size: clamp(24px, 2.6vw, 34px); line-height: 1; letter-spacing: .08em; color: var(--white);
+          padding: 10px 16px 8px; background: rgba(10,10,11,.86); border: 2px solid var(--white); text-shadow: 0 0 6px rgba(255,255,255,.6);
+          opacity: 0; transition: opacity .45s var(--ease-signal); pointer-events: none; white-space: nowrap; }
+.ch-osd.on { opacity: 1; transition-duration: .08s; }
+
+/* ---------- not found ---------- */
+.notfound { margin-top: calc(var(--navh) + env(safe-area-inset-top, 0px)); border: 1px solid var(--line); padding: clamp(32px, 6vw, 96px) clamp(24px, 4.4vw, 64px); display: grid; gap: 24px; justify-items: start; min-height: 60vh; align-content: center; }
+.notfound-osd { font-size: clamp(30px, 4vw, 48px); padding: 10px 18px 8px; border: 2px solid var(--white); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn.primary, .screen, .arrow, .text-link::after { transition: none; }
+  .btn.primary:hover { box-shadow: -3px 0 0 var(--anaglyph-left), 3px 0 0 var(--anaglyph-right); }
+}

@@ -1,0 +1,33 @@
+import { useEffect } from 'react';
+import { HIRE_PAGE } from '../seo/meta';
+import { HireHero } from '../sections/hire/HireHero';
+import { Pay } from '../sections/hire/Pay';
+import { PathSection } from '../sections/hire/PathSection';
+import { Picture } from '../sections/hire/Picture';
+import { ProofCards } from '../sections/hire/ProofCards';
+import { Send } from '../sections/hire/Send';
+import { Start } from '../sections/hire/Start';
+import { Trust } from '../sections/hire/Trust';
+
+/** /hire, for small businesses and solo founders. Eight beats, each raising the visitor's confidence:
+ *  idea → legit? → not sure what I need → picture it → done before → money is safe → starting is easy → send. */
+export function Hire() {
+  useEffect(() => { document.title = HIRE_PAGE.title; }, []);
+  return (
+    <main className="hire-page">
+      {/* Like home: Paper frames the hero as it closes into the card, and the trust strip under it. The rest is Stage. */}
+      <div className="room paper">
+        <HireHero />
+        <Trust />
+      </div>
+      <div className="page">
+        <PathSection />
+        <Picture />
+        <ProofCards />
+        <Pay />
+        <Start />
+        <Send />
+      </div>
+    </main>
+  );
+}

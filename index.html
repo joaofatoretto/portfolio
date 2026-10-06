@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Same test as MOTION in src/lib/motion.ts, run before the first paint so the prerendered page starts in its
+         motion state (TV off, reveals hidden) instead of flashing the content before the tune-in. Keep the two in sync. -->
+    <script>try{if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)&&'IntersectionObserver'in window)document.documentElement.classList.add('motion')}catch(e){}</script>
+    <!--seo:start--><!-- filled by vite-plugin-seo.ts from src/seo/meta.ts --><!--seo:end-->
+    <meta name="theme-color" content="#0A0A0B" />
+    <!-- Google Search wants a raster icon in a multiple of 48px; browsers that read SVG take the last one. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Sora stands in for Nohemi until Nohemi is self-hosted (check the licence covers web use). See design.md §6. -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=VT323&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
