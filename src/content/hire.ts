@@ -80,11 +80,10 @@ export const PAY = {
     { label: 'Piece 2 · e.g. ordering', title: 'Orders and payments, working' },
     { label: 'Piece 3 · the rest', title: 'Everything launched · it’s yours' },
   ],
-  delivered: 'Delivered',
-  /** the message of the section: shown under each piece once it's delivered */
+  /** the two lanes of the timeline: what I deliver, then what you pay */
+  lanes: { deliver: 'Delivery', pay: 'Payment' },
+  /** the message of the section: each payment, placed after its piece is delivered */
   receipt: 'You pay for this piece',
-  /** the payment slot before its piece is delivered (only shown with motion, while you watch) */
-  due: 'Nothing to pay yet',
 };
 
 export const START = {

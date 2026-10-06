@@ -276,51 +276,86 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .quote-card.placeholder { border-style: dashed; color: var(--fg-tertiary); }
 @media (max-width: 900px) { .proof-cards { grid-template-columns: minmax(0, 1fr); } }
 
-/* ---------- 06 pay: the pieces ship one at a time, and each one's payment only comes after it ----------
-   The message leads: the title, then per piece "Delivered" and its payment slot, which waits as a dashed outline
-   ("Nothing to pay yet") and fills solid once its piece is delivered. The drawings stay small and grey.
-   Wide screens: the stage holds still (sticky) while you scroll through the track; the line to the next piece
-   fills with --f (by itself, faster as you scroll) and the next piece ships when it's full (useMoments). Phones:
-   stacked, each piece ships as it reaches the middle of the screen. Nothing ships before the section plays. */
-.pay-stage { display: grid; gap: clamp(40px, 6vh, 64px); }
+/* ---------- 06 pay: one timeline, two lanes: I deliver, then you pay ----------
+   Time runs left to right. Each piece lands in a beat: its node lights and its title comes up, an elbow runs down to
+   the payment lane and on in time, then its payment fills. Then the delivery line travels on to the next piece (--f:
+   by itself, faster as you scroll; useMoments) and the beat repeats. The payment lane stays empty until the first
+   delivery: a payment only appears when its piece has landed. Phones: time runs down the page, each piece lands as it reaches the middle of the screen.
+   Rows (desktop): title · delivery lane · gap · payment lane; .lanes uses the same rows for the lane names. */
+.pay-stage { display: grid; gap: clamp(48px, 8vh, 96px); }
 .pay-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px 48px; }
 .pay-title { font-size: clamp(40px, 5vw, 72px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
 .pay .lede { max-width: 34ch; color: var(--fg-secondary); }
-.pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.piece { display: grid; justify-items: start; align-content: start; gap: 14px; min-width: 0; }
-/* the timeline across the top: a node per piece, the line runs on to the next */
-.node-row { position: relative; width: 100%; height: 22px; margin-bottom: 6px; }
-.node-row .node { left: 11px; top: 50%; z-index: 1; }
-.piece:not(:last-child) .node-row::before, .piece:not(:last-child) .node-row::after { content: ''; position: absolute; left: 11px; top: 10px; width: calc(100% + 32px); height: 2px; }
-.piece:not(:last-child) .node-row::before { background: var(--line); }
-.piece:not(:last-child) .node-row::after { background: var(--fg-primary); transform-origin: left; }
-.piece-screen { position: relative; width: 100%; max-width: 240px; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--line-strong); background: var(--surface); transition: opacity .5s var(--ease-signal); }
-.piece-screen svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.piece-title { font-size: 18px; font-weight: 600; color: var(--fg-secondary); }
-.delivered { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; transition: opacity .4s var(--ease-signal) .5s, transform .4s var(--ease-signal) .5s; }
-/* the payment slot: the loudest thing here */
-.receipt { display: grid; width: 100%; max-width: 300px; margin-top: 6px; }
-.receipt > span { grid-area: 1 / 1; display: flex; align-items: center; min-height: 56px; padding: 0 20px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
-.receipt .paid { background: var(--fg-primary); color: var(--bg); transition: opacity .45s var(--ease-signal) 1s, transform .45s var(--ease-signal) 1s; }
-.receipt .due { border: 1.5px dashed var(--line-strong); color: var(--fg-tertiary); font-weight: 500; font-size: 15px; opacity: 0; transition: opacity .3s var(--ease-signal) 1s; }
-.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .piece-screen { opacity: .3; }
-.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .piece-title { opacity: .4; }
+.ledger { --r1: 104px; --r2: 22px; --r3: 76px; --r4: 64px; --elbow: 56px; --gap: 32px;
+          display: grid; grid-template-columns: 112px minmax(0, 1fr); }
+.lanes { display: grid; grid-template-rows: var(--r1) var(--r2) var(--r3) var(--r4); }
+.lanes span { display: flex; align-items: center; }
+.lanes span:first-child { grid-row: 2; } .lanes span:last-child { grid-row: 4; }
+.pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--gap); }
+.piece { display: grid; grid-template-rows: var(--r1) var(--r2) var(--r3) var(--r4); min-width: 0; }
+.dl { display: grid; align-content: start; gap: 6px; padding-right: 16px; transition: opacity .4s var(--ease-signal); }
+.dl-title { font-size: clamp(20px, 2vw, 28px); font-weight: 600; line-height: 1.2; text-wrap: balance; }
+/* the delivery lane: a node per piece, the line runs on to the next */
+.lane-top { position: relative; }
+.lane-top .node { left: 11px; top: 50%; z-index: 1; }
+.piece:not(:last-child) .lane-top::before, .piece:not(:last-child) .lane-top::after { content: ''; position: absolute; left: 11px; top: 10px; width: calc(100% + var(--gap)); height: 2px; }
+.piece:not(:last-child) .lane-top::before { background: var(--line-strong); }
+.piece:not(:last-child) .lane-top::after { background: var(--fg-primary); transform-origin: left; }
+/* the payment lane: a faint line through time; each payment sits on it, a beat after its delivery */
+.lane-bottom { grid-row: 4; position: relative; display: flex; align-items: center; }
+.lane-bottom::before { content: ''; position: absolute; left: 0; right: calc(-1 * var(--gap)); top: 50%; border-top: 1px dashed var(--line-strong); }
+.piece:last-child .lane-bottom::before { right: 0; }
+.elbow { position: absolute; inset: 0; pointer-events: none; }
+.elbow i { position: absolute; background: var(--fg-primary); }
+.elbow i:first-child { left: 10px; width: 2px; bottom: 50%; height: calc(var(--r4) / 2 + var(--r3) + var(--r2) / 2 - 11px); transform-origin: top; }
+.elbow i:last-child { left: 10px; width: calc(var(--elbow) - 10px); top: calc(50% - 1px); height: 2px; transform-origin: left; }
+.chip { position: relative; margin-left: var(--elbow); display: flex; align-items: center; height: 56px; padding: 0 22px; background: var(--fg-primary); color: var(--bg);
+        font-size: clamp(16px, 1.4vw, 19px); font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+.lanes .caption { color: var(--fg-secondary); }
+/* the beat: node and title, then the elbow down and on, then the payment */
+.piece .node, .dl { transition: background-color .25s var(--ease-signal), opacity .4s var(--ease-signal); }
+.elbow i:first-child { transition: transform .3s var(--ease-lock) .35s; }
+.elbow i:last-child { transition: transform .22s var(--ease-lock) .65s; }
+.chip { transition: opacity .3s var(--ease-signal) .85s, transform .45s var(--ease-signal) .85s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .dl { opacity: .28; }
 .motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .node { background: var(--line-strong); }
-.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .delivered { opacity: 0; transform: translateY(6px); transition-delay: 0s; }
-.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .receipt .paid { opacity: 0; transform: translateY(-10px); transition-delay: 0s; }
-.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .receipt .due { opacity: 1; transition-delay: 0s; }
-/* the line to the next piece: empty, filling while this piece is the current one, full once the next has shipped */
-.motion .piece:not(:last-child) .node-row::after { transform: scaleX(0); }
-.motion .pay.play .piece.on:not(:last-child) .node-row::after { transform: scaleX(var(--f, 0)); }
-.motion .pay.play .piece.past .node-row::after { transform: none; transition: transform .3s var(--ease-signal); }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .elbow i:first-child { transform: scaleY(0); transition-delay: 0s; transition-duration: .15s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .elbow i:last-child { transform: scaleX(0); transition-delay: 0s; transition-duration: .15s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .chip { opacity: 0; transform: translateX(-12px); transition-delay: 0s; transition-duration: .2s; }
+.motion .pay.play .piece.lit .node::after { content: ''; position: absolute; inset: -6px; border: 2px solid var(--fg-primary); border-radius: 50%; animation: ping .7s var(--ease-signal) both; }
+@keyframes ping { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(1.6); } }
+/* the delivery line to the next piece: it waits for the payment to land, then travels; full once the next has shipped */
+.motion .piece:not(:last-child) .lane-top::after { transform: scaleX(0); }
+.motion .pay.play .piece.on:not(:last-child) .lane-top::after { transform: scaleX(clamp(0, (var(--f, 0) - .3) / .7, 1)); }
+.motion .pay.play .piece.past .lane-top::after { transform: none; transition: transform .3s var(--ease-signal); }
 @media (min-width: 761px) and (min-height: 620px) {
   .motion .pay-track { height: calc(100svh - var(--navh) + (var(--n) - .5) * 50svh); }
   .motion .pay-stage { position: sticky; top: var(--navh); height: calc(100svh - var(--navh)); align-content: center; }
 }
+@media (max-width: 1080px) { .ledger { grid-template-columns: minmax(0, 1fr); } .lanes { display: none; } }
+/* phones: time runs down. The rail joins the nodes; each payment hangs off the rail, a beat after its delivery. */
 @media (max-width: 760px) {
-  .pieces { grid-template-columns: minmax(0, 1fr); gap: 56px; }
-  .node-row { display: none; }
-  .receipt { max-width: none; }
+  .pieces { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .piece { grid-template-rows: none; position: relative; padding: 0 0 56px 44px; gap: 20px; }
+  .dl-title { font-size: 22px; }
+  .chip { height: 52px; font-size: 17px; }
+  .piece:last-child { padding-bottom: 0; }
+  .lane-top { position: absolute; left: 0; top: 0; bottom: 0; width: 22px; }
+  .lane-top .node { top: 11px; }
+  .piece:not(:last-child) .lane-top::before, .piece:not(:last-child) .lane-top::after { left: 10px; top: 11px; width: 2px; height: 100%; }
+  .piece:not(:last-child) .lane-top::after { transform-origin: top; }
+  .motion .piece:not(:last-child) .lane-top::after, .motion .pay.play .piece.on:not(:last-child) .lane-top::after { transform: scaleY(0); }
+  .motion .pay.play .piece.past .lane-top::after { transform: none; }
+  /* the last piece's rail only runs down to its payment */
+  .piece:last-child .lane-top::before, .piece:last-child .lane-top::after { content: ''; position: absolute; left: 10px; top: 11px; width: 2px; height: calc(100% - 37px); }
+  .piece:last-child .lane-top::before { background: var(--line-strong); }
+  .piece:last-child .lane-top::after { background: var(--fg-primary); transform-origin: top; transition: transform .3s var(--ease-lock) .35s; }
+  .motion :is(.pay:not(.play) .piece, .piece:not(.lit)):last-child .lane-top::after { transform: scaleY(0); transition-delay: 0s; }
+  .lane-bottom { grid-row: auto; }
+  .lane-bottom::before { display: none; }
+  .elbow i:first-child { display: none; }
+  .elbow i:last-child { left: -34px; width: 34px; }
+  .chip { margin-left: 0; }
 }
 
 /* ---------- 07 start: the chat plays, the steps light up with it ---------- */
@@ -396,5 +431,5 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .lead-done [tabindex="-1"]:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .art .d, .art .p, .art .f, .node, .piece-screen, .delivered, .receipt > span, .node-row::after, .field input { transition: none; }
+  .art .d, .art .p, .art .f, .node, .chip, .elbow i, .lane-top::after, .field input { transition: none; }
 }

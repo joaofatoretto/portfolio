@@ -85,29 +85,24 @@ describe('hire page: the story', () => {
     expect(pay.textContent).not.toMatch(/[$€£]\s?\d/);
   });
 
-  it('draws each paid piece as a real screen for any business, not a bakery', () => {
+  it('shows two lanes in time, delivery then payment, for any business', () => {
     at('/hire');
     const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
-    expect(pay.querySelectorAll('.piece-screen svg')).toHaveLength(3);
+    expect(pay.textContent).toContain(PAY.lanes.deliver);
+    expect(pay.textContent).toContain(PAY.lanes.pay);
     expect(pay.textContent).not.toMatch(/bak(e|ery)|cake|sweet ?crumb/i);
   });
 
-  it('keeps the drawings quiet so the payment message leads: no words in them', () => {
-    at('/hire');
-    const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
-    expect(pay.querySelectorAll('.piece-screen text')).toHaveLength(0);
-  });
-
-  it('pairs every piece with "Delivered", then its payment, in that order', () => {
+  it('puts every payment after its delivery, one piece at a time', () => {
     at('/hire');
     const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
     const pieces = within(pay).getAllByRole('listitem');
-    expect(pieces).toHaveLength(3);
-    for (const li of pieces) {
+    expect(pieces).toHaveLength(PAY.pieces.length);
+    pieces.forEach((li, i) => {
       const text = li.textContent!;
-      expect(text).toMatch(/delivered/i);
-      expect(text.indexOf('Delivered')).toBeLessThan(text.indexOf(PAY.receipt));
-    }
+      expect(text).toContain(PAY.pieces[i].title);
+      expect(text.indexOf(PAY.pieces[i].title)).toBeLessThan(text.indexOf(PAY.receipt));
+    });
   });
 
   it('offers WhatsApp with a ready message', () => {
