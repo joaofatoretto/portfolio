@@ -41,7 +41,7 @@ The whole brand tells one transformation in many forms: **noise becomes sound**.
 **The TV tune-in: static before the picture.**
 - An old analogue TV hunting for a channel shows static until the signal locks, then the picture appears.
 - The site does the same when it loads. The visitor sees the noise first, and the content arrives as the result of finding the signal, which is exactly how a project feels from the inside.
-- It also gives the site a navigation language: CH 01 is home, CH 02 case studies, CH 03 about, CH 04 contact. Moving between pages is changing channels.
+- It also gives the site a navigation language: CH 01 is home, CH 02 case studies (CH 02·n per case), CH 03 how I build, CH 04 about, CH 05 contact, CH 06 start a project (/hire). Moving between pages is changing channels.
 
 **The 3D anaglyph: rose and cyan.**
 - Red/cyan 3D film works by offsetting two images. When your eyes line them up, depth appears. Design and engineering are those two images.
@@ -50,7 +50,7 @@ The whole brand tells one transformation in many forms: **noise becomes sound**.
 
 **Stage and Paper: the screen and the room.**
 - The site is dark: Stage is the page, where the brand speaks and the work is shown.
-- Paper is the room around the TV, used once: on home it frames the hero as it closes into the card, and holds the results under it. Then the page turns to Stage for good.
+- Paper is the room around the TV: on home it frames the hero as it closes into the card and holds the results under it; on /hire it frames the hero and holds the trust strip. Then the page turns to Stage for good.
 - Black and white keeps attention on the work. Colour appears only at moments of meaning.
 
 **The typography: three voices with three jobs.**
@@ -79,7 +79,7 @@ The whole brand tells one transformation in many forms: **noise becomes sound**.
 
 ### Guardrails
 
-- **Dark mode is the standard.** Every page and every new section is on Stage. Paper is reserved for the room around the home hero (the hero frame and the results under it), and nowhere else.
+- **Dark mode is the standard.** Every page and every new section is on Stage. Paper is reserved for the rooms around the TV heroes (home: the hero frame and the results; /hire: the hero frame and the trust strip, João's OK 2026-10-05), and nowhere else without João's OK.
 
 - Noise is a starting point, never a style. Static and glitches appear only while tuning in.
 - Colour stays rare: rose and cyan together, on the headline and the main button only.
@@ -91,6 +91,9 @@ The whole brand tells one transformation in many forms: **noise becomes sound**.
 2. **One signal per view.** Each screen has one loud thing: a headline, a wave, or a piece of work. Everything around it stays quiet.
 3. **Show the mechanism.** Graphics are generated from code (seeded noise, parametric curves), never stock or AI images. They prove the "ships code" claim.
 4. **Quiet at rest, alive in detail.** The page is calm and black-and-white. Colour and motion appear only at moments of meaning: tuning in, hovering the main action.
+5. **The message leads, the picture supports.** Every section has one sentence the reader must leave with ("You pay for this piece"). That sentence gets the strongest treatment in the section (size, the solid white block, the last and clearest motion). Illustrations around it step back: small, greys only, no words, no white fills. If the eye lands on a drawing first, the drawing is too loud.
+6. **One thing moves at a time.** Never several animations running at once, never a loop that plays forever. Something moves, finishes, and holds still so it can be read; then the next thing moves. The reader always knows where to look.
+7. **Picture the reader's business, not ours.** On pages for clients (/hire), examples and mock screens show outcomes any business or founder could want (new customers, less busywork, happier customers, money coming in), never one kind of shop. Mock screens never show prices.
 
 ---
 
@@ -304,7 +307,7 @@ Desktop values. Mobile uses the `clamp()` minimum.
 | `osd` | VT323 | 40 / 40 | +4% | `clamp(26px, 3vw, 40px)` |
 
 Rules:
-- One `display` per view.
+- One `display` per view. The section titles that carry a section's message (e.g. "Picture it working.", "You pay as I deliver.") use `display/m`.
 - Running text max ~65 characters per line.
 - Headings get `text-wrap: balance`.
 - Numbers in tables and timecodes are tabular (`font-variant-numeric: tabular-nums`).
@@ -365,6 +368,9 @@ TV snow for tune-in and transitions. Grain at 5% opacity is allowed on Stage at 
 | **Case card** | Thumbnail (`surface`, 1px `line`, 208px tall) → title `heading/3`-18 → meta in `body/s` `fg-tertiary` (role · measurable result) → ↗ icon. |
 | **OSD label** | `osd` style, white, 6px white glow, faint rose/cyan fringe. Always `aria-hidden`. |
 | **Focus ring** | 2px `focus` outline, 3px offset (7px on the primary CTA). |
+| **Step list** (step sections) | One row per step: `mono/caption` number (01…) and the step name in a bold display size (22–34px), grey-600 until it's the current one, then `fg-primary`. Under each, a 2px bar: empty (`line`), filling white while current (`--f`), grey-600 once seen. Each row is a button that jumps to its step. On phones it becomes a row of story bars with the current step's name under them. |
+| **Payment slot** (/hire pay) | Full-width block, 56px tall, `body` 18px bold. Before its piece is delivered: 1.5px dashed `line-strong` outline, "Nothing to pay yet" in `fg-tertiary`. After: solid `fg-primary` block with `bg` text, "You pay for this piece". The loudest element of its section. |
+| **Mock screen** (illustration) | A phone or a 16:10 frame drawn in code. Real-looking UI made of things any business has (people, tasks, reviews, payments). Where it supports a message, keep it quiet: greys only, no text. |
 | **Logo carousel** | Client logos flattened to one ink tone (`brightness(0)`, 58% opacity). Hovering a logo shows its own colours: the one exception to §4, because it's the client's colour, not ours (João's choice, 2026-10-05). One slow linear loop (~5s per logo), 1px `line` hairlines above and below. Under a mouse it holds still in the middle (so a logo can be looked at) and runs faster toward the edges, forwards on the right, backwards on the left. It bleeds edge to edge up to a 1920px screen (the one element allowed past the 1440px page width); wider, it stays 1920px and its edges fade out. Reduced motion: one still copy wrapped in centred rows. Only real clients from career.md. |
 
 ---
@@ -392,6 +398,16 @@ TV snow for tune-in and transitions. Grain at 5% opacity is allowed on Stage at 
 | 05 Settled | 3.4s+ | 5% grain at 12fps |
 
 - **Guided sequence** (groups of items: stats, cards, phones, chips): the items arrive one at a time in reading order, about 300ms apart, each only once it is on screen and never before the one before it. Inside an item, its parts follow each other 140ms apart (e.g. number → what it means → source), and a part with its own motion (a scramble, a tune-in) starts when its item arrives. The eye is led through the group instead of taking it in at once.
+- **Plays once, then holds.** Section animations run once when their section is in place (pinned or in view) and end in their finished state, which is also what shows without motion. Nothing loops forever; nothing starts while the reader can't see it.
+- **Step sections** (a story told in steps on one stage: "Picture it working", "You pay as I deliver"):
+  - The stage holds still (sticky) while the reader scrolls through a taller track; the scroll picks the step. Nothing starts until the stage has fully arrived.
+  - Each step plays once and holds. Its bar (or the line to the next step) fills by itself over ~3.5–4.5s, then the next step comes on. A reader who stops scrolling still sees every step; scrolling just gets there sooner.
+  - Scroll always answers: every bit of forward scroll visibly fills the bar, and the bar is full exactly when the scroll reaches the next step, never before (no dead scroll). Scrolling back gives a step its full time again.
+  - The reader always wins: any scroll, touch, key or click stops an automatic move, and the timer waits ~1.2s after the last input before moving on. Automatic moves are one smooth glide to the next step, and they never carry the reader out of the section.
+  - The last step gets a shorter stretch of scroll, so the section lets go soon after it.
+  - Between steps on a TV screen: a quick channel flick (~380ms).
+  - Where the stage can't hold (stacked layouts on phones), each step comes on as it reaches ~60% of the screen, at most one every 700ms. Reduced motion: no holding, no timer; the step list switches the screen.
+  - No "scroll" hint text (§2): the moving bar and the instant response to scroll are the invitation.
 - **Channel switch** (page transitions): a 300ms burst of phases 01–03.
 - **Reduced motion:** start at 05 with static grain, no channel bursts, no hover widening (the colour stays at 3px).
 

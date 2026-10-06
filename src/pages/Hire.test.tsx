@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { CLIENTS } from '../content/profile';
-import { TRUST } from '../content/hire';
+import { PAY, PICTURE, TRUST } from '../content/hire';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -53,11 +53,61 @@ describe('hire page: the story', () => {
     expect(steps[3]).toMatch(/ship it/i);
   });
 
+  it('shows one moment at a time on one phone, and lets you pick the moment', () => {
+    at('/hire');
+    const pic = screen.getByRole('region', { name: /picture it working/i });
+    const moments = within(pic).getAllByRole('button');
+    expect(moments.map(b => b.textContent)).toEqual(PICTURE.moments.map(m => expect.stringContaining(m)));
+    // one phone; only the chosen moment's screen is shown
+    const screens = [...pic.querySelectorAll('.pic-screen')];
+    const shown = () => screens.filter(s => s.getAttribute('aria-hidden') !== 'true');
+    expect(pic.querySelectorAll('.phone')).toHaveLength(1);
+    expect(screens).toHaveLength(moments.length);
+    expect(moments[0]).toHaveAttribute('aria-pressed', 'true');
+    expect(shown()).toEqual([screens[0]]);
+    fireEvent.click(moments[2]);
+    expect(moments[2]).toHaveAttribute('aria-pressed', 'true');
+    expect(moments[0]).toHaveAttribute('aria-pressed', 'false');
+    expect(shown()).toEqual([screens[2]]);
+  });
+
+  it('pictures outcomes any business or new product could want, not one kind of shop', () => {
+    at('/hire');
+    const pic = screen.getByRole('region', { name: /picture it working/i });
+    expect(PICTURE.moments.length).toBeGreaterThanOrEqual(3);
+    expect(pic.textContent).not.toMatch(/bak(e|ery)|cake|class/i);
+  });
+
   it('says payment only comes after each shipped piece, with no prices', () => {
     at('/hire');
     const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
     expect(pay.textContent).toMatch(/nothing upfront/i);
     expect(pay.textContent).not.toMatch(/[$€£]\s?\d/);
+  });
+
+  it('draws each paid piece as a real screen for any business, not a bakery', () => {
+    at('/hire');
+    const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
+    expect(pay.querySelectorAll('.piece-screen svg')).toHaveLength(3);
+    expect(pay.textContent).not.toMatch(/bak(e|ery)|cake|sweet ?crumb/i);
+  });
+
+  it('keeps the drawings quiet so the payment message leads: no words in them', () => {
+    at('/hire');
+    const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
+    expect(pay.querySelectorAll('.piece-screen text')).toHaveLength(0);
+  });
+
+  it('pairs every piece with "Delivered", then its payment, in that order', () => {
+    at('/hire');
+    const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
+    const pieces = within(pay).getAllByRole('listitem');
+    expect(pieces).toHaveLength(3);
+    for (const li of pieces) {
+      const text = li.textContent!;
+      expect(text).toMatch(/delivered/i);
+      expect(text.indexOf('Delivered')).toBeLessThan(text.indexOf(PAY.receipt));
+    }
   });
 
   it('offers WhatsApp with a ready message', () => {

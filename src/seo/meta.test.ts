@@ -39,6 +39,22 @@ describe('one page per URL, for search engines', () => {
     expect(head).toContain(`<link rel="canonical" href="${SITE.origin}/hire" />`);
   });
 
+  it('names what clients search for in the hire page title, within what Google shows (~60 characters)', () => {
+    const hire = PAGES.find(p => p.path === '/hire')!;
+    expect(hire.title).toMatch(/websites?/i);
+    expect(hire.title).toMatch(/apps?/i);
+    expect(hire.title).toMatch(/small business/i);
+    expect(hire.title.length).toBeLessThanOrEqual(60);
+    expect(hire.description.length).toBeLessThanOrEqual(160);
+  });
+
+  it('tells search engines what the service is, in which languages, and where the page sits', () => {
+    const head = renderHead(PAGES.find(p => p.path === '/hire')!);
+    expect(head).toContain('"description":');
+    expect(head).toContain('"knowsLanguage":["en","pt"]');
+    expect(head).toContain('"@type":"BreadcrumbList"');
+  });
+
   it('gives every page its own title and description', () => {
     expect(new Set(PAGES.map(p => p.title)).size).toBe(PAGES.length);
     expect(new Set(PAGES.map(p => p.description)).size).toBe(PAGES.length);

@@ -154,46 +154,110 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
   .path-end .node { left: -34px; top: 66px; }
 }
 
-/* ---------- 04 picture: three phones, each looping one moment ---------- */
-.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.phone-col { display: grid; justify-items: center; gap: 24px; text-align: center; min-width: 0; }
-.phone { width: 100%; max-width: 280px; aspect-ratio: 280 / 560; border: 2px solid var(--fg-primary); border-radius: 36px; background: var(--grey-850); }
-.pm { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--grey-850); color: var(--white); font-size: 13px; }
-.pm-h { font-size: 15px; }
-.pm .toast { position: absolute; left: 12px; right: 12px; }
-.slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.slots span { display: flex; align-items: center; justify-content: center; height: 34px; border: 1px solid var(--grey-750); color: var(--grey-400); }
-.slots .pick { background: var(--white); border-color: var(--white); color: var(--ink); font-weight: 600; }
-.slots .gone { color: var(--grey-700); text-decoration: line-through; }
-.pm-photo { flex: 1; background: var(--grey-800); }
-.pm-book .toast { bottom: 16px; }
-.search-bar { display: flex; align-items: center; height: 40px; padding: 0 16px; border: 1px solid var(--grey-750); border-radius: 20px; color: var(--grey-400); font-size: 14px; }
-.map { position: relative; height: 30%; background: repeating-linear-gradient(35deg, var(--grey-800) 0 18px, var(--grey-750) 18px 20px); }
-.pin { position: absolute; left: 50%; top: 40%; width: 22px; height: 22px; margin: -22px 0 0 -11px; border-radius: 50% 50% 50% 0; background: var(--white); rotate: -45deg; }
-.result { display: grid; gap: 4px; padding: 12px; border: 1px solid var(--white); }
-.result b { font-size: 15px; } .result span { font-size: 12px; color: var(--grey-400); }
-.result.ghost { border-color: var(--grey-800); }
-.result.ghost i { display: block; height: 9px; width: 60%; background: var(--grey-800); }
-.result.ghost i + i { width: 40%; }
+/* ---------- 04 picture: one phone, the moments in turn ----------
+   With motion the stage holds still (sticky) while you scroll through the track. Each moment plays once and holds;
+   its bar fills by itself and the next moment comes on when it's full, and scrolling fills it faster (moments.ts,
+   Picture.tsx). The last moment gets half a stretch of scroll (LAST). Without motion the track is as tall as the
+   stage, the bars are hidden, and the list switches the screen. */
+.picture { --tt: 0px; }
+.pic-stage { display: grid; grid-template: "head phone" auto "steps phone" auto / minmax(0, 560px) auto; justify-content: center; align-content: center;
+             gap: clamp(32px, 5vh, 56px) clamp(48px, 8vw, 128px); }
+.motion .pic-track { height: calc(100svh - var(--navh) + var(--tt) + (var(--n) - .5) * 60svh); }
+.motion .pic-stage { position: sticky; top: calc(var(--navh) - var(--tt)); height: calc(100svh - var(--navh) + var(--tt)); }
+.pic-head { grid-area: head; align-self: end; display: grid; gap: 16px; }
+.pic-title { font-size: clamp(40px, 5vw, 72px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+.pic-lede { margin: 0; max-width: 34ch; color: var(--fg-secondary); font-size: 18px; }
+.pic-steps { grid-area: steps; align-self: start; list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(16px, 2.6vh, 28px); min-width: 0; }
+.pic-steps li { display: grid; gap: 12px; }
+.pic-steps button { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: baseline; gap: 16px; padding: 0; border: 0; background: none; color: var(--grey-600);
+                    font: inherit; text-align: left; cursor: pointer; transition: color .4s var(--ease-signal); }
+.pic-steps button:hover { color: var(--fg-secondary); }
+.pic-steps button:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; }
+.pic-steps .on button { color: var(--fg-primary); }
+.pic-steps .caption { color: inherit; }
+.pic-step { font-size: clamp(22px, 2.3vw, 34px); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+/* every moment has a bar: full once seen, filling while on (--f), empty still to come. It moves by itself and jumps
+   when you scroll, which is how the section says "this goes on, and scrolling takes you there" without words. */
+.pic-bar { display: none; margin-left: 44px; height: 2px; background: var(--line); overflow: hidden; }
+.pic-bar::after { content: ''; display: block; height: 100%; background: var(--fg-primary); transform-origin: left; transform: scaleX(0); }
+.pic-steps .past .pic-bar::after { transform: none; background: var(--grey-600); }
+.pic-steps .on .pic-bar::after { transform: scaleX(var(--f, 0)); }
+.motion .pic-bar { display: block; }
+
+.phone { grid-area: phone; width: 290px; height: min(580px, calc(100svh - var(--navh) - 96px)); min-height: 440px; border: 2px solid var(--fg-primary); border-radius: 36px; background: var(--grey-850); container-type: size; }
+.pic-screen { position: absolute; inset: 0; visibility: hidden; }
+.pic-screen.on { visibility: visible; }
+.pm { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 14px; padding: 16px; background: var(--grey-850); color: var(--white); font-size: 13px; text-align: left; }
+.pm ul { list-style: none; margin: 0; padding: 0; }
+.pm-head { display: grid; gap: 2px; } .pm-head span { color: var(--grey-400); }
+.pm-h { font-size: 17px; }
+.pm .toast { position: absolute; left: 12px; right: 12px; bottom: 12px; }
+/* reach: the week's line, then new people */
+.spark { flex: none; width: 100%; height: auto; overflow: visible; background: repeating-linear-gradient(to bottom, var(--grey-800) 0 1px, transparent 1px 30px); }
+/* the line is under 300 units long, so one 300 dash draws it. Butt caps: Chrome draws this curve doubled with
+   round ones (or with pathLength). */
+.spark-line { fill: none; stroke: var(--white); stroke-width: 2.5; stroke-dasharray: 300; }
+.days { display: flex; justify-content: space-between; margin-top: -6px; color: var(--grey-600); font: 400 10px var(--font-mono); }
+.pm .feed { display: grid; gap: 8px; margin-top: auto; }
+.feed li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--grey-800); }
+.feed i { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--white); color: var(--ink); font: 600 10px var(--font-mono); font-style: normal; }
+.feed li > span { display: grid; gap: 1px; min-width: 0; } .feed li span span { font-size: 12px; color: var(--grey-400); }
+/* busywork: the list ticks itself off */
+.tasks li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--grey-800); color: var(--grey-400); }
+.box { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border: 1.5px solid var(--white); border-radius: 6px; background: var(--white); color: var(--ink); }
+/* happy: a new review on top */
+.review { display: grid; gap: 6px; padding: 14px; border: 1px solid var(--grey-750); border-radius: 14px; }
+.review p { margin: 0; font-size: 14px; line-height: 1.35; }
+.review > span:last-child { font-size: 12px; color: var(--grey-400); }
+.review.fresh { background: var(--white); border-color: var(--white); color: var(--ink); }
+.review.fresh > span:last-child { color: var(--grey-700); }
+.stars { font-size: 14px; letter-spacing: 2px; } .stars i { display: inline-block; font-style: normal; }
+.review.ghost { gap: 8px; border-color: var(--grey-800); }
+.review.ghost i { display: block; height: 9px; width: 70%; background: var(--grey-800); } .review.ghost i + i { width: 45%; }
+/* money: payments on the lock screen */
 .pm-paid { background: var(--ink); align-items: stretch; }
 .clock { margin-top: 24px; text-align: center; font-size: 56px; font-weight: 300; line-height: 1; }
 .day { text-align: center; color: var(--grey-400); }
-.notes { display: grid; gap: 10px; margin-top: 24px; }
+.notes { display: grid; gap: 10px; margin-top: auto; margin-bottom: 20px; }
 .pm-paid .toast { position: static; }
-.notes .toast:nth-child(2) { opacity: .65; --o: .65; } .notes .toast:nth-child(3) { opacity: .35; --o: .35; }
-.motion .picture.play .slots .pick { animation: pick 4s var(--ease-signal) infinite; }
-.motion .picture.play .pm-book .toast { animation: toast-up 4s var(--ease-signal) infinite; }
-.motion .picture.play .pin { animation: pin-drop 3.2s var(--ease-signal) infinite; }
-.motion .picture.play .notes .toast { animation: note-in 6s var(--ease-signal) infinite both; }
-.motion .picture.play .notes .toast:nth-child(1) { animation-delay: 2.4s; }
-.motion .picture.play .notes .toast:nth-child(2) { animation-delay: 1.2s; }
-@keyframes pick { 0%, 20% { background: transparent; border-color: var(--grey-750); color: var(--grey-400); } 28%, 100% { background: var(--white); border-color: var(--white); color: var(--ink); } }
-@keyframes toast-up { 0%, 32% { opacity: 0; transform: translateY(24px); } 42%, 86% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: translateY(24px); } }
-@keyframes pin-drop { 0% { opacity: 0; translate: 0 -40px; } 18% { opacity: 1; translate: 0 0; } 24% { translate: 0 -8px; } 30%, 88% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: 0 0; } }
-@keyframes note-in { 0% { opacity: 0; transform: translateY(-16px); } 8%, 82% { opacity: var(--o, 1); transform: none; } 92%, 100% { opacity: 0; } }
-@media (max-width: 860px) {
-  .phones { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(78%, 280px); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
-  .phone-col { scroll-snap-align: center; }
+@container (max-height: 480px) {
+  .pm { gap: 10px; } .clock { margin-top: 4px; font-size: 44px; } .notes { gap: 8px; margin-bottom: 4px; }
+  .feed li { padding: 7px 10px; } .feed li:nth-child(n + 4) { display: none; } .tasks li { padding: 8px 0; } .review.ghost { display: none; }
+}
+/* each moment plays once when it comes on, after the phone tunes in or flicks over to it (--pd) */
+.pic-screen { --pd: .45s; }
+.motion .picture.play .pic-screen.on .spark-line { animation: draw 1.1s var(--ease-signal) var(--pd) both; }
+.motion .picture.play .pic-screen.on .feed li { animation: rise .45s var(--ease-signal) calc(var(--pd) + .7s + var(--k) * .45s) both; }
+.motion .picture.play .pic-screen.on .tasks li { animation: done .3s var(--ease-signal) calc(var(--pd) + var(--k) * .4s) both; }
+.motion .picture.play .pic-screen.on .box { animation: tick-on .3s var(--ease-lock) calc(var(--pd) + var(--k) * .4s) both; }
+.motion .picture.play .pic-screen.on .pm-tasks .toast { animation: rise .5s var(--ease-signal) calc(var(--pd) + 2.2s) both; }
+.motion .picture.play .pic-screen.on .review.fresh { animation: rise .5s var(--ease-signal) var(--pd) both; }
+.motion .picture.play .pic-screen.on .fresh .stars i { animation: star-on .3s var(--ease-lock) calc(var(--pd) + .5s + var(--k) * .14s) both; }
+.motion .picture.play .pic-screen.on .notes .toast { animation: rise .45s var(--ease-signal) calc(var(--pd) + var(--k) * .6s) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes draw { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }
+@keyframes done { from { color: var(--white); } }
+@keyframes tick-on { from { background: transparent; color: transparent; border-color: var(--grey-600); } }
+@keyframes star-on { from { opacity: .15; transform: scale(.5); } }
+@media (max-width: 900px) {
+  .picture { --tt: var(--head, 0px); }
+  .pic-stage { grid-template: "head" auto "steps" auto "phone" auto / minmax(0, 1fr); justify-items: center; align-content: start; gap: 20px; padding-top: 12px; }
+  .pic-head { align-self: start; justify-items: center; text-align: center; gap: 10px; }
+  .pic-title { font-size: clamp(32px, 9vw, 44px); }
+  .pic-lede { font-size: 16px; }
+  .pic-steps { width: min(100%, 360px); gap: 12px; }
+  .pic-steps li { gap: 8px; }
+  .pic-steps button { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+  .pic-step { font-size: 18px; }
+  .pic-bar { margin-left: 0; }
+  .phone { width: min(260px, 72vw); height: clamp(300px, calc(100svh - var(--navh) - 120px), 540px); min-height: 0; border-radius: 30px; }
+  /* with motion the list becomes a row of bars, story-style, with the current moment's name under them */
+  .motion .pic-steps { position: relative; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0 6px; padding-bottom: 32px; }
+  .motion .pic-steps li { display: flex; flex-direction: column-reverse; gap: 0; }
+  .motion .pic-steps button { display: block; width: 100%; height: 24px; }
+  .motion .pic-steps .caption { display: none; }
+  .motion .pic-step { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; opacity: 0; pointer-events: none; transition: opacity .3s var(--ease-signal); }
+  .motion .pic-steps .on .pic-step { opacity: 1; }
 }
 
 /* ---------- 05 proof: one result per card ---------- */
@@ -212,37 +276,51 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .quote-card.placeholder { border-style: dashed; color: var(--fg-tertiary); }
 @media (max-width: 900px) { .proof-cards { grid-template-columns: minmax(0, 1fr); } }
 
-/* ---------- 06 pay: each piece ships, then its payment drops in ---------- */
-.pay .lede { max-width: 34ch; }
+/* ---------- 06 pay: the pieces ship one at a time, and each one's payment only comes after it ----------
+   The message leads: the title, then per piece "Delivered" and its payment slot, which waits as a dashed outline
+   ("Nothing to pay yet") and fills solid once its piece is delivered. The drawings stay small and grey.
+   Wide screens: the stage holds still (sticky) while you scroll through the track; the line to the next piece
+   fills with --f (by itself, faster as you scroll) and the next piece ships when it's full (useMoments). Phones:
+   stacked, each piece ships as it reaches the middle of the screen. Nothing ships before the section plays. */
+.pay-stage { display: grid; gap: clamp(40px, 6vh, 64px); }
+.pay-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px 48px; }
+.pay-title { font-size: clamp(40px, 5vw, 72px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+.pay .lede { max-width: 34ch; color: var(--fg-secondary); }
 .pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.piece { display: grid; justify-items: center; gap: 16px; text-align: center; min-width: 0; }
-.piece-screen { position: relative; width: 100%; max-width: 340px; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--fg-primary); background: var(--surface); transition: opacity .5s var(--ease-signal); }
-.shot { position: absolute; inset: 14px; display: flex; flex-direction: column; gap: 8px; }
-.shot i { display: block; height: 10px; background: var(--grey-750); }
-.shot-lp i:first-child { width: 70%; height: 14px; background: var(--fg-primary); } .shot-lp i + i { width: 45%; }
-.shot-lp b { margin-top: auto; width: 34%; height: 22px; background: var(--fg-primary); }
-.shot-order { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.shot-order i, .shot-order b { height: auto; background: var(--grey-750); }
-.shot-order b { background: var(--fg-primary); }
-.shot-live span { align-self: center; padding: 3px 12px; border-radius: 10px; background: var(--grey-800); font: 400 12px var(--font-mono); color: var(--grey-400); }
-.shot-live i { flex: 1; height: auto; background: var(--grey-800); }
-.node-row { position: relative; width: 100%; height: 22px; }
-.node-row .node { left: 50%; top: 50%; }
-.piece:not(:last-child) .node-row::before, .piece:not(:last-child) .node-row::after { content: ''; position: absolute; left: 50%; top: 10px; width: calc(100% + 32px); height: 2px; }
+.piece { display: grid; justify-items: start; align-content: start; gap: 14px; min-width: 0; }
+/* the timeline across the top: a node per piece, the line runs on to the next */
+.node-row { position: relative; width: 100%; height: 22px; margin-bottom: 6px; }
+.node-row .node { left: 11px; top: 50%; z-index: 1; }
+.piece:not(:last-child) .node-row::before, .piece:not(:last-child) .node-row::after { content: ''; position: absolute; left: 11px; top: 10px; width: calc(100% + 32px); height: 2px; }
 .piece:not(:last-child) .node-row::before { background: var(--line); }
-.piece:not(:last-child) .node-row::after { background: var(--fg-primary); transform-origin: left; transition: transform .8s var(--ease-signal); }
-.node-row .node { z-index: 1; }
-.piece-title { font-size: 20px; font-weight: 600; }
-.delivered { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--fg-primary); font-size: 14px; font-weight: 600; transition: opacity .4s var(--ease-signal) .3s, transform .4s var(--ease-signal) .3s; }
-.receipt { min-width: 220px; padding: 14px 18px; border: 1px dashed var(--line-strong); color: var(--fg-intro); font-size: 15px; transition: opacity .5s var(--ease-signal) .65s, transform .5s var(--ease-signal) .65s; }
-.motion .piece:not(.lit) .piece-screen { opacity: .2; }
-.motion .piece:not(.lit) .node { background: var(--line-strong); }
-.motion .piece:not(.lit) .delivered { opacity: 0; transform: translateY(8px); }
-.motion .piece:not(.lit) .receipt { opacity: 0; transform: translateY(-14px); }
-.motion .piece:not(.flow) .node-row::after { transform: scaleX(0); }
+.piece:not(:last-child) .node-row::after { background: var(--fg-primary); transform-origin: left; }
+.piece-screen { position: relative; width: 100%; max-width: 240px; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--line-strong); background: var(--surface); transition: opacity .5s var(--ease-signal); }
+.piece-screen svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.piece-title { font-size: 18px; font-weight: 600; color: var(--fg-secondary); }
+.delivered { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; transition: opacity .4s var(--ease-signal) .5s, transform .4s var(--ease-signal) .5s; }
+/* the payment slot: the loudest thing here */
+.receipt { display: grid; width: 100%; max-width: 300px; margin-top: 6px; }
+.receipt > span { grid-area: 1 / 1; display: flex; align-items: center; min-height: 56px; padding: 0 20px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.receipt .paid { background: var(--fg-primary); color: var(--bg); transition: opacity .45s var(--ease-signal) 1s, transform .45s var(--ease-signal) 1s; }
+.receipt .due { border: 1.5px dashed var(--line-strong); color: var(--fg-tertiary); font-weight: 500; font-size: 15px; opacity: 0; transition: opacity .3s var(--ease-signal) 1s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .piece-screen { opacity: .3; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .piece-title { opacity: .4; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .node { background: var(--line-strong); }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .delivered { opacity: 0; transform: translateY(6px); transition-delay: 0s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .receipt .paid { opacity: 0; transform: translateY(-10px); transition-delay: 0s; }
+.motion :is(.pay:not(.play) .piece, .piece:not(.lit)) .receipt .due { opacity: 1; transition-delay: 0s; }
+/* the line to the next piece: empty, filling while this piece is the current one, full once the next has shipped */
+.motion .piece:not(:last-child) .node-row::after { transform: scaleX(0); }
+.motion .pay.play .piece.on:not(:last-child) .node-row::after { transform: scaleX(var(--f, 0)); }
+.motion .pay.play .piece.past .node-row::after { transform: none; transition: transform .3s var(--ease-signal); }
+@media (min-width: 761px) and (min-height: 620px) {
+  .motion .pay-track { height: calc(100svh - var(--navh) + (var(--n) - .5) * 50svh); }
+  .motion .pay-stage { position: sticky; top: var(--navh); height: calc(100svh - var(--navh)); align-content: center; }
+}
 @media (max-width: 760px) {
   .pieces { grid-template-columns: minmax(0, 1fr); gap: 56px; }
-  .piece:not(:last-child) .node-row::before, .piece:not(:last-child) .node-row::after { display: none; }
+  .node-row { display: none; }
+  .receipt { max-width: none; }
 }
 
 /* ---------- 07 start: the chat plays, the steps light up with it ---------- */
@@ -318,5 +396,5 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .lead-done [tabindex="-1"]:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .art .d, .art .p, .art .f, .node, .piece-screen, .delivered, .receipt, .node-row::after, .field input { transition: none; }
+  .art .d, .art .p, .art .f, .node, .piece-screen, .delivered, .receipt > span, .node-row::after, .field input { transition: none; }
 }

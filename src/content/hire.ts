@@ -53,9 +53,12 @@ export const PATH = {
   end: 'Your business, online.',
 };
 
+/** Outcomes, not one kind of business: whoever reads this (a shop, a service, a founder with a new product) should
+ *  find what they want in at least one moment. Each moment has its own screen in Picture.tsx. */
 export const PICTURE = {
   title: 'Picture it working.',
-  moments: ['Customers book on their own', 'People find you on Google', 'You get paid online'],
+  lede: 'Every idea is different. The point is the same: it works for you.',
+  moments: ['New customers find you', 'The busywork does itself', 'Customers leave happy', 'The money comes in'],
 };
 
 export const PROOF = {
@@ -77,6 +80,11 @@ export const PAY = {
     { label: 'Piece 2 · e.g. ordering', title: 'Orders and payments, working' },
     { label: 'Piece 3 · the rest', title: 'Everything launched · it’s yours' },
   ],
+  delivered: 'Delivered',
+  /** the message of the section: shown under each piece once it's delivered */
+  receipt: 'You pay for this piece',
+  /** the payment slot before its piece is delivered (only shown with motion, while you watch) */
+  due: 'Nothing to pay yet',
 };
 
 export const START = {

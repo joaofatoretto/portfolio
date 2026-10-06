@@ -50,18 +50,26 @@ function casePage(c: CaseStudy): Page {
   };
 }
 
-/** The landing page for clients who want something built. */
+/** The landing page for clients who want something built. Its title names what they search for (Google shows
+ *  about 60 characters); the page itself opens with "Tell me your idea". Languages from career.md. */
+const HIRE_DESCRIPTION = 'Websites and apps for small businesses and new founders, designed and built by me. Free first chat, nothing upfront: you pay after each piece is shipped.';
 export const HIRE_PAGE: Page = {
   path: '/hire',
-  title: `Tell me your idea · ${SITE.name}`,
-  description: 'Websites and apps for small businesses and new founders, designed and built by me. Free first chat, nothing upfront: you pay after each piece is shipped.',
+  title: `Websites and apps for small businesses · ${SITE.name}`,
+  description: HIRE_DESCRIPTION,
   type: 'website',
-  jsonLd: [{
-    '@type': 'ProfessionalService', name: `${SITE.name}, websites and apps`, url: `${SITE.origin}/hire`,
-    image: SITE.origin + SITE.image, founder: person,
-    serviceType: ['Websites', 'Landing pages', 'Web and mobile apps', 'Product design'],
-    areaServed: 'Worldwide',
-  }],
+  jsonLd: [
+    {
+      '@type': 'ProfessionalService', name: `${SITE.name}, websites and apps`, url: `${SITE.origin}/hire`,
+      description: HIRE_DESCRIPTION, image: SITE.origin + SITE.image, founder: person,
+      serviceType: ['Websites', 'Landing pages', 'Web and mobile apps', 'Product design'],
+      areaServed: 'Worldwide', knowsLanguage: ['en', 'pt'],
+    },
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: `${SITE.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Websites and apps', item: `${SITE.origin}/hire` },
+    ] },
+  ],
 };
 
 /** Every indexable page. Each becomes an HTML file at build time and a sitemap entry. */
