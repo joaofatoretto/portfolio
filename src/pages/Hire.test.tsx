@@ -132,6 +132,13 @@ describe('hire page: the story', () => {
     });
   });
 
+  it('shows the form card as a TV that powers on, like the contact card on home', () => {
+    at('/hire');
+    const card = document.getElementById('contact')!;
+    expect(card.querySelector('canvas.static')).not.toBeNull();
+    expect(card.querySelector('.send-layer')).toContainElement(form());
+  });
+
   it('offers WhatsApp with a ready message', () => {
     at('/hire');
     const wa = screen.getAllByRole('link', { name: /whatsapp/i });

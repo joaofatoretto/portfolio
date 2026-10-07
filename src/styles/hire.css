@@ -403,9 +403,11 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .call + .send { margin-top: clamp(32px, 4vw, 56px); }
 .gather-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 30; pointer-events: none; }
 
-/* ---------- 08 send: the closing Stage card ---------- */
-.send { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px 72px; align-items: center; margin-top: clamp(96px, 12vw, 176px);
-        padding: clamp(28px, 4.4vw, 64px); border: 1px solid var(--line); }
+/* ---------- 08 send: the closing Stage card, a TV that powers on as it arrives (like Contact on home) ---------- */
+.send { position: relative; overflow: hidden; isolation: isolate; margin-top: clamp(96px, 12vw, 176px); border: 1px solid var(--line); }
+.send-layer { position: relative; background: var(--bg); }
+.motion .send-layer { opacity: 0; }
+.send-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px 72px; align-items: center; padding: clamp(28px, 4.4vw, 64px); }
 .send-text { display: grid; gap: 28px; min-width: 0; }
 .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .chips li { padding: 8px 14px; border: 1px solid var(--line-strong); color: var(--fg-intro); font-size: 14px; }
@@ -413,7 +415,7 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .motion .send:not(.locked) .bigmark .ghosts { opacity: 0; }
 .send-form { display: grid; gap: 20px; min-width: 0; }
 .send-alt { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-left: 5px; }
-@media (max-width: 980px) { .send { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 980px) { .send-inner { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 860px) { .send .bigmark { display: none; } }
 
 /* the form */
