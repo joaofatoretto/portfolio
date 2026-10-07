@@ -139,6 +139,12 @@ describe('hire page: the story', () => {
     expect(card.querySelector('.send-layer')).toContainElement(form());
   });
 
+  it('shows no client quote, not even a placeholder, until a real one is confirmed', () => {
+    at('/hire');
+    expect(document.querySelector('.quote-card')).toBeNull();
+    expect(document.body.textContent).not.toMatch(/client quote/i);
+  });
+
   it('offers WhatsApp with a ready message', () => {
     at('/hire');
     const wa = screen.getAllByRole('link', { name: /whatsapp/i });

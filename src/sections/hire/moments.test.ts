@@ -1,4 +1,4 @@
-import { DWELL, LAST, advance, locate, reached } from './moments';
+import { DWELL, LAST, advance, locate, reached, stepTowards } from './moments';
 
 describe('"Picture it working": where the scroll is', () => {
   // 4 moments, each 100 px of scroll; the last one is shorter (LAST of a moment), so the section lets go soon after it
@@ -77,5 +77,33 @@ describe('stacked steps (phones): how far the reader has got', () => {
     expect(reached([400, 900, 1400], 500)).toBe(0);
     expect(reached([-300, 200, 700], 500)).toBe(1);
     expect(reached([-900, -400, 100], 500)).toBe(2);
+  });
+});
+
+describe('stacked steps: the pace on phones', () => {
+  const gap = 1600;
+
+  it('ships nothing past the first until the section plays, however far you scrolled', () => {
+    expect(stepTowards({ shown: 0, last: -Infinity }, 2, 5000, gap, false)).toEqual({ shown: 0, last: -Infinity });
+  });
+
+  it('once playing, waits a full beat before the next step, then goes one at a time', () => {
+    let s = stepTowards({ shown: 0, last: -Infinity }, 2, 1000, gap, true);
+    expect(s.shown).toBe(0); // the first beat starts now
+    s = stepTowards(s, 2, 1000 + gap - 1, gap, true);
+    expect(s.shown).toBe(0);
+    s = stepTowards(s, 2, 1000 + gap, gap, true);
+    expect(s.shown).toBe(1);
+    s = stepTowards(s, 2, 1000 + gap + 10, gap, true);
+    expect(s.shown).toBe(1);
+    s = stepTowards(s, 2, 1000 + 2 * gap, gap, true);
+    expect(s.shown).toBe(2);
+  });
+
+  it('never runs ahead of what is on screen, and goes straight back when you scroll up', () => {
+    let s = stepTowards({ shown: 1, last: 0 }, 1, 99999, gap, true);
+    expect(s.shown).toBe(1);
+    s = stepTowards({ shown: 2, last: 0 }, 0, 10, gap, true);
+    expect(s.shown).toBe(0);
   });
 });

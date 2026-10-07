@@ -38,3 +38,16 @@ export function reached(tops: number[], line: number): number {
   tops.forEach((t, k) => { if (t < line) i = k; });
   return i;
 }
+
+export type Pace = { shown: number; last: number };
+
+/** Stacked steps, one frame: move `shown` towards `target` (the last step on screen). Nothing moves on until the
+ *  section `playing`; then the first step's beat starts and each next step comes `gap` ms after the one before, one
+ *  at a time, never past what's on screen. Scrolling back goes straight back. */
+export function stepTowards(p: Pace, target: number, now: number, gap: number, playing: boolean): Pace {
+  if (target < p.shown) return { shown: target, last: now };
+  if (!playing) return p;
+  if (p.last === -Infinity) return { shown: p.shown, last: now };
+  if (target > p.shown && now - p.last >= gap) return { shown: p.shown + 1, last: now };
+  return p;
+}

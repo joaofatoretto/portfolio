@@ -21,7 +21,7 @@ export function Pay() {
   const timers = useRef<number[]>([]);
   const later = (ms: number, cls: string) => timers.current.push(window.setTimeout(() => ref.current?.classList.add(cls), ms));
   const { active } = useMoments(N, ref, trackRef, stageRef, {
-    dwell: 3400, items: '.piece',
+    dwell: 3400, items: '.piece', gap: 1800, // on phones: a piece's whole beat (~1.2s), then a breath
     onArrive: () => { ref.current!.classList.add('pieces-in'); later(LANES_AT, 'lanes-in'); later(PLAY_AT, 'play'); },
   });
   useEffect(() => { if (MOTION && active === N - 1) later(TELL_AFTER, 'told'); }, [active]);

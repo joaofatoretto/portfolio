@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { MOTION, animate, easeLock } from '../../lib/motion';
-import { DWELL, LAST, advance, locate, reached, type Clock } from './moments';
+import { DWELL, LAST, advance, locate, reached, stepTowards, type Clock, type Pace } from './moments';
 
 type Opts = {
   /** ms a step stays before the next comes on by itself */
@@ -10,11 +10,13 @@ type Opts = {
   onArrive?: () => void;
   /** stacked mode: the steps' elements, reached as their tops pass 62% of the viewport */
   items?: string;
+  /** stacked mode: the least ms between one step and the next (a step's whole beat) */
+  gap?: number;
 };
 
 /** ms after the reader last scrolled, touched or pressed a key before a step moves on by itself */
 const IDLE = 1200;
-/** stacked mode: the least time between one step and the next */
+/** stacked mode: the default least time between one step and the next */
 const STEP_GAP = 700;
 
 /** Runs a section told in steps (moments.ts). Two modes, chosen by the CSS:
@@ -22,10 +24,11 @@ const STEP_GAP = 700;
  *    `--f` (0–1, set on the section) fills with time and with forward scrolling; when it's full and the reader is
  *    idle, the page glides to the next step. The last step gets LAST of a stretch, then the section lets go.
  *  - stacked: the stage isn't sticky (phones, where the steps are stacked). A step is reached as its top passes
- *    62% of the screen, at most one every STEP_GAP ms; the reader's scroll is the pace.
+ *    62% of the screen, once the section plays, one at a time and `gap` ms apart (stepTowards); the reader's scroll
+ *    sets how far it can go.
  *  Without motion it does nothing: `active` stays 0 and `pick` just sets it. */
 export function useMoments(n: number, section: RefObject<HTMLElement | null>, track: RefObject<HTMLElement | null>,
-  stage: RefObject<HTMLElement | null>, { dwell = DWELL, onArrive, items }: Opts = {}) {
+  stage: RefObject<HTMLElement | null>, { dwell = DWELL, onArrive, items, gap = STEP_GAP }: Opts = {}) {
   const [active, setActive] = useState(0);
   const glideRef = useRef<(i: number) => void>(() => {});
 
@@ -40,7 +43,7 @@ export function useMoments(n: number, section: RefObject<HTMLElement | null>, tr
       start: tr.getBoundingClientRect().top + window.scrollY - top,
       seg: Math.max(1, tr.offsetHeight - st.offsetHeight) / (n - 1 + LAST),
     });
-    let raf = 0, last = 0, shown = 0, lastStep = -Infinity, lastUser = -Infinity, clock: Clock = { i: 0, frac: 0, fill: 0 };
+    let raf = 0, last = 0, shown = 0, pace: Pace = { shown: 0, last: -Infinity }, lastUser = -Infinity, clock: Clock = { i: 0, frac: 0, fill: 0 };
     let stopGlide: (() => void) | null = null;
     const show = (i: number) => { if (i !== shown) { shown = i; setActive(i); } };
     let arrived = false;
@@ -68,10 +71,8 @@ export function useMoments(n: number, section: RefObject<HTMLElement | null>, tr
         if (!items) return;
         const r = reached([...sec.querySelectorAll(items)].map(el => el.getBoundingClientRect().top), window.innerHeight * 0.62);
         if (r >= 0) play();
-        const i = Math.max(0, r);
-        // forward one step at a time, STEP_GAP apart, so steps that arrive together (a row) still come in turn
-        if (i < shown) show(i);
-        else if (i > shown && now - lastStep >= STEP_GAP) { show(shown + 1); lastStep = now; }
+        pace = stepTowards(pace, Math.max(0, r), now, gap, sec.classList.contains('play'));
+        show(pace.shown);
         return;
       }
       const { start, seg } = geo(), y = window.scrollY - start;

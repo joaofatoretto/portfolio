@@ -36,9 +36,7 @@ export function ProofCards() {
       <Seq className="proof-cards" step={320}>
         {PROOF.cards.map((c, i) => <ProofCard key={c.client} c={c} n={i + 1} />)}
       </Seq>
-      {q
-        ? <R as="figure" className="quote-card"><blockquote>“{q.text}”</blockquote><figcaption className="label">{q.who}</figcaption></R>
-        : import.meta.env.DEV && <div className="quote-card placeholder"><p>“[Client quote: one sentence about what changed for their business.]”</p><span className="label">[Name] · [Business] · shown in dev only</span></div>}
+      {q && <R as="figure" className="quote-card"><blockquote>“{q.text}”</blockquote><figcaption className="label">{q.who}</figcaption></R>}
     </section>
   );
 }

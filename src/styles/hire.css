@@ -273,7 +273,6 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .proof-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; }
 .quote-card { display: grid; gap: 16px; margin: 0; padding: 32px; border: 1px solid var(--line); }
 .quote-card blockquote, .quote-card p { margin: 0; font-size: clamp(20px, 2vw, 26px); font-weight: 300; font-style: italic; line-height: 1.45; }
-.quote-card.placeholder { border-style: dashed; color: var(--fg-tertiary); }
 @media (max-width: 900px) { .proof-cards { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- 06 pay: one timeline, two lanes: I deliver, then you pay ----------
