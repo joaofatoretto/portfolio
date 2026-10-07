@@ -5,7 +5,7 @@ import { MOTION } from '../../lib/motion';
 import { useInView } from '../../lib/reveal';
 
 /** The last call before the form, in order: the nudge ("What are you waiting for?"); then the promise, gathered from
- *  streaks of light that rush in from the whole screen and fill it in (lib/gather.ts); then an arrow draws down to
+ *  faint streaks of light that glide in from around it and fill it in (lib/gather.ts); then an arrow draws down to
  *  the form. Plays once. */
 export function Call() {
   const ref = useRef<HTMLElement>(null), titleRef = useRef<HTMLHeadingElement>(null);
