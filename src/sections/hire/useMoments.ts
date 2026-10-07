@@ -5,8 +5,9 @@ import { DWELL, LAST, advance, locate, reached, type Clock } from './moments';
 type Opts = {
   /** ms a step stays before the next comes on by itself */
   dwell?: number;
-  /** add `.play` to the section when it first holds the screen (or, stacked, when the first step is reached) */
-  autoPlay?: boolean;
+  /** called once when the section first holds the screen (or, stacked, when the first step is reached). Default: add
+   *  `.play` to the section, which starts the steps. A section with an intro adds `.play` itself when it's done. */
+  onArrive?: () => void;
   /** stacked mode: the steps' elements, reached as their tops pass 62% of the viewport */
   items?: string;
 };
@@ -24,7 +25,7 @@ const STEP_GAP = 700;
  *    62% of the screen, at most one every STEP_GAP ms; the reader's scroll is the pace.
  *  Without motion it does nothing: `active` stays 0 and `pick` just sets it. */
 export function useMoments(n: number, section: RefObject<HTMLElement | null>, track: RefObject<HTMLElement | null>,
-  stage: RefObject<HTMLElement | null>, { dwell = DWELL, autoPlay = true, items }: Opts = {}) {
+  stage: RefObject<HTMLElement | null>, { dwell = DWELL, onArrive, items }: Opts = {}) {
   const [active, setActive] = useState(0);
   const glideRef = useRef<(i: number) => void>(() => {});
 
@@ -42,7 +43,8 @@ export function useMoments(n: number, section: RefObject<HTMLElement | null>, tr
     let raf = 0, last = 0, shown = 0, lastStep = -Infinity, lastUser = -Infinity, clock: Clock = { i: 0, frac: 0, fill: 0 };
     let stopGlide: (() => void) | null = null;
     const show = (i: number) => { if (i !== shown) { shown = i; setActive(i); } };
-    const play = () => { if (autoPlay) sec.classList.add('play'); };
+    let arrived = false;
+    const play = () => { if (arrived) return; arrived = true; if (onArrive) onArrive(); else sec.classList.add('play'); };
 
     /** scroll to the start of step i, as one smooth move the reader can interrupt */
     const glide = (i: number) => {

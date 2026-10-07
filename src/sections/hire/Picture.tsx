@@ -80,7 +80,7 @@ const N = MOMENTS.length;
 export function Picture() {
   const ref = useRef<HTMLElement>(null), trackRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
-  const { active, pick } = useMoments(N, ref, trackRef, stageRef, { autoPlay: false });
+  const { active, pick } = useMoments(N, ref, trackRef, stageRef, { onArrive: () => {} }); // plays when the phone tunes in, below
   // the first moment starts once the phone has tuned in (TVFrame tunes at the same point; TL.tune is ~1 s)
   useInView(stageRef, () => { if (MOTION) setTimeout(() => ref.current?.classList.add('play'), 600); }, 0.4);
 

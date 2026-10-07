@@ -93,6 +93,16 @@ describe('hire page: the story', () => {
     expect(pay.textContent).not.toMatch(/bak(e|ery)|cake|sweet ?crumb/i);
   });
 
+  it('marks each delivery with a check, and says the terms after the timeline, once for screen readers', () => {
+    at('/hire');
+    const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
+    const pieces = within(pay).getAllByRole('listitem');
+    for (const li of pieces) expect(li.querySelector('.node svg')).not.toBeNull();
+    const lede = within(pay).getByText(PAY.lede);
+    const list = within(pay).getByRole('list');
+    expect(list.compareDocumentPosition(lede) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('puts every payment after its delivery, one piece at a time', () => {
     at('/hire');
     const pay = screen.getByRole('region', { name: /you pay as i deliver/i });
