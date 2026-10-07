@@ -23,6 +23,8 @@ export type Page = {
   title: string;
   description: string;
   type: 'website' | 'article';
+  /** prerendered but kept out of search results and the sitemap (no canonical, robots noindex) */
+  noindex?: true;
   /** schema.org objects for <script type="application/ld+json"> */
   jsonLd: object[];
 };
@@ -80,6 +82,16 @@ export const PAGES: Page[] = [
   HIRE_PAGE,
 ];
 
+/** Where the hire form lands once it has sent (also after a plain form post): the conversion URL for Google Ads.
+ *  It has a URL of its own but stays out of search results. */
+export const THANKS_PAGE: Page = {
+  path: '/hire/thanks', noindex: true, title: `Thanks · ${SITE.name}`,
+  description: 'Your idea is in my inbox. I reply within 1 business day.', type: 'website', jsonLd: [],
+};
+
+/** Prerendered like PAGES, but left out of the sitemap and the index. */
+export const UNLISTED: Page[] = [THANKS_PAGE];
+
 /** Served for any unknown address (dist/404.html), with a 404 status and kept out of the index. */
 export const NOT_FOUND: Page = {
   path: null, title: `No signal · ${SITE.name}`, description: 'This page doesn’t exist. The case studies are on the home page.', type: 'website', jsonLd: [],
@@ -91,7 +103,7 @@ const ldJson = (o: object) => JSON.stringify({ '@context': 'https://schema.org',
 
 /** The page's <head> tags, as HTML. */
 export function renderHead(page: Page): string {
-  const url = page.path === null ? null : SITE.origin + page.path, image = SITE.origin + SITE.image;
+  const url = page.path === null || page.noindex ? null : SITE.origin + page.path, image = SITE.origin + SITE.image;
   return [
     `<title>${esc(page.title)}</title>`,
     `<meta name="description" content="${esc(page.description)}" />`,

@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { NavBar } from './components/NavBar';
 import { CaseStudy } from './pages/CaseStudy';
 import { Hire } from './pages/Hire';
+import { HireThanks } from './pages/HireThanks';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 
@@ -27,6 +28,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="work/:slug" element={<CaseStudy />} />
         <Route path="hire" element={<Hire />} />
+        <Route path="hire/thanks" element={<HireThanks />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { CASES } from '../content/cases';
-import { NOT_FOUND, PAGES, fillTemplate, renderHead, renderSitemap, SITE } from './meta';
+import { NOT_FOUND, PAGES, THANKS_PAGE, UNLISTED, fillTemplate, renderHead, renderSitemap, SITE } from './meta';
 
 const home = PAGES[0];
 const casePage = (slug: string) => PAGES.find(p => p.path === `/work/${slug}`)!;
@@ -83,6 +83,16 @@ describe('one page per URL, for search engines', () => {
     expect(head).toContain('<meta name="robots" content="noindex" />');
     expect(head).not.toContain('rel="canonical"');
     expect(head).not.toContain('og:url');
+  });
+
+  it('prerenders the hire thank-you page (the ads conversion URL) but keeps it out of the index and the sitemap', () => {
+    expect(THANKS_PAGE.path).toBe('/hire/thanks');
+    expect(UNLISTED).toContain(THANKS_PAGE);
+    expect(PAGES).not.toContain(THANKS_PAGE);
+    const head = renderHead(THANKS_PAGE);
+    expect(head).toContain('<meta name="robots" content="noindex" />');
+    expect(head).not.toContain('rel="canonical"');
+    expect(renderSitemap()).not.toContain('/hire/thanks');
   });
 
   it('lists every page in the sitemap, and nothing else', () => {

@@ -47,13 +47,12 @@ describe('POST /api/lead', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('accepts a plain form post (no JavaScript) and answers with a thank-you page', async () => {
+  it('accepts a plain form post (no JavaScript) and sends it to the thank-you page, like the browser form', async () => {
     const res = await POST(new Request('https://joaofatoretto.com/api/lead', {
       method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(lead).toString(),
     }));
-    expect(res.status).toBe(200);
-    expect(res.headers.get('content-type')).toContain('text/html');
-    expect(await res.text()).toContain('Thanks');
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toBe('https://joaofatoretto.com/hire/thanks');
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 

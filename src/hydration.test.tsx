@@ -45,7 +45,7 @@ async function hydrate(path: string, markup: string, reduce: boolean) {
   }
 }
 
-describe.each([['/'], [`/work/${CASES[0].slug}`], ['/hire'], ['/not-a-page']])('hydrating %s', path => {
+describe.each([['/'], [`/work/${CASES[0].slug}`], ['/hire'], ['/hire/thanks'], ['/not-a-page']])('hydrating %s', path => {
   it.each([['motion on', false], ['reduced motion', true]])('matches the prerendered HTML with %s', async (_, reduce) => {
     const markup = await serverHtml(path);
     expect(await hydrate(path, markup, reduce)).toEqual([]);

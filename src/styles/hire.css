@@ -432,8 +432,6 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 6px 5px 0; }
 .btn.primary:disabled { opacity: .7; cursor: progress; }
 .form-fail { padding: 16px 20px; border: 2px solid var(--fg-primary); font-size: 15px; line-height: 1.55; }
-.lead-done { display: grid; gap: 16px; align-content: start; padding: 32px; border: 1px solid var(--line-strong); background: var(--surface); }
-.lead-done [tabindex="-1"]:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .art .d, .art .p, .art .f, .node, .chip, .elbow i, .lane-top::after, .field input { transition: none; }

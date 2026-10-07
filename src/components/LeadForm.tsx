@@ -1,20 +1,25 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PROFILE, waLink } from '../content/profile';
 import { validateLead, type LeadErrors, type LeadField } from '../lib/lead';
 
 type Values = Record<LeadField | 'website', string>;
 const EMPTY: Values = { name: '', contact: '', message: '', website: '' };
 const ORDER: LeadField[] = ['name', 'contact', 'message'];
+/** What the thank-you page gets from the form (router state; empty when the page is opened directly). */
+export type Sent = { name: string; message: string };
 const FALLBACK = 'Hi João, I tried to send the form on your site about an idea.';
 
-/** The hire page's conversion point: three fields. Validates in the browser, posts to /api/lead, offers WhatsApp after. */
+/** The hire page's conversion point: three fields. Validates in the browser, posts to /api/lead, then goes to
+ *  /hire/thanks (the Google Ads conversion URL) with the name and idea, so it can thank them and offer WhatsApp. */
 export function LeadForm() {
   const uid = useId();
   const id = (f: string) => `${uid}-${f}`;
   const formRef = useRef<HTMLFormElement>(null);
   const [v, setV] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<LeadErrors>({});
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<'idle' | 'sending' | 'failed'>('idle');
   const set = (f: keyof Values, value: string) => {
     setV(prev => ({ ...prev, [f]: value }));
     if (errors[f as LeadField]) setErrors(prev => ({ ...prev, [f]: undefined }));
@@ -32,7 +37,7 @@ export function LeadForm() {
     setStatus('sending');
     try {
       const res = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) });
-      if (res.ok) { setStatus('sent'); return; }
+      if (res.ok) { navigate('/hire/thanks', { state: { name: v.name.trim(), message: v.message.trim() } satisfies Sent }); return; }
       if (res.status === 400) {
         const data = await res.json().catch(() => ({}));
         if (data.errors && Object.keys(data.errors).length) { setErrors(data.errors); setStatus('idle'); return; }
@@ -42,20 +47,6 @@ export function LeadForm() {
       setStatus('failed');
     }
   };
-
-  if (status === 'sent') {
-    const first = v.name.trim().split(/\s+/)[0];
-    return (
-      <div className="lead-done" role="status">
-        <span className="label">Sent</span>
-        <p className="h-2" tabIndex={-1} ref={el => el?.focus()}>Got it, {first}. Your idea is in my inbox.</p>
-        <p className="muted">I’ll reply within 1 business day. Want to talk sooner?</p>
-        <div className="ctas">
-          <a className="btn ghost" href={waLink(`Hi João, I’m ${v.name.trim()}. I just sent you my idea: ${v.message.trim()}`)} target="_blank" rel="noopener noreferrer">Continue on WhatsApp</a>
-        </div>
-      </div>
-    );
-  }
 
   const field = (f: LeadField, label: string, props: Record<string, string>) => (
     <div className="field">

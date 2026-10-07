@@ -42,5 +42,6 @@ export async function POST(request: Request): Promise<Response> {
     }),
   });
   if (!res.ok) { console.error('lead: Resend refused the email', res.status, await res.text()); return failed(502, 'send_failed'); }
-  return reply(200, { ok: true }, 'Thanks', 'Your message is in my inbox. I reply within 1 business day.');
+  // a plain form post lands on the same thank-you page as the browser's (the Google Ads conversion URL)
+  return isForm ? Response.redirect(new URL('/hire/thanks', request.url), 303) : json(200, { ok: true });
 }
