@@ -101,7 +101,8 @@ export function useTV(
         const t = now - anim.start;
         if (t >= anim.tl.dur) { anim = null; cur = REST; api.current.tuned = true; root.classList.remove('tuning'); apply(REST, 0, now, true); }
         else apply(anim.tl.at(t), t, now);
-      } else if (grain && visible) apply(REST, 0, now);
+      // at rest the grain keeps moving; a screen that hasn't tuned in yet stays off (static, no picture) until it does
+      } else if (grain && visible) apply(cur, 0, now);
       if (anim || (grain && visible)) raf = requestAnimationFrame(loop);
     };
     const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
