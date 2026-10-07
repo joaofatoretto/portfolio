@@ -384,11 +384,13 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 }
 
 /* ---------- 07 call: the last call before the form ----------
-   In order (Call.tsx): the nudge (.asked); then the promise gathers from dots spread over the whole screen
-   (lib/gather.ts) and the real text fades in over them (.formed); then the arrow draws down to the form. */
+   In order (Call.tsx): the nudge (.asked); then streaks of light rush in from the whole screen and the promise fills
+   in solid as they land (--g, lib/gather.ts), glowing, and the glow settles (.formed); then the arrow draws down. */
 .call { justify-items: center; text-align: center; gap: clamp(16px, 2vw, 24px); }
 .call-ask { margin: 0; font-size: clamp(20px, 2vw, 28px); font-weight: 400; color: var(--fg-secondary); transition: opacity .6s var(--ease-signal), transform .6s var(--ease-signal); }
-.call-title { max-width: 14ch; font-size: clamp(44px, 7.4vw, 112px); font-weight: 700; line-height: .95; letter-spacing: -0.03em; text-wrap: balance; transition: opacity .5s var(--ease-signal); }
+/* smaller than the form's "Let's make it real." so the two don't compete */
+.call-title { max-width: 20ch; font-size: clamp(30px, 4.2vw, 60px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; text-wrap: balance;
+              text-shadow: 0 0 0 rgba(255, 255, 255, 0); transition: opacity .3s var(--ease-signal), text-shadow 1s var(--ease-signal); }
 .call-arrow { display: block; width: 48px; height: 120px; margin-top: clamp(16px, 3vw, 40px); color: var(--fg-primary); transition: transform var(--dur-quick) var(--ease-signal); }
 .call-arrow:hover { transform: translateY(6px); }
 .call-arrow:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; }
@@ -396,11 +398,10 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 /* butt caps and a fixed dash: Chrome draws some curves doubled with round caps (CLAUDE.md) */
 .call-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: miter; stroke-dasharray: 200; transition: stroke-dashoffset .9s var(--ease-signal) .2s; }
 .motion .call:not(.asked) .call-ask { opacity: 0; transform: translateY(10px); }
-.motion .call:not(.formed) .call-title { opacity: 0; }
+.motion .call:not(.formed) .call-title { opacity: var(--g, 0); text-shadow: 0 0 calc(8px + var(--g, 0) * 36px) rgba(255, 255, 255, .75); transition: none; }
 .motion .call:not(.formed) .call-line { stroke-dashoffset: 200; }
 .call + .send { margin-top: clamp(32px, 4vw, 56px); }
-.gather-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 30; pointer-events: none; transition: opacity .5s var(--ease-signal); }
-.gather-canvas.out { opacity: 0; }
+.gather-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 30; pointer-events: none; }
 
 /* ---------- 08 send: the closing Stage card ---------- */
 .send { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px 72px; align-items: center; margin-top: clamp(96px, 12vw, 176px);

@@ -1,6 +1,7 @@
-/* Dots gathering into a phrase: 1px dots spread over the whole screen fly in and condense into the text, fading
-   from 0 to full as they land; then the real text takes over. Noise becoming a signal, in type (design.md §1). */
-import { MOTION, clamp01, easeOut } from './motion';
+/* A phrase gathered from light, like the old PlayStation boot logo: streaks rush in fast from all over the screen,
+   curve into the letters and vanish into them, and the phrase fills in, solid, with a flare that settles.
+   Noise becoming a signal, in type (design.md §1). */
+import { MOTION, clamp01 } from './motion';
 
 type Pt = { x: number; y: number };
 
@@ -13,16 +14,18 @@ export function sample(alpha: Uint8ClampedArray, w: number, h: number, step: num
   }
 }
 
-/** Where a dot is at `t` (0–1) of its flight, and how opaque: it slows as it lands and fades in as it arrives. */
+/** Where a streak is at `t` (0–1) of its flight, and how bright: it leaves slowly and rushes in, fastest as it lands,
+ *  bending off the straight line on the way (an arc that closes as it arrives). */
 export function flight(from: Pt, to: Pt, t: number) {
-  const e = easeOut(clamp01(t));
-  return { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e, a: e };
+  const k = clamp01(t), e = k * k * k, dx = to.x - from.x, dy = to.y - from.y, bend = Math.sin(Math.PI * e) * 0.22;
+  return { x: from.x + dx * e - dy * bend + 0, y: from.y + dy * e + dx * bend + 0, a: k };
 }
 
-const STEP = 2, MAX = 5000, FLY = 1500, SPREAD = 600;
+const STEP = 2, MAX = 900, FLY = 720, SPREAD = 380, TAIL = 0.07;
 
-/** Gathers dots into the text of `el`, whose words are `.w` spans; calls `done` when they've landed. Returns a cancel.
- *  Without motion it calls `done` at once. */
+/** Gathers streaks of light into the text of `el` (its words are `.w` spans) and fills it in: sets `--g` (0–1, how
+ *  much has landed) on `el` as they arrive and calls `done` when all have. Returns a cancel. Without motion it calls
+ *  `done` at once. */
 export function gather(el: HTMLElement, done: () => void): () => void {
   if (!MOTION) { done(); return () => {}; }
   let raf = 0, cancelled = false, canvas: HTMLCanvasElement | null = null;
@@ -30,7 +33,7 @@ export function gather(el: HTMLElement, done: () => void): () => void {
 
   document.fonts.ready.then(() => {
     if (cancelled) return;
-    // draw the phrase where the page lays it out, word by word, and read back its pixels
+    // draw the phrase where the page lays it out, word by word, and read back its pixels: the streaks' targets
     const box = el.getBoundingClientRect(), cs = getComputedStyle(el);
     const w = Math.ceil(box.width), h = Math.ceil(box.height);
     const off = document.createElement('canvas'); off.width = w; off.height = h;
@@ -52,23 +55,26 @@ export function gather(el: HTMLElement, done: () => void): () => void {
     canvas.width = vw * dpr; canvas.height = vh * dpr;
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d')!;
-    ctx.scale(dpr, dpr); ctx.fillStyle = cs.color;
-    const dots = targets.map(to => ({ to, from: { x: Math.random() * vw, y: Math.random() * vh }, delay: Math.random() * SPREAD }));
+    ctx.scale(dpr, dpr); ctx.strokeStyle = cs.color; ctx.lineWidth = 1.4; ctx.lineCap = 'butt';
+    // they come from everywhere: start points are spread over the screen, a little past its edges
+    const dots = targets.map(to => ({ to, from: { x: (Math.random() * 1.2 - 0.1) * vw, y: (Math.random() * 1.2 - 0.1) * vh }, delay: Math.random() * SPREAD }));
     const start = performance.now();
     const frame = (now: number) => {
       const t0 = now - start, at = el.getBoundingClientRect();
+      let landed = 0;
       ctx.clearRect(0, 0, vw, vh);
       for (const d of dots) {
-        const p = flight(d.from, { x: at.left + d.to.x, y: at.top + d.to.y }, (t0 - d.delay) / FLY);
-        if (p.a <= 0) continue;
+        const t = (t0 - d.delay) / FLY;
+        if (t >= 1) { landed++; continue; }
+        if (t <= 0) continue;
+        const to = { x: at.left + d.to.x, y: at.top + d.to.y }, p = flight(d.from, to, t), q = flight(d.from, to, t - TAIL);
         ctx.globalAlpha = p.a;
-        ctx.fillRect(p.x, p.y, 1, 1);
+        ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(p.x, p.y); ctx.stroke();
       }
-      if (t0 < FLY + SPREAD) { raf = requestAnimationFrame(frame); return; }
+      el.style.setProperty('--g', (landed / dots.length).toFixed(3));
+      if (landed < dots.length) { raf = requestAnimationFrame(frame); return; }
+      canvas!.remove(); canvas = null;
       done();
-      // the real text fades in over the dots, then the dots go
-      canvas!.classList.add('out');
-      window.setTimeout(() => canvas?.remove(), 600);
     };
     raf = requestAnimationFrame(frame);
   });

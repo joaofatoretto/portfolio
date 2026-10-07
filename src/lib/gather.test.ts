@@ -19,6 +19,14 @@ describe('dots gathering into a phrase', () => {
     expect(sample(mask(40, 40, all), 40, 40, 1, 100).length).toBeLessThanOrEqual(100);
   });
 
+  it('rushes in: slow to leave, fastest as it lands, on a curve (not a straight line)', () => {
+    const from = { x: 0, y: 0 }, to = { x: 100, y: 0 };
+    const early = flight(from, to, 0.2), late = flight(from, to, 0.8), last = flight(from, to, 0.95);
+    expect(early.x).toBeLessThan(20);
+    expect(last.x - late.x).toBeGreaterThan(late.x - flight(from, to, 0.65).x);
+    expect(Math.abs(flight(from, to, 0.5).y)).toBeGreaterThan(1);
+  });
+
   it('flies each dot from its start to its place, fading in as it arrives', () => {
     const from = { x: 0, y: 0 }, to = { x: 100, y: 50 };
     expect(flight(from, to, 0)).toEqual({ x: 0, y: 0, a: 0 });
