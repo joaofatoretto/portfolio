@@ -16,16 +16,17 @@ export function sample(alpha: Uint8ClampedArray, w: number, h: number, step: num
 
 /** Where a streak is at `t` (0–1) of its flight, and how bright: it leaves slowly and rushes in, fastest as it lands,
  *  bending off the straight line on the way (an arc that closes as it arrives). Its brightness follows the way
- *  covered, not the time: invisible at the start, full from halfway on. */
+ *  covered, not the time, easing out: invisible at the start, brightening fast and then slowly, full only right
+ *  before it lands. */
 export function flight(from: Pt, to: Pt, t: number) {
   const k = clamp01(t), e = k * k * k, dx = to.x - from.x, dy = to.y - from.y, bend = Math.sin(Math.PI * e) * 0.22;
-  return { x: from.x + dx * e - dy * bend + 0, y: from.y + dy * e + dx * bend + 0, a: clamp01(e / 0.5) };
+  return { x: from.x + dx * e - dy * bend + 0, y: from.y + dy * e + dx * bend + 0, a: 1 - (1 - clamp01(e / 0.95)) ** 2 };
 }
 
 const STEP = 2, MAX = 900, FLY = 720, SPREAD = 380, TAIL = 0.07;
 
-/** Gathers streaks of light into the text of `el` (its words are `.w` spans) and fills it in: sets `--g` (0–1, how
- *  much has landed) on `el` as they arrive and calls `done` when all have. Returns a cancel. Without motion it calls
+/** Gathers streaks of light into the text of `el` (its words are `.w` spans) and fills it in: sets `--landed` (0–1,
+ *  how much has landed; not `--g`, which is the page gutter) on `el` as they arrive and calls `done` when all have. Returns a cancel. Without motion it calls
  *  `done` at once. */
 export function gather(el: HTMLElement, done: () => void): () => void {
   if (!MOTION) { done(); return () => {}; }
@@ -72,7 +73,7 @@ export function gather(el: HTMLElement, done: () => void): () => void {
         ctx.globalAlpha = p.a;
         ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(p.x, p.y); ctx.stroke();
       }
-      el.style.setProperty('--g', (landed / dots.length).toFixed(3));
+      el.style.setProperty('--landed', (landed / dots.length).toFixed(3));
       if (landed < dots.length) { raf = requestAnimationFrame(frame); return; }
       canvas!.remove(); canvas = null;
       done();

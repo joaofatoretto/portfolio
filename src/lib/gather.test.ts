@@ -27,17 +27,19 @@ describe('dots gathering into a phrase', () => {
     expect(Math.abs(flight(from, to, 0.5).y)).toBeGreaterThan(1);
   });
 
-  it('starts invisible and is only fully bright once it has covered half the way', () => {
+  it('starts invisible and only reaches full brightness right before it lands, easing out', () => {
     const from = { x: 0, y: 0 }, to = { x: 100, y: 0 };
-    let first = -1;
+    expect(flight(from, to, 0).a).toBe(0);
+    expect(flight(from, to, 0.05).a).toBeLessThan(0.01);
     for (let t = 0; t <= 1.0001; t += 0.01) {
-      const p = flight(from, to, t), covered = p.x / 100;
-      if (covered < 0.5) expect(p.a).toBeLessThan(1);
-      if (p.a >= 1 && first < 0) first = covered;
+      const p = flight(from, to, t);
+      if (p.x < 90) expect(p.a).toBeLessThan(1);
     }
-    expect(first).toBeGreaterThanOrEqual(0.5);
-    expect(first).toBeLessThan(0.6);
-    expect(flight(from, to, 0.3).a).toBeLessThan(0.1);
+    expect(flight(from, to, 1).a).toBe(1);
+    // ease-out: over the way covered, it brightens fast at first and slowly at the end
+    const at = (covered: number) => flight(from, to, Math.cbrt(covered)).a;
+    expect(at(0.25)).toBeGreaterThan(0.25);
+    expect(at(0.5) - at(0.25)).toBeGreaterThan(at(0.9) - at(0.65));
   });
 
   it('flies each dot from its start to its place, fading in as it arrives', () => {
