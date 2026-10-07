@@ -15,10 +15,11 @@ export function sample(alpha: Uint8ClampedArray, w: number, h: number, step: num
 }
 
 /** Where a streak is at `t` (0–1) of its flight, and how bright: it leaves slowly and rushes in, fastest as it lands,
- *  bending off the straight line on the way (an arc that closes as it arrives). */
+ *  bending off the straight line on the way (an arc that closes as it arrives). Its brightness follows the way
+ *  covered, not the time: invisible at the start, full from halfway on. */
 export function flight(from: Pt, to: Pt, t: number) {
   const k = clamp01(t), e = k * k * k, dx = to.x - from.x, dy = to.y - from.y, bend = Math.sin(Math.PI * e) * 0.22;
-  return { x: from.x + dx * e - dy * bend + 0, y: from.y + dy * e + dx * bend + 0, a: k };
+  return { x: from.x + dx * e - dy * bend + 0, y: from.y + dy * e + dx * bend + 0, a: clamp01(e / 0.5) };
 }
 
 const STEP = 2, MAX = 900, FLY = 720, SPREAD = 380, TAIL = 0.07;

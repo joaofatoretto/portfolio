@@ -27,6 +27,19 @@ describe('dots gathering into a phrase', () => {
     expect(Math.abs(flight(from, to, 0.5).y)).toBeGreaterThan(1);
   });
 
+  it('starts invisible and is only fully bright once it has covered half the way', () => {
+    const from = { x: 0, y: 0 }, to = { x: 100, y: 0 };
+    let first = -1;
+    for (let t = 0; t <= 1.0001; t += 0.01) {
+      const p = flight(from, to, t), covered = p.x / 100;
+      if (covered < 0.5) expect(p.a).toBeLessThan(1);
+      if (p.a >= 1 && first < 0) first = covered;
+    }
+    expect(first).toBeGreaterThanOrEqual(0.5);
+    expect(first).toBeLessThan(0.6);
+    expect(flight(from, to, 0.3).a).toBeLessThan(0.1);
+  });
+
   it('flies each dot from its start to its place, fading in as it arrives', () => {
     const from = { x: 0, y: 0 }, to = { x: 100, y: 50 };
     expect(flight(from, to, 0)).toEqual({ x: 0, y: 0, a: 0 });
