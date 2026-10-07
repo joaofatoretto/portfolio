@@ -1,24 +1,26 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { PROFILE, waLink } from '../content/profile';
 import { validateLead, type LeadErrors, type LeadField } from '../lib/lead';
 
 type Values = Record<LeadField | 'website', string>;
 const EMPTY: Values = { name: '', contact: '', message: '', website: '' };
 const ORDER: LeadField[] = ['name', 'contact', 'message'];
-/** What the thank-you page gets from the form (router state; empty when the page is opened directly). */
+/** What the thank-you page gets from the form, in sessionStorage under SENT_KEY (none when opened directly). */
 export type Sent = { name: string; message: string };
+export const SENT_KEY = 'lead-sent';
+/** A full page load (not a router change), so the Google tag on /hire/thanks runs. An object so tests can stub it. */
+export const nav = { to: (url: string) => window.location.assign(url) };
 const FALLBACK = 'Hi João, I tried to send the form on your site about an idea.';
 
-/** The hire page's conversion point: three fields. Validates in the browser, posts to /api/lead, then goes to
- *  /hire/thanks (the Google Ads conversion URL) with the name and idea, so it can thank them and offer WhatsApp. */
+/** The hire page's conversion point: three fields. Validates in the browser, posts to /api/lead, then loads
+ *  /hire/thanks in full (a real page load, so the Google tag counts the conversion), leaving the name and idea in
+ *  sessionStorage so that page can thank them and offer WhatsApp. */
 export function LeadForm() {
   const uid = useId();
   const id = (f: string) => `${uid}-${f}`;
   const formRef = useRef<HTMLFormElement>(null);
   const [v, setV] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<LeadErrors>({});
-  const navigate = useNavigate();
   const [status, setStatus] = useState<'idle' | 'sending' | 'failed'>('idle');
   const set = (f: keyof Values, value: string) => {
     setV(prev => ({ ...prev, [f]: value }));
@@ -37,7 +39,11 @@ export function LeadForm() {
     setStatus('sending');
     try {
       const res = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) });
-      if (res.ok) { navigate('/hire/thanks', { state: { name: v.name.trim(), message: v.message.trim() } satisfies Sent }); return; }
+      if (res.ok) {
+        try { sessionStorage.setItem(SENT_KEY, JSON.stringify({ name: v.name.trim(), message: v.message.trim() } satisfies Sent)); } catch { /* the page thanks without a name */ }
+        nav.to('/hire/thanks');
+        return;
+      }
       if (res.status === 400) {
         const data = await res.json().catch(() => ({}));
         if (data.errors && Object.keys(data.errors).length) { setErrors(data.errors); setStatus('idle'); return; }

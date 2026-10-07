@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
+import { SENT_KEY, nav } from '../components/LeadForm';
 import { CLIENTS } from '../content/profile';
 import { CALL, PAY, PICTURE, TRUST } from '../content/hire';
 import { existsSync } from 'node:fs';
@@ -17,7 +18,8 @@ function fill() {
 }
 
 const fetchMock = vi.fn<typeof fetch>();
-beforeEach(() => { fetchMock.mockReset(); vi.stubGlobal('fetch', fetchMock); });
+beforeEach(() => { fetchMock.mockReset(); vi.stubGlobal('fetch', fetchMock); sessionStorage.clear(); });
+afterEach(() => vi.restoreAllMocks());
 afterEach(() => vi.unstubAllGlobals());
 
 describe('hire page: the story', () => {
@@ -193,26 +195,26 @@ describe('hire page: the form', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('sends the idea, then goes to the thank-you page (the ads conversion URL) and thanks the person by name', async () => {
+  it('sends the idea, then loads the thank-you page in full (so the Google tag counts the conversion)', async () => {
     fetchMock.mockResolvedValue(new Response('{"ok":true}', { status: 200 }));
+    const go = vi.spyOn(nav, 'to').mockImplementation(() => {});
     at('/hire');
     fill();
     fireEvent.submit(form());
-    expect(await screen.findByRole('heading', { level: 1, name: /got it, maria/i })).toBeInTheDocument();
-    expect(screen.queryByRole('form', { name: /tell me your idea/i })).toBeNull();
+    await waitFor(() => expect(go).toHaveBeenCalledWith('/hire/thanks'));
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('/api/lead');
     expect(JSON.parse(init!.body as string)).toMatchObject({ name: 'Maria', contact: 'maria@bakery.example' });
+    expect(JSON.parse(sessionStorage.getItem(SENT_KEY)!)).toEqual({ name: 'Maria', message: 'A site where people order my cakes.' });
+  });
+
+  it('thanks the person by name on the thank-you page, with their idea ready for WhatsApp', async () => {
+    sessionStorage.setItem(SENT_KEY, JSON.stringify({ name: 'Maria Silva', message: 'A site where people order my cakes.' }));
+    at('/hire/thanks');
+    expect(await screen.findByRole('heading', { level: 1, name: /got it, maria\./i })).toBeInTheDocument();
     const wa = screen.getByRole('link', { name: /continue on whatsapp/i }).getAttribute('href')!;
     expect(wa).toMatch(/^https:\/\/wa\.me\//);
     expect(decodeURIComponent(wa)).toContain('A site where people order my cakes.');
-  });
-
-  it('thanks people who open the thank-you page directly, without a name', () => {
-    at('/hire/thanks');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^Got it\. Your idea is in my inbox\.$/);
-    expect(screen.getByText(/1 business day/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /continue on whatsapp/i }).getAttribute('href')).toMatch(/^https:\/\/wa\.me\//);
   });
 
   it('keeps what they typed and offers email and WhatsApp when sending fails', async () => {
