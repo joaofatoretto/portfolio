@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { CLIENTS } from '../content/profile';
-import { PAY, PICTURE, TRUST } from '../content/hire';
+import { CALL, PAY, PICTURE, TRUST } from '../content/hire';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -101,6 +101,23 @@ describe('hire page: the story', () => {
     const lede = within(pay).getByText(PAY.lede);
     const list = within(pay).getByRole('list');
     expect(list.compareDocumentPosition(lede) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('names the pieces as numbered sprints with short plain names, and bills each sprint', () => {
+    PAY.pieces.forEach((pc, i) => {
+      expect(pc.label).toBe(`Sprint ${i + 1}`);
+      expect(pc.title.split(' ').length).toBeLessThanOrEqual(4);
+    });
+    expect(PAY.receipt).toBe('You pay this sprint');
+  });
+
+  it('ends with a short last call that points to the form', () => {
+    at('/hire');
+    const call = screen.getByRole('region', { name: CALL.title });
+    expect(call.textContent).toContain(CALL.ask);
+    expect(within(call).getByRole('link')).toHaveAttribute('href', '#contact');
+    // the call comes right before the form
+    expect(call.compareDocumentPosition(document.getElementById('contact')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('puts every payment after its delivery, one piece at a time', () => {

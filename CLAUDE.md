@@ -15,7 +15,7 @@ João Fatoretto's portfolio: Vite + React 19 + TypeScript + React Router 7, no C
 
 ## Structure
 - `src/content/` copy and data. `profile.ts` (home), `cases/index.ts` (case list + summaries), `cases/<slug>.ts` (meta, images, body blocks).
-- `src/lib/` engine code: `motion.ts` (MOTION/REDUCE switch, easing), `signal.ts` (seeded noise, fibres, mark), `tv.tsx` (static generator, timelines, `useTV`, `SplitFilter`), `reveal.tsx` (`R` reveal wrapper, `useInView`).
+- `src/lib/` engine code: `motion.ts` (MOTION/REDUCE switch, easing), `signal.ts` (seeded noise, fibres, mark), `tv.tsx` (static generator, timelines, `useTV`, `SplitFilter`), `reveal.tsx` (`R` reveal wrapper, `useInView`), `gather.ts` (dots gathering into a phrase: the /hire last call).
 - `src/components/` shared UI (TVHero (the full-screen TV hero, used by home's Hero and /hire), Hero, NavBar, ChannelSwitch, Screen, Contact, Footer, PrototypeEmbed, Rich, Scramble, TestCard).
 - `src/sections/` home sections. `src/pages/` Home, CaseStudy (the case template), Hire, NotFound.
 - `/hire` (`pages/Hire.tsx`, sections in `src/sections/hire/`, copy in `content/hire.ts`): the landing page for small businesses and solo founders (story: the canvas "Hire Page Story Wireframe"; research: the "Who Buys a Build" journey map). Eight beats, visuals carry the story, ~200 words, no tech words. Conversion = the 3-field form or WhatsApp. Offer terms (free first chat, nothing upfront, pay after each shipped piece, reply in 1 business day) are João's commitments; no prices (João's choice). The +55 WhatsApp number is shown only on this page (João's OK, an exception to the no-location rule). The client quote is a dev-only placeholder until `PROOF.quote` is filled.
@@ -48,6 +48,7 @@ João Fatoretto's portfolio: Vite + React 19 + TypeScript + React Router 7, no C
 - Groups of items (stats, cards, phones, chips) use `Seq`/`SeqItem` from `reveal.tsx`: items arrive one by one in reading order (design.md §10 "Guided sequence"); `useInView` inside an item waits for the item.
 - Gotcha: IntersectionObserver never fires for an element its own clip-path hides completely. Clip a child, or observe a wrapper.
 - Gotcha: Chrome draws some SVG curves doubled with `stroke-linecap: round` or a `pathLength` attribute. For a line that draws itself, use butt caps and a fixed `stroke-dasharray` longer than the path.
+- Gotcha: some class names are global (e.g. `.intro` sets `display: flex`). Prefix state classes in a section (`pieces-in`, `lanes-in`) or check base.css first.
 - Gotcha: a CSS variable used in a `calc()` must be defined on that element or an ancestor; one defined on a child makes the whole declaration invalid (the sticky track lost its height this way).
 
 ## Open decisions (ask João)

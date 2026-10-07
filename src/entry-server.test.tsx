@@ -27,8 +27,9 @@ describe('prerendered HTML (what search engines read before any JavaScript runs)
   it('has the hire page story and the whole form, so it works before JavaScript loads', () => {
     const out = render('/hire');
     expect(out).toMatch(/<h1[^>]*>Tell me your idea\. I’ll make it real\.<\/h1>/);
-    for (const t of ['Not sure what you need?', 'Picture it working.', 'You pay as I deliver.', 'Starting takes one message.', 'Let’s make it real.'])
-      expect(out).toContain(t);
+    const text = out.replace(/<[^>]+>/g, '');
+    for (const t of ['Not sure what you need?', 'Picture it working.', 'You pay as I deliver.', 'What are you waiting for?', 'Starting takes one message.', 'Let’s make it real.'])
+      expect(text).toContain(t);
     expect(out).toContain('aria-label="Tell me your idea"');
     expect(out).toContain('href="https://wa.me/5519993229283?text=');
   });

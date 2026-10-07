@@ -76,32 +76,22 @@ export const PAY = {
   title: 'You pay as I deliver.',
   lede: 'Nothing upfront. Each payment comes after something real is shipped.',
   pieces: [
-    { label: 'Piece 1 · e.g. a landing page', title: 'Your landing page, built' },
-    { label: 'Piece 2 · e.g. ordering', title: 'Orders and payments, working' },
-    { label: 'Piece 3 · the rest', title: 'Everything launched · it’s yours' },
+    { label: 'Sprint 1', title: 'Landing page done' },
+    { label: 'Sprint 2', title: 'Orders & payments ready' },
+    { label: 'Sprint 3', title: 'Launched' },
   ],
   /** the two lanes of the timeline: what I deliver, then what you pay */
   lanes: { deliver: 'Delivery', pay: 'Payment' },
   /** the message of the section: each payment, placed after its piece is delivered */
-  receipt: 'You pay for this piece',
+  receipt: 'You pay this sprint',
 };
 
-export const START = {
+/** The last call before the form: a nudge, then the promise, then an arrow down to the form. */
+export const CALL = {
+  ask: 'What are you waiting for?',
   title: 'Starting takes one message.',
-  steps: [
-    ['Tell me your idea', 'One line or a voice message. Messy is fine.'],
-    ['We talk for 30 minutes', 'Free. About your business, not technology.'],
-    ['You get a plan and a price', 'For the first piece. Then you decide.'],
-  ] as [string, string][],
-  /** the example chat: who speaks, what they say. "voice" is a voice message, "file" a sent document. */
-  chat: [
-    { from: 'them', kind: 'voice', text: '0:42' },
-    { from: 'them', text: 'I run a small bakery. I want people to order online instead of calling me all day.' },
-    { from: 'me', text: 'Love it. Who orders the most, and how do they pay today?' },
-    { from: 'them', text: 'Neighbours, for birthdays. Cash or bank transfer, all by phone.' },
-    { from: 'me', text: 'Got it. Can we talk for 30 minutes tomorrow? I’ll bring a first plan.' },
-    { from: 'me', kind: 'file', text: 'Sweet Crumb · plan and price' },
-  ] as { from: 'me' | 'them'; kind?: 'voice' | 'file'; text: string }[],
+  /** the arrow's name for screen readers */
+  to: 'Go to the form',
 };
 
 export const SEND = {
