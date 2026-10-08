@@ -5,11 +5,14 @@
    piece, reply in 1 business day) are João's commitments: change them here if the offer changes. */
 
 export const HERO = {
-  title: 'Tell me your idea. I’ll make it real.',
+  title: 'Let’s make your idea real.',
   lede: 'Websites and apps for small businesses and new founders. Designed and built by me.',
-  cta: 'Tell me your idea',
-  wa: 'Hi João, I have an idea I’d like to talk about.',
+  cta: 'Get in touch',
+  /** the hero's name for screen readers */
+  label: 'Let’s make your idea real',
   shot: { alt: 'Tempo’s landing page, which I redesigned' },
+  /** the link under the shot to its case study; the trailing space is non-breaking, so the arrow never wraps alone */
+  seeCase: 'See the case\u00a0',
 };
 
 /** A client's logo in the trust carousel, shown in one ink tone and in colour on hover. `color` is a separate colour
@@ -59,10 +62,36 @@ export const PICTURE = {
   title: 'Picture it working.',
   lede: 'Every idea is different. The point is the same: it works for you.',
   moments: ['New customers find you', 'The busywork does itself', 'Customers leave happy', 'The money comes in'],
+  /** What each moment's phone screen shows (made-up people and numbers, in the language of the page). */
+  screens: {
+    reach: {
+      head: 'New customers', sub: 'This week',
+      days: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      /** [initials, what happened, where they came from] */
+      feed: [['AM', 'Ana M. signed up', 'Found you on Google'], ['LR', 'Leo R. signed up', 'Saw you on Instagram'], ['JS', 'Joy S. signed up', 'A friend sent your link'], ['MT', 'Max T. signed up', 'Came back from your email']] as [string, string, string][],
+    },
+    busywork: {
+      head: 'Today', sub: 'Done for you',
+      tasks: ['Send this week’s invoices', 'Confirm new orders', 'Remind tomorrow’s clients', 'Update the sales sheet', 'Answer common questions'],
+      done: 'All done', left: 'Nothing left on your list',
+    },
+    happy: {
+      head: 'Reviews', sub: 'What customers say',
+      fresh: { text: '“So easy. I sorted it out in two minutes.”', who: 'Ana M. · just now' },
+      old: { text: '“No more waiting on the phone.”', who: 'Leo R. · yesterday' },
+    },
+    paid: {
+      clock: '9:41', day: 'Today',
+      /** [what came in, from where] */
+      notes: [['+$49 received', 'Monthly plan · Ana M.'], ['+$120 received', 'Order #1042'], ['+$80 received', 'Booking deposit · Leo R.']] as [string, string][],
+    },
+  },
 };
 
 export const PROOF = {
   title: 'I’ve done this before.',
+  /** a card's name for screen readers; `{n}` `{what}` `{client}` are that card's number, line and client */
+  cardLabel: '{n} {what}. {client} case study',
   cards: [
     { n: '+15%', what: 'more add-to-cart after I redesigned how people find promotions', client: 'Superopa', kind: 'Grocery app', slug: 'promotions-discoverability' },
     { n: '< 3 mo', what: 'from an idea to a launched product, for safe car-sale payments', client: 'Transferência Segura', kind: 'New business' },
@@ -95,8 +124,12 @@ export const CALL = {
 };
 
 export const SEND = {
-  title: 'Let’s make it real.',
+  title: 'Your idea starts here.',
   chips: ['Free first chat', 'Nothing upfront', 'It’s all yours'],
   reply: 'I reply within 1 business day.',
-  wa: 'Hi João, I’d like to talk about an idea.',
+};
+
+/** The caption under the Tempo shot names the section on screen. One label per stop in TempoSession.tsx, in order. */
+export const TEMPO = {
+  stops: ['Hero', 'Product', 'Connect your codebase', 'Design system', 'Tasks and branches', 'Design by hand', 'Prototype with AI', 'Push to Git', 'Wall of love', 'Just Ship It'],
 };

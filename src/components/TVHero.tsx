@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCopy } from '../i18n/copy';
 import { MOTION, REDUCE, clamp01, lerp, ss } from '../lib/motion';
 import { SplitFilter, makeStatic } from '../lib/tv';
 
@@ -20,7 +21,7 @@ function heroParams(t: number) {
     vig: t < C ? 1 : lerp(1, 0.25, s(C, D + 500)),
     draw: s(D, E),
     sweep: t > D && t < E ? Math.min(1, (E - t) / 200) : 0,
-    msg: t < A ? 'NO SIGNAL' : t < B ? 'SEARCHING' : '',
+    msg: (t < A ? 'noSignal' : t < B ? 'searching' : '') as 'noSignal' | 'searching' | '',
     osd: t < D ? 1 : 1 - s(D, D + 500),
   };
 }
@@ -43,6 +44,8 @@ type Props = {
  *  Pinned when the content fits the screen; otherwise (phones) the edges close in while the content scrolls.
  *  Used by the home hero and the hire hero; each passes its own content. */
 export function TVHero({ channel, label, content }: Props) {
+  const { ui } = useCopy();
+  const tvWords = useRef(ui.tv);
   const [skip] = useState(() => REDUCE || tunedThisLoad.has(channel));
   const trackRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLElement>(null), screenRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null), canvasRef = useRef<HTMLCanvasElement>(null);
@@ -155,7 +158,7 @@ export function TVHero({ channel, label, content }: Props) {
         cs.setProperty('--scan', p.scan.toFixed(3)); cs.setProperty('--vig', p.vig.toFixed(3));
         chRef.current!.style.opacity = p.osd.toFixed(3);
         const msg = msgRef.current!;
-        if (p.msg) { msg.style.display = 'block'; msg.textContent = p.msg; } else msg.style.display = 'none';
+        if (p.msg) { msg.style.display = 'block'; msg.textContent = tvWords.current[p.msg]; } else msg.style.display = 'none';
       }
       raf = requestAnimationFrame(loop);
     };
@@ -178,7 +181,7 @@ export function TVHero({ channel, label, content }: Props) {
           <div className="vig" aria-hidden="true" />
           <div className="osd-msg" ref={msgRef} aria-hidden="true" style={{ display: 'none' }} />
           <div className="scroll-tip" ref={tipRef} aria-hidden="true" hidden={!pinned}>
-            <span className="caption">Scroll</span>
+            <span className="caption">{ui.tv.scroll}</span>
             <span className="track"><i /></span>
           </div>
         </section>

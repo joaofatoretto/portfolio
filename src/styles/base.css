@@ -87,13 +87,32 @@ h1, h2, h3 { text-wrap: balance; }
 .lockup svg { flex: none; }
 .lockup path { stroke: var(--fg-primary); }
 .links { display: flex; align-items: center; gap: 40px; }
-.links a { text-decoration: none; font-size: 16px; }
+.links a { text-decoration: none; font-size: 16px; white-space: nowrap; }
 .text-link { position: relative; color: var(--fg-primary); }
 .text-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-base) var(--ease-signal); }
-.text-link:hover::after, .text-link[aria-current="true"]::after { transform: scaleX(1); }
-.talk { display: inline-flex; align-items: center; min-height: 48px; background: var(--cta-bg); color: var(--cta-fg); padding: 0 28px; font-weight: 500; transition: background-color var(--dur-base) var(--ease-signal), color var(--dur-base) var(--ease-signal); }
+.text-link:hover::after, .text-link[aria-current="true"]::after, .text-link[aria-current="page"]::after { transform: scaleX(1); }
+.talk { display: inline-flex; align-items: center; min-height: 48px; white-space: nowrap; background: var(--cta-bg); color: var(--cta-fg); padding: 0 28px; font-weight: 500; transition: background-color var(--dur-base) var(--ease-signal), color var(--dur-base) var(--ease-signal); }
 .talk:hover { background: var(--grey-800); color: var(--white); }
-@media (max-width: 860px) { .links { gap: 24px; } .links .text-link { display: none; } }
+/* "Fale comigo" is longer than "Let's talk": less padding on small phones keeps it one line */
+@media (max-width: 420px) { html[lang="pt-BR"] .talk { padding: 0 18px; } }
+/* the links take what room there is: tighter, then the home sections give way (their content is on the home page),
+   then, on phones, every text link ("Let's talk" stays) */
+@media (max-width: 1240px) { .links { gap: 24px; } }
+@media (max-width: 1080px) { .links .nav-more { display: none; } }
+@media (max-width: 860px) { .links .text-link { display: none; } }
+
+/* ---------- language switch (nav and footer): a quiet mono label, the current language in full ink ---------- */
+.lang { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: .01em; }
+.lang-item { display: inline-flex; align-items: center; }
+.lang-item > a, .lang-item > [aria-current] { display: inline-flex; align-items: center; min-height: 24px; padding-inline: 6px; }
+.lang a { color: var(--fg-tertiary); text-decoration: none; transition: color var(--dur-base) var(--ease-signal); }
+.lang a:hover { color: var(--fg-primary); }
+.lang [aria-current] { color: var(--fg-primary); }
+.lang-sep { color: var(--line-strong); }
+.footer-links .lang { margin-left: -6px; }
+.nav-wrap .lang a { transition: color var(--dur-base) var(--ease-signal); }
+/* phones: the lockup and "Let's talk" already fill the nav, so the switch there waits in the footer */
+@media (max-width: 520px) { .nav .lang { display: none; } }
 
 /* ---------- sections ---------- */
 .section { padding-block: clamp(80px, 10vw, 144px) 0; display: grid; gap: clamp(32px, 4vw, 48px); }

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useCopy } from '../../i18n/copy';
 import { MOTION } from '../../lib/motion';
 
 /* Tempo's real landing page (exported from its Figma file: 1500 × 11488 px in four parts), scrolled section by section.
@@ -9,18 +10,19 @@ import { MOTION } from '../../lib/motion';
    hairline seam at fractional pixel positions (it showed mid-frame on "Design by hand"). */
 const W = 1500, PAGE_H = 11488, PART_H = 2872, PARTS = 4, OVERLAP = 16;
 
-/** [label, from, to]: where the frame sits (top of the viewport, 1000 page px tall). `to` differs when the section drifts. */
-const STOPS: [string, number, number][] = [
-  ['Hero', 0, 0],
-  ['Product', 1035, 1035],
-  ['Connect your codebase', 2020, 2020],
-  ['Design system', 2840, 2840],
-  ['Tasks and branches', 3780, 3780],
-  ['Design by hand', 4860, 5130],
-  ['Prototype with AI', 6170, 6170],
-  ['Push to Git', 7760, 7760],
-  ['Wall of love', 8865, 8865],
-  ['Just Ship It', 10488, 10488],
+/** [from, to]: where the frame sits (top of the viewport, 1000 page px tall). `to` differs when the section drifts.
+ *  The label of each stop (the section's name, shown under the shot) is in the copy: hire.tempo.stops, in this order. */
+export const STOPS: [number, number][] = [
+  [0, 0],
+  [1035, 1035],
+  [2020, 2020],
+  [2840, 2840],
+  [3780, 3780],
+  [4860, 5130],
+  [6170, 6170],
+  [7760, 7760],
+  [8865, 8865],
+  [10488, 10488],
 ];
 const HOLD = 2300, HOLD_FIRST = 3000, DRIFT = 3400, FLICK = 700;
 /** Longer jumps take a little longer, so speed stays readable. */
@@ -33,7 +35,7 @@ type Seg = { t0: number; t1: number; y0: number; y1: number; ease: (u: number) =
 const { SEGS, LOOP } = (() => {
   const segs: Seg[] = [];
   let t = 0, y = 0;
-  STOPS.forEach(([, from, to], i) => {
+  STOPS.forEach(([from, to], i) => {
     if (i > 0) { const d = moveMs(Math.abs(from - y)); segs.push({ t0: t, t1: t + d, y0: y, y1: from, ease: expoOut, stop: i }); t += d; }
     const hold = i === 0 ? HOLD_FIRST : to !== from ? DRIFT : HOLD;
     segs.push({ t0: t, t1: t + hold, y0: from, y1: to, ease: sineInOut, stop: i });
@@ -46,6 +48,7 @@ const { SEGS, LOOP } = (() => {
  *  stay still at the top); without motion it shows the top of the page. */
 export function TempoSession({ live, alt, children }: { live: boolean; alt: string; children?: ReactNode }) {
   const fid = 'tp' + useId().replace(/[^a-zA-Z0-9]/g, '');
+  const labels = useCopy().hire.tempo.stops;
   const viewRef = useRef<HTMLDivElement>(null), lensRef = useRef<HTMLDivElement>(null), pageRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLElement>(null), blurRef = useRef<SVGFEGaussianBlurElement>(null), labelRef = useRef<HTMLSpanElement>(null);
 
@@ -58,7 +61,7 @@ export function TempoSession({ live, alt, children }: { live: boolean; alt: stri
       stop = i;
       view.classList.toggle('edges', i > 0);
       label.classList.remove('in'); void label.offsetWidth;
-      label.textContent = STOPS[i][0]; label.classList.add('in');
+      label.textContent = labels[i]; label.classList.add('in');
     };
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
@@ -118,7 +121,7 @@ export function TempoSession({ live, alt, children }: { live: boolean; alt: stri
         </div>
       </div>
       <div className="hh-caption">
-        <span className="caption">Tempo · <span className="tp-label" ref={labelRef}>{STOPS[0][0]}</span></span>
+        <span className="caption">Tempo · <span className="tp-label" ref={labelRef}>{labels[0]}</span></span>
         {children}
       </div>
     </div>

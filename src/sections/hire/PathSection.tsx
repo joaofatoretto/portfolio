@@ -1,5 +1,5 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
-import { PATH } from '../../content/hire';
+import { useCopy } from '../../i18n/copy';
 import { useScrollProgress } from '../../lib/scroll';
 
 /* One drawing per stop. Parts with class "d" draw themselves (pathLength 1), "p" pop in, "f" fill in, in that order. */
@@ -49,7 +49,7 @@ const ShipArt = () => (
 );
 
 const ART = [TalkArt, SketchArt, DesignArt, ShipArt];
-const STOPS = PATH.steps.length;
+const STOPS = ART.length;
 /* The path, in px, for a section `w` wide and STOPS × ROW tall; nodes sit at 36% and 64% of the width.
    The prerendered HTML uses the widest layout; the browser redraws it for the real width. */
 const ROW = 380, TOP = 40, H = TOP + STOPS * ROW + 80, WIDE = 1392;
@@ -63,6 +63,7 @@ const pathD = (w: number) => {
 
 /** "Not sure what you need? That's my job.": one path winds down through four stops and draws itself as you scroll. */
 export function PathSection() {
+  const PATH = useCopy().hire.path;
   const ref = useRef<HTMLDivElement>(null), svgRef = useRef<SVGSVGElement>(null), drawRef = useRef<SVGPathElement>(null), stopsRef = useRef<HTMLOListElement>(null);
   useEffect(() => {
     const el = ref.current!, svg = svgRef.current!;

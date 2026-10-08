@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { render } from '@testing-library/react';
-import { TempoSession } from './TempoSession';
+import { STOPS, TempoSession } from './TempoSession';
+import { en } from '../../content';
 
 /** Width and height from a WebP file's header (lossy, lossless or extended). */
 function webpSize(file: string) {
@@ -13,6 +14,10 @@ function webpSize(file: string) {
 }
 
 describe('Tempo session', () => {
+  it('has one caption per stop (the captions are copy, the stops are page pixels)', () => {
+    expect(en.hire.tempo.stops).toHaveLength(STOPS.length);
+  });
+
   const imgs = () => {
     const { container } = render(<TempoSession live={false} alt="Tempo’s landing page" />);
     const page = container.querySelector<HTMLElement>('.tp-page')!;

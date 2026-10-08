@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import { STEPS } from '../content/profile';
+import { fmt, useCopy } from '../i18n/copy';
 import { MOTION, animate, easeOut, ss } from '../lib/motion';
 import { R, useInView } from '../lib/reveal';
 import { chord, fbm, makeNoise } from '../lib/signal';
@@ -50,16 +50,16 @@ function StepGraphic({ i }: { i: number }) {
 }
 
 export function Method() {
+  const { profile } = useCopy(), t = profile.home.method;
   return (
     <section className="section" id="process" aria-labelledby="process-h">
-      <SectionHead label="How I work" id="process-h" title="From noise to one clear decision"
-        lede="Every project starts noisy. The work is to listen to all of it, find the pattern and turn it into something that can be built." />
+      <SectionHead label={t.label} id="process-h" title={t.title} lede={t.lede} />
       <div className="steps-wrap">
         <R kind="line" className="rule strong" />
         <ol className="steps">
-          {STEPS.map((s, i) => (
+          {profile.steps.map((s, i) => (
             <R as="li" className="step" key={s.name} d={i * 110}>
-              <span className="label">Step {i + 1}</span>
+              <span className="label">{fmt(t.step, { n: i + 1 })}</span>
               <StepGraphic i={i} />
               <h3 className="h-3">{s.name}</h3>
               <p>{s.text}</p>

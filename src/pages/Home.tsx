@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SITE } from '../seo/meta';
+import { useCopy } from '../i18n/copy';
 import { Contact } from '../components/Contact';
 import { Hero } from '../components/Hero';
 import { About } from '../sections/About';
@@ -9,7 +9,8 @@ import { Proof } from '../sections/Proof';
 import { Work } from '../sections/Work';
 
 export function Home() {
-  useEffect(() => { document.title = SITE.title; }, []);
+  const { seo } = useCopy();
+  useEffect(() => { document.title = seo.title; }, [seo]);
   return (
     <main>
       {/* The room around the TV: Paper frames the hero as it closes into the card, and the results under it.

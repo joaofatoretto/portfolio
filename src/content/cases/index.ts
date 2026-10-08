@@ -67,5 +67,6 @@ export const CASES: CaseStudy[] = [
   },
 ];
 
-export const caseBySlug = (slug: string | undefined) => CASES.find(c => c.slug === slug);
-export const caseNumber = (c: CaseStudy) => CASES.indexOf(c) + 1;
+/** The lookups take the case list too: a language's copy has its own (translated) list in the same order. */
+export const caseBySlug = (slug: string | undefined, cases: CaseStudy[] = CASES) => cases.find(c => c.slug === slug);
+export const caseNumber = (c: Pick<CaseStudy, 'slug'>, cases: CaseStudy[] = CASES) => cases.findIndex(x => x.slug === c.slug) + 1;

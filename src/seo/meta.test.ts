@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { CASES } from '../content/cases';
-import { NOT_FOUND, PAGES, THANKS_PAGE, UNLISTED, fillTemplate, renderHead, renderSitemap, SITE } from './meta';
+import { ALL_PAGES, NOT_FOUND, PAGES, THANKS_PAGE, UNLISTED, fillTemplate, modulepreload, pagesFor, renderHead, renderSitemap, unlistedFor, SITE } from './meta';
 
 const home = PAGES[0];
 const casePage = (slug: string) => PAGES.find(p => p.path === `/work/${slug}`)!;
@@ -95,23 +95,113 @@ describe('one page per URL, for search engines', () => {
     expect(renderSitemap()).not.toContain('/hire/thanks');
   });
 
-  it('lists every page in the sitemap, and nothing else', () => {
+  it('lists every page in both languages in the sitemap, and nothing else', () => {
     const xml = renderSitemap();
-    for (const p of PAGES) expect(xml).toContain(`<loc>${SITE.origin}${p.path}</loc>`);
-    expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length);
+    for (const p of ALL_PAGES) expect(xml).toContain(`<loc>${SITE.origin}${p.path}</loc>`);
+    expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length * 2);
+  });
+});
+
+const pt = pagesFor('pt');
+const ptPage = (path: string) => pt.find(p => p.path === path)!;
+
+describe('the same pages in Portuguese', () => {
+  it('mirrors every English page under /pt-br', () => {
+    expect(pt.map(p => p.path)).toEqual(['/pt-br', ...CASES.map(c => `/pt-br/work/${c.slug}`), '/pt-br/hire']);
+    expect(pt.every(p => p.locale === 'pt')).toBe(true);
+    expect(PAGES.every(p => p.locale === 'en')).toBe(true);
+    expect(unlistedFor('pt').map(p => p.path)).toEqual(['/pt-br/hire/thanks']);
+    expect(unlistedFor('pt')[0].noindex).toBe(true);
+  });
+
+  it('gives every page a canonical and og:url of its own language (never the other one)', () => {
+    for (const p of pt) {
+      const head = renderHead(p);
+      expect(head).toContain(`<link rel="canonical" href="${SITE.origin}${p.path}" />`);
+      expect(head).toContain(`<meta property="og:url" content="${SITE.origin}${p.path}" />`);
+    }
+  });
+
+  it('points each page to its twins: English, Portuguese and x-default (English), from either side', () => {
+    const pairs: [string, string][] = [['/', '/pt-br'], ['/hire', '/pt-br/hire'], [`/work/${CASES[0].slug}`, `/pt-br/work/${CASES[0].slug}`]];
+    for (const [en, br] of pairs) {
+      for (const head of [renderHead(PAGES.find(p => p.path === en)!), renderHead(ptPage(br))]) {
+        expect(head).toContain(`<link rel="alternate" hreflang="en" href="${SITE.origin}${en}" />`);
+        expect(head).toContain(`<link rel="alternate" hreflang="pt-BR" href="${SITE.origin}${br}" />`);
+        expect(head).toContain(`<link rel="alternate" hreflang="x-default" href="${SITE.origin}${en}" />`);
+      }
+    }
+  });
+
+  it('says which language the page is in for link previews: og:locale and the other as an alternate', () => {
+    expect(renderHead(home)).toContain('<meta property="og:locale" content="en_US" />');
+    expect(renderHead(home)).toContain('<meta property="og:locale:alternate" content="pt_BR" />');
+    expect(renderHead(ptPage('/pt-br'))).toContain('<meta property="og:locale" content="pt_BR" />');
+    expect(renderHead(ptPage('/pt-br'))).toContain('<meta property="og:locale:alternate" content="en_US" />');
+  });
+
+  it('says which language the structured data is in', () => {
+    expect(renderHead(home)).toContain('"inLanguage":"en"');
+    expect(renderHead(ptPage('/pt-br'))).toContain('"inLanguage":"pt-BR"');
+    expect(renderHead(ptPage('/pt-br/hire'))).toContain('"inLanguage":"pt-BR"');
+    expect(renderHead(ptPage(`/pt-br/work/${CASES[0].slug}`))).toContain('"inLanguage":"pt-BR"');
+    expect(renderHead(ptPage('/pt-br/hire'))).toContain(`"item":"${SITE.origin}/pt-br/hire"`);
+    expect(renderHead(ptPage('/pt-br/hire'))).toContain(`"item":"${SITE.origin}/pt-br"`);
+  });
+
+  it('keeps the Portuguese thank-you page out of the index, like the English one', () => {
+    const head = renderHead(unlistedFor('pt')[0]);
+    expect(head).toContain('<meta name="robots" content="noindex" />');
+    expect(head).not.toContain('rel="canonical"');
+    expect(head).not.toContain('hreflang');
+    expect(head).toContain('<meta property="og:locale" content="pt_BR" />');
+    expect(renderSitemap()).not.toContain('/hire/thanks');
+  });
+
+  it('leaves hreflang and alternates off pages that aren’t indexed', () => {
+    for (const p of [THANKS_PAGE, NOT_FOUND]) {
+      const head = renderHead(p);
+      expect(head).not.toContain('hreflang');
+      expect(head).not.toContain('og:locale:alternate');
+    }
+  });
+
+  it('lists each page in the sitemap with its alternates', () => {
+    const xml = renderSitemap();
+    expect(xml).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+    for (const [en, br] of [['/', '/pt-br'], ['/hire', '/pt-br/hire']]) {
+      for (const loc of [en, br]) {
+        const entry = xml.match(new RegExp(`<url><loc>${SITE.origin}${loc}</loc>.*?</url>`))![0];
+        expect(entry).toContain(`<xhtml:link rel="alternate" hreflang="en" href="${SITE.origin}${en}"/>`);
+        expect(entry).toContain(`<xhtml:link rel="alternate" hreflang="pt-BR" href="${SITE.origin}${br}"/>`);
+        expect(entry).toContain(`<xhtml:link rel="alternate" hreflang="x-default" href="${SITE.origin}${en}"/>`);
+      }
+    }
+  });
+
+  it('adds extra head tags last, such as the preload of the Portuguese copy', () => {
+    const head = renderHead(ptPage('/pt-br'), [modulepreload('/assets/copy-pt-abc.js')]);
+    expect(head.endsWith('<link rel="modulepreload" href="/assets/copy-pt-abc.js" />')).toBe(true);
+    expect(renderHead(home)).not.toContain('modulepreload');
   });
 });
 
 describe('fillTemplate', () => {
-  const template = '<head><!--seo:start--><title>old</title><!--seo:end--></head><body><div id="root"></div></body>';
+  const template = '<html lang="en"><head><!--seo:start--><title>old</title><!--seo:end--></head><body><div id="root"></div></body></html>';
 
   it('puts the page head and the rendered app into the built index.html', () => {
     const html = fillTemplate(template, '<title>new</title>', '<main>Hi</main>');
-    expect(html).toBe('<head><title>new</title></head><body><div id="root"><main>Hi</main></div></body>');
+    expect(html).toBe('<html lang="en"><head><title>new</title></head><body><div id="root"><main>Hi</main></div></body></html>');
+  });
+
+  it('sets the page’s language on <html>', () => {
+    expect(fillTemplate(template, '', '', 'pt-BR')).toContain('<html lang="pt-BR">');
+    expect(fillTemplate(template.replace('lang="en"', 'lang="pt-BR"'), '', '', 'en')).toContain('<html lang="en">');
   });
 
   it('fails loudly when the template is missing a slot', () => {
-    expect(() => fillTemplate('<div id="root"></div>', '', '')).toThrow(/seo/);
-    expect(() => fillTemplate('<!--seo:start--><!--seo:end-->', '', '')).toThrow(/root/);
+    expect(() => fillTemplate('<html lang="en"><div id="root"></div>', '', '')).toThrow(/seo/);
+    expect(() => fillTemplate('<html lang="en"><!--seo:start--><!--seo:end-->', '', '')).toThrow(/root/);
+    expect(() => fillTemplate('<!--seo:start--><!--seo:end--><div id="root"></div>', '', '')).toThrow(/html lang/);
   });
 });

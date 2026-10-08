@@ -1,10 +1,12 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
-import { PAY } from '../../content/hire';
+import { PAY as PAY_EN } from '../../content/hire';
+import { useCopy } from '../../i18n/copy';
 import { MOTION } from '../../lib/motion';
 import { Tick } from './icons';
 import { useMoments } from './useMoments';
 
-const N = PAY.pieces.length;
+/** how many pieces there are: the timing below depends on it, and every language has the same number (i18n.test.tsx) */
+const N = PAY_EN.pieces.length;
 /** the intro, in ms after the section arrives: the pieces come in one by one, then the lanes draw, then the beat */
 const PIECE_GAP = 280, LANES_AT = N * PIECE_GAP + 400, PLAY_AT = LANES_AT + 1000;
 /** after the last payment lands, the terms are written out */
@@ -17,6 +19,7 @@ const TELL_AFTER = 1500;
  *  faster as you scroll (useMoments); and last, the terms are written out under the timeline. On phones time runs
  *  down the page and each piece lands as it reaches the middle of the screen. */
 export function Pay() {
+  const PAY = useCopy().hire.pay;
   const ref = useRef<HTMLElement>(null), trackRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
   const later = (ms: number, cls: string) => timers.current.push(window.setTimeout(() => ref.current?.classList.add(cls), ms));

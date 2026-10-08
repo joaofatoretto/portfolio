@@ -56,6 +56,27 @@ describe('POST /api/lead', () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it('tells João the lead wrote from the Portuguese page, so he replies in Portuguese', async () => {
+    await post({ ...lead, lang: 'pt' });
+    expect(sent().subject).toMatch(/^\[PT\] New idea from Tom/);
+  });
+
+  it('leaves the subject alone for English leads, and for a language it doesn’t know', async () => {
+    await post({ ...lead, lang: 'en' });
+    await post({ ...lead, lang: 'fr' });
+    await post(lead);
+    for (const call of fetchMock.mock.calls) expect(JSON.parse(call[1]!.body as string).subject).toMatch(/^New idea from Tom/);
+  });
+
+  it('sends a Portuguese plain form post to the Portuguese thank-you page', async () => {
+    const res = await POST(new Request('https://joaofatoretto.com/api/lead', {
+      method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ ...lead, lang: 'pt' }).toString(),
+    }));
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toBe('https://joaofatoretto.com/pt-br/hire/thanks');
+    expect(sent().subject).toMatch(/^\[PT\] /);
+  });
+
   it('rejects a body that is not JSON', async () => {
     expect((await post('name=Tom')).status).toBe(400);
   });

@@ -1,6 +1,7 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { ChannelSwitch, useScrollOnNavigate } from './components/ChannelSwitch';
 import { Footer } from './components/Footer';
+import { useCopy } from './i18n/copy';
 import { NavBar } from './components/NavBar';
 import { CaseStudy } from './pages/CaseStudy';
 import { Hire } from './pages/Hire';
@@ -10,9 +11,10 @@ import { NotFound } from './pages/NotFound';
 
 function Layout() {
   useScrollOnNavigate();
+  const { ui } = useCopy();
   return (
     <>
-      <a className="skip" href="#main-content" onClick={e => { e.preventDefault(); document.querySelector<HTMLElement>('main [data-focus]')?.focus(); }}>Skip to content</a>
+      <a className="skip" href="#main-content" onClick={e => { e.preventDefault(); document.querySelector<HTMLElement>('main [data-focus]')?.focus(); }}>{ui.skip}</a>
       <NavBar />
       <Outlet />
       <Footer />

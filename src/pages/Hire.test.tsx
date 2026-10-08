@@ -8,13 +8,14 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const at = (path: string) => render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
-const form = () => screen.getByRole('form', { name: /tell me your idea/i });
+// the form's labels in either language (the Portuguese page is tested too)
+const form = () => screen.getByRole('form', { name: /tell me your idea|me conta sua ideia/i });
 
 function fill() {
   const f = within(form());
-  fireEvent.change(f.getByLabelText(/your name/i), { target: { value: 'Maria' } });
-  fireEvent.change(f.getByLabelText(/whatsapp or email/i), { target: { value: 'maria@bakery.example' } });
-  fireEvent.change(f.getByLabelText(/your idea/i), { target: { value: 'A site where people order my cakes.' } });
+  fireEvent.change(f.getByLabelText(/your name|seu nome/i), { target: { value: 'Maria' } });
+  fireEvent.change(f.getByLabelText(/email or phone|e-mail ou telefone/i), { target: { value: 'maria@bakery.example' } });
+  fireEvent.change(f.getByLabelText(/your idea|sua ideia/i), { target: { value: 'A site where people order my cakes.' } });
 }
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -25,8 +26,8 @@ afterEach(() => vi.unstubAllGlobals());
 describe('hire page: the story', () => {
   it('opens with the promise and a way to the form', () => {
     at('/hire');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Tell me your idea. I’ll make it real.');
-    const start = screen.getAllByRole('link', { name: /tell me your idea/i })[0];
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s make your idea real.');
+    const start = screen.getAllByRole('link', { name: /get in touch/i })[0];
     expect(start).toHaveAttribute('href', '#contact');
     expect(document.getElementById('contact')).toContainElement(form());
   });
@@ -147,14 +148,22 @@ describe('hire page: the story', () => {
     expect(document.body.textContent).not.toMatch(/client quote/i);
   });
 
-  it('offers WhatsApp with a ready message', () => {
+  it('makes the form the only way in: no WhatsApp anywhere on the page', () => {
     at('/hire');
-    const wa = screen.getAllByRole('link', { name: /whatsapp/i });
-    expect(wa.length).toBeGreaterThan(0);
-    for (const a of wa) {
-      expect(a.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/5519993229283\?text=/);
-      expect(a).toHaveAttribute('target', '_blank');
-    }
+    expect(document.querySelector('a[href*="wa.me"]')).toBeNull();
+    expect(document.getElementById('root') ?? document.body).not.toHaveTextContent(/whatsapp/i);
+  });
+
+  it('closes with the idea, not the promise the hero already made', () => {
+    at('/hire');
+    expect(screen.getByRole('heading', { level: 2, name: 'Your idea starts here.' })).toBeInTheDocument();
+  });
+
+  it('asks for an email or a phone, with no placeholder text in the fields', () => {
+    at('/hire');
+    const f = within(form());
+    expect(f.getByLabelText('Email or phone')).toBeInTheDocument();
+    for (const input of form().querySelectorAll('input:not([type="hidden"])')) expect(input).not.toHaveAttribute('placeholder');
   });
 
   it('frames the hero and the trust strip on Paper, like home, and puts the rest on the dark Stage', () => {
@@ -168,13 +177,13 @@ describe('hire page: the story', () => {
 
   it('tunes in like the home hero, on its own channel', () => {
     at('/hire');
-    const hero = screen.getByRole('region', { name: /tell me your idea/i });
+    const hero = screen.getByRole('region', { name: /let’s make your idea real/i });
     expect(hero.querySelector('.hero-ch')).toHaveTextContent('CH 06');
   });
 
   it('shows real work in the hero, linked to its case study', () => {
     at('/hire');
-    const hero = screen.getByRole('region', { name: /tell me your idea/i });
+    const hero = screen.getByRole('region', { name: /let’s make your idea real/i });
     const shot = within(hero).getByRole('img', { name: /tempo’s landing page/i });
     expect(shot).toHaveAttribute('src', '/hire/tempo/page-1.webp');
     expect(within(hero).getByRole('link', { name: /see the case/i })).toHaveAttribute('href', '/work/tempo-landing-page');
@@ -205,24 +214,54 @@ describe('hire page: the form', () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('/api/lead');
     expect(JSON.parse(init!.body as string)).toMatchObject({ name: 'Maria', contact: 'maria@bakery.example' });
-    expect(JSON.parse(sessionStorage.getItem(SENT_KEY)!)).toEqual({ name: 'Maria', message: 'A site where people order my cakes.' });
+    expect(JSON.parse(sessionStorage.getItem(SENT_KEY)!)).toEqual({ name: 'Maria' });
   });
 
-  it('thanks the person by name on the thank-you page, with their idea ready for WhatsApp', async () => {
-    sessionStorage.setItem(SENT_KEY, JSON.stringify({ name: 'Maria Silva', message: 'A site where people order my cakes.' }));
+  it('sends the page’s language with the form, and loads the Portuguese thank-you page from a Portuguese page', async () => {
+    fetchMock.mockResolvedValue(new Response('{"ok":true}', { status: 200 }));
+    const go = vi.spyOn(nav, 'to').mockImplementation(() => {});
+    const { pt } = await import('../content/pt');
+    const { LocaleProvider } = await import('../i18n/copy');
+    render(<LocaleProvider locale="pt" copy={pt}><MemoryRouter initialEntries={['/pt-br/hire']} basename="/pt-br"><App /></MemoryRouter></LocaleProvider>);
+    expect(form().querySelector('input[name="lang"]')).toHaveValue('pt');
+    fill();
+    fireEvent.submit(form());
+    await waitFor(() => expect(go).toHaveBeenCalledWith('/pt-br/hire/thanks'));
+    expect(JSON.parse(fetchMock.mock.calls[0][1]!.body as string)).toMatchObject({ name: 'Maria', lang: 'pt' });
+  });
+
+  it('sends lang "en" from the English page', async () => {
+    fetchMock.mockResolvedValue(new Response('{"ok":true}', { status: 200 }));
+    vi.spyOn(nav, 'to').mockImplementation(() => {});
+    at('/hire');
+    fill();
+    fireEvent.submit(form());
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    expect(JSON.parse(fetchMock.mock.calls[0][1]!.body as string).lang).toBe('en');
+  });
+
+  it('thanks the person by name on the thank-you page, and points to the work, with no WhatsApp', async () => {
+    sessionStorage.setItem(SENT_KEY, JSON.stringify({ name: 'Maria Silva' }));
     at('/hire/thanks');
     expect(await screen.findByRole('heading', { level: 1, name: /got it, maria\./i })).toBeInTheDocument();
-    const wa = screen.getByRole('link', { name: /continue on whatsapp/i }).getAttribute('href')!;
-    expect(wa).toMatch(/^https:\/\/wa\.me\//);
-    expect(decodeURIComponent(wa)).toContain('A site where people order my cakes.');
+    expect(screen.getByRole('link', { name: /see my work/i })).toHaveAttribute('href', '/#work');
+    expect(document.querySelector('a[href*="wa.me"]')).toBeNull();
+    expect(document.querySelector('main')).not.toHaveTextContent(/whatsapp|sooner/i);
   });
 
-  it('keeps what they typed and offers email and WhatsApp when sending fails', async () => {
+  it('marks the idea as optional', () => {
+    at('/hire');
+    expect(within(form()).getByLabelText(/your idea, in one line \(optional\)/i)).toBeInTheDocument();
+  });
+
+  it('keeps what they typed and offers email when sending fails', async () => {
     fetchMock.mockResolvedValue(new Response('{}', { status: 502 }));
     at('/hire');
     fill();
     fireEvent.submit(form());
-    expect(await screen.findByRole('alert')).toHaveTextContent('jvitorfatto@gmail.com');
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('jvitorfatto@gmail.com');
+    expect(alert).not.toHaveTextContent(/whatsapp/i);
     expect(within(form()).getByLabelText(/your name/i)).toHaveValue('Maria');
   });
 });

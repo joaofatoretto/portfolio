@@ -1,4 +1,4 @@
-import { LIMITS, contactKind, leadEmail, validateLead } from './lead';
+import { LIMITS, MESSAGES, contactKind, leadEmail, validateLead } from './lead';
 
 const valid = { name: '  Maria Souza ', contact: 'maria@example.com', message: 'A site where people order my cakes.', website: '' };
 
@@ -16,7 +16,14 @@ describe('validateLead', () => {
   it('asks for each missing field in plain words', () => {
     const r = validateLead({ name: ' ', contact: 'maria@', message: '' });
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(['contact', 'message', 'name']);
+    if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(['contact', 'name']);
+  });
+
+  it('takes the idea as optional: a name and a way to reply are enough', () => {
+    const r = validateLead({ ...valid, message: '  ' });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.lead.message).toBe('');
+    expect(validateLead({ ...valid, message: 'Hi' }).ok).toBe(true);
   });
 
   it('rejects text past the limits', () => {
@@ -36,6 +43,30 @@ describe('validateLead', () => {
   });
 });
 
+describe('validateLead in Portuguese', () => {
+  it('checks the same rules and answers in the visitor’s language', () => {
+    expect(validateLead(valid, 'pt').ok).toBe(true);
+    const r = validateLead({ name: ' ', contact: 'maria@', message: '' }, 'pt');
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(Object.keys(r.errors).sort()).toEqual(['contact', 'name']);
+      expect(r.errors.name).toBe(MESSAGES.pt.name);
+      expect(r.errors.contact).toBe(MESSAGES.pt.contact);
+    }
+  });
+
+  it('has a message for everything English has, with the same limits in the long ones', () => {
+    expect(Object.keys(MESSAGES.pt).sort()).toEqual(Object.keys(MESSAGES.en).sort());
+    expect(MESSAGES.pt.nameLong(LIMITS.name)).toContain(String(LIMITS.name));
+    expect(MESSAGES.pt.messageLong(LIMITS.message)).toContain(String(LIMITS.message));
+  });
+
+  it('falls back to English for a language it doesn’t know', () => {
+    const r = validateLead({ name: '', contact: '', message: '' }, 'fr' as never);
+    if (!r.ok) expect(r.errors.name).toBe(MESSAGES.en.name);
+  });
+});
+
 describe('contactKind', () => {
   it('tells an email from a phone number', () => {
     expect(contactKind('maria@example.com')).toBe('email');
@@ -45,6 +76,12 @@ describe('contactKind', () => {
 });
 
 describe('leadEmail', () => {
+  it('names the lead in the subject when they left no idea', () => {
+    const r = validateLead({ ...valid, message: '' });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(leadEmail(r.lead).subject).toBe('New lead from Maria Souza');
+  });
+
   it('puts the name and the start of the idea in the subject, and everything in the body', () => {
     const r = validateLead(valid);
     if (!r.ok) throw new Error('expected a valid lead');

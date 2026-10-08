@@ -1,5 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { PROFILE } from '../content/profile';
+import { useCopy } from '../i18n/copy';
 import { MOTION, animate, easeLock, lerp } from '../lib/motion';
 import { useInView } from '../lib/reveal';
 import { BIG_GHOSTS, LOCK_PHI, bigFigure } from '../lib/signal';
@@ -8,6 +9,7 @@ import { ArrowIcon } from './Icons';
 
 /** The closing Stage card. Powers on as it arrives; "Let's talk." locks its fringe and the mark locks in. */
 export function Contact() {
+  const { ui } = useCopy(), t = ui.contact;
   const fid = useId();
   const rootRef = useRef<HTMLElement>(null), canvasRef = useRef<HTMLCanvasElement>(null), layerRef = useRef<HTMLDivElement>(null);
   const h2Ref = useRef<HTMLHeadingElement>(null), markRef = useRef<SVGPathElement>(null), outRef = useRef<HTMLOutputElement>(null);
@@ -42,12 +44,12 @@ export function Contact() {
       <div className="contact-layer" ref={layerRef}>
         <div className="contact-inner">
           <div className="contact-text">
-            <h2 className="display-l" id="contact-h" ref={h2Ref} tabIndex={-1}>Let’s talk.</h2>
-            <p className="body-l" style={{ maxWidth: '40ch' }}>Hiring for product design or design engineering? Email me about the role.</p>
+            <h2 className="display-l" id="contact-h" ref={h2Ref} tabIndex={-1}>{t.title}</h2>
+            <p className="body-l" style={{ maxWidth: '40ch' }}>{t.text}</p>
             <div className="email"><output ref={outRef}>{PROFILE.email}</output></div>
             <div className="ctas">
-              <button className="btn primary" type="button" onClick={copy} aria-live="polite">{copied ? 'Email copied' : 'Copy email'}</button>
-              <a className="btn ghost" href={`mailto:${PROFILE.email}`}>Send an email</a>
+              <button className="btn primary" type="button" onClick={copy} aria-live="polite">{copied ? t.copied : t.copy}</button>
+              <a className="btn ghost" href={`mailto:${PROFILE.email}`}>{t.send}</a>
               <a className="btn ghost" href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn&nbsp;<ArrowIcon /></a>
             </div>
           </div>

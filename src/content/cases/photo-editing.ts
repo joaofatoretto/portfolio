@@ -311,7 +311,8 @@ export const body: CaseBody = [
   {
     "type": "embed",
     "src": "https://embed.figma.com/proto/BVKM2wbczEzk7cdkt6MMCB/Crop-2.0?node-id=113-847&node-type=canvas&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=113%3A847&embed-host=share",
-    "label": "Mobile"
+    "label": "Mobile",
+    "tall": true
   },
   {
     "type": "h2",

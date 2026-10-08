@@ -1,17 +1,21 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CHANNELS } from '../content/profile';
 import { caseBySlug, caseNumber } from '../content/cases';
+import type { Copy } from '../content';
+import { useCopy, useLocale } from '../i18n/copy';
+import { splitLocale } from '../i18n/locales';
 import { MOTION, lerp, ss } from '../lib/motion';
 import { makeStatic } from '../lib/tv';
 
-function channelFor(path: string, hash: string): [string, string] | null {
+/** The channel (code, name) a link tunes to, for a path without its language prefix; null for links that aren't pages. */
+function channelFor(copy: Copy, path: string, hash: string): [string, string] | null {
+  const CHANNELS = copy.profile.channels;
   if (hash && hash !== 'top' && CHANNELS[hash]) return CHANNELS[hash];
   if (path === '/') return CHANNELS.top;
   if (path === '/hire') return CHANNELS.hire;
   if (path.startsWith('/work/')) {
-    const c = caseBySlug(path.split('/')[2]);
-    return c ? [`CH 02·${caseNumber(c)}`, c.client] : null;
+    const c = caseBySlug(path.split('/')[2], copy.cases);
+    return c ? [`CH 02·${caseNumber(c, copy.cases)}`, c.client] : null;
   }
   return null;
 }
@@ -51,6 +55,7 @@ export function ChannelSwitch() {
   const navigate = useNavigate();
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
+  const copy = useCopy(), locale = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null), osdRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,11 +91,15 @@ export function ChannelSwitch() {
       const href = a.getAttribute('href');
       if (!href || !href.startsWith('/')) return;
       const url = new URL(href, window.location.origin);
-      const ch = channelFor(url.pathname, url.hash.slice(1));
+      // a link to the other language is a whole other document: the browser loads it, not the router
+      const to = splitLocale(url.pathname);
+      if (to.locale !== locale) return;
+      const ch = channelFor(copy, to.path, url.hash.slice(1));
       if (!ch) return;
       e.preventDefault();
       e.stopPropagation();
-      go(url.pathname + url.hash, ch);
+      // the router has the language prefix as its basename, so it takes the path without it
+      go(to.path + url.hash, ch);
     };
     document.addEventListener('click', onClick, true);
     return () => {
@@ -99,7 +108,7 @@ export function ChannelSwitch() {
       clearTimeout(osdTimer);
       canvas.style.opacity = '0'; // never leave static over the page
     };
-  }, []);
+  }, [copy, locale]);
 
   return (
     <>

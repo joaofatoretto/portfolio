@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
-import { NOT_FOUND } from '../seo/meta';
+import { useCopy, useLocalize } from '../i18n/copy';
 
 export function NotFound() {
-  useEffect(() => { document.title = NOT_FOUND.title; }, []);
+  const { ui, seo } = useCopy(), localize = useLocalize();
+  useEffect(() => { document.title = seo.notFound.title; }, [seo]);
   return (
     <main className="page">
       <section className="notfound stage" aria-labelledby="nf-h">
-        <span className="osd notfound-osd" aria-hidden="true">NO SIGNAL</span>
-        <h1 className="h-1" id="nf-h" data-focus tabIndex={-1}>This channel doesn’t exist.</h1>
-        <p className="body-l">The page may have moved. The case studies are on the home page.</p>
-        <div className="ctas"><a className="btn primary" href="/#work">View case studies&nbsp;&nbsp;→</a></div>
+        <span className="osd notfound-osd" aria-hidden="true">{ui.tv.noSignal}</span>
+        <h1 className="h-1" id="nf-h" data-focus tabIndex={-1}>{ui.notFound.title}</h1>
+        <p className="body-l">{ui.notFound.text}</p>
+        <div className="ctas"><a className="btn primary" href={localize('/#work')}>{ui.notFound.cta}</a></div>
       </section>
     </main>
   );

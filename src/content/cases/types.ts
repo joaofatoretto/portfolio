@@ -3,7 +3,8 @@ export type Block =
   | { type: 'h2' | 'h3' | 'p'; text: string }
   | { type: 'ul' | 'ol'; items: string[] }
   | { type: 'img'; src: string; alt: string; w: number | null; h: number | null }
-  | { type: 'embed'; src: string; label: string };
+  /** `tall`: a phone prototype, shown in a tall frame (set here, never guessed from the translated label) */
+  | { type: 'embed'; src: string; label: string; tall?: boolean };
 
 export type CaseBody = Block[];
 
@@ -45,3 +46,9 @@ export type CaseStudy = {
 
 /** Chips in display order: industry, model, then platforms. */
 export const caseTags = (c: Pick<CaseStudy, 'industry' | 'model' | 'platforms'>): string[] => [c.industry, c.model, ...c.platforms];
+
+/** The same chips in a page's language: `labels` is the copy's `ui` (it names the typed model and platform values). */
+export const caseChips = (
+  c: Pick<CaseStudy, 'industry' | 'model' | 'platforms'>,
+  labels: { models: Record<Model, string>; platforms: Record<Platform, string> },
+): string[] => [c.industry, labels.models[c.model], ...c.platforms.map(p => labels.platforms[p])];

@@ -1,16 +1,15 @@
 import { useEffect, useId, useLayoutEffect, useRef } from 'react';
-import { SEND } from '../../content/hire';
-import { waLink } from '../../content/profile';
+import { useCopy } from '../../i18n/copy';
 import { MOTION, animate, easeLock, lerp } from '../../lib/motion';
 import { Seq, SeqItem, useInView } from '../../lib/reveal';
 import { BIG_GHOSTS, LOCK_PHI, bigFigure } from '../../lib/signal';
 import { SplitFilter, TL, useTV } from '../../lib/tv';
 import { LeadForm } from '../../components/LeadForm';
-import { WaIcon } from './icons';
 
-/** "Let's make it real.": the closing Stage card, a TV like Contact on home: it powers on as it arrives (static, the
+/** "Your idea starts here.": the closing Stage card, a TV like Contact on home: it powers on as it arrives (static, the
  *  picture splits in and locks), then the headline's fringe and the mark lock in. Grain stays at rest. */
 export function Send() {
+  const { hire } = useCopy(), SEND = hire.send;
   const fid = useId();
   const rootRef = useRef<HTMLElement>(null), canvasRef = useRef<HTMLCanvasElement>(null), layerRef = useRef<HTMLDivElement>(null);
   const h2Ref = useRef<HTMLHeadingElement>(null), markRef = useRef<SVGPathElement>(null);
@@ -46,10 +45,6 @@ export function Send() {
           </div>
           <div className="send-form">
             <LeadForm />
-            <div className="send-alt">
-              <span className="muted">or</span>
-              <a className="btn ghost" href={waLink(SEND.wa)} target="_blank" rel="noopener noreferrer"><WaIcon />Chat on WhatsApp</a>
-            </div>
             <span className="caption">{SEND.reply}</span>
           </div>
         </div>

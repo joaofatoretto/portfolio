@@ -1,22 +1,27 @@
 import { useRef, type CSSProperties } from 'react';
-import { TRUST, type ClientLogo } from '../../content/hire';
+import type { ClientLogo } from '../../content/hire';
+import { useCopy } from '../../i18n/copy';
 import { R, Seq, SeqItem } from '../../lib/reveal';
 import { Scramble } from '../../components/Scramble';
 import { useEdgeSpeed } from './marquee';
 
-const Logos = ({ copy }: { copy?: boolean }) => (
-  <ul aria-hidden={copy || undefined}>
-    {TRUST.clients.map((c: ClientLogo) => (
-      <li key={c.name} style={c.h ? { '--h': c.h } as CSSProperties : undefined}>
-        <img src={c.logo} alt={copy ? '' : c.name} decoding="async" />
-        {c.color && <img className="logo-color" src={c.color} alt="" decoding="async" />}
-      </li>
-    ))}
-  </ul>
-);
+const Logos = ({ copy }: { copy?: boolean }) => {
+  const TRUST = useCopy().hire.trust;
+  return (
+    <ul aria-hidden={copy || undefined}>
+      {TRUST.clients.map((c: ClientLogo) => (
+        <li key={c.name} style={c.h ? { '--h': c.h } as CSSProperties : undefined}>
+          <img src={c.logo} alt={copy ? '' : c.name} decoding="async" />
+          {c.color && <img className="logo-color" src={c.color} alt="" decoding="async" />}
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 /** "Is he legit?" answered in three seconds: the companies drift past (in colour under the mouse, faster toward the edges), then four numbers, read one at a time. */
 export function Trust() {
+  const TRUST = useCopy().hire.trust;
   const trackRef = useRef<HTMLDivElement>(null);
   useEdgeSpeed(trackRef);
   return (

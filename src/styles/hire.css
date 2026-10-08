@@ -98,7 +98,9 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .trust-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: clamp(8px, 1.4vw, 20px); border-top: 1px solid var(--fg-primary); }
 .trust-stats .stat { gap: 12px; padding: clamp(32px, 3.4vw, 48px) 28px 8px; }
 .trust-stats .stat:first-child { padding-left: 0; }
-.trust-stats .num { font-size: clamp(40px, 4.4vw, 60px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.trust-stats .num { white-space: nowrap; font-size: clamp(40px, 4.4vw, 60px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+/* Portuguese "< 3 meses" is wider than "< 3 mo": a smaller step so the four numbers stay one line and aligned */
+html[lang="pt-BR"] .trust-stats .num { font-size: clamp(36px, 3.6vw, 60px); }
 .trust-stats .stat p { font-size: 16px; }
 @media (max-width: 980px) { .trust-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-stats .stat:nth-child(odd) { border-left: 0; padding-left: 0; } .trust-stats .stat:nth-child(n + 3) { border-top: 1px solid var(--line); } }
@@ -265,7 +267,7 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .proof-cards > * { min-width: 0; }
 .proof-card { display: grid; gap: 16px; align-content: start; color: inherit; text-decoration: none; }
 .proof-shot { aspect-ratio: 16 / 10 !important; }
-.proof-card .num { font-size: clamp(48px, 5vw, 72px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.proof-card .num { white-space: nowrap; font-size: clamp(48px, 5vw, 72px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
 .proof-what { max-width: 34ch; color: var(--fg-intro); font-size: 18px; font-weight: 300; line-height: 1.45; }
 .proof-who { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .proof-card:hover .screen { border-color: var(--line-strong); }
@@ -311,7 +313,8 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .elbow i:first-child { left: 10px; width: 2px; bottom: 50%; height: calc(var(--r4) / 2 + var(--r3) + var(--r2) / 2 - 11px); transform-origin: top; }
 .elbow i:last-child { left: 10px; width: calc(var(--elbow) - 10px); top: calc(50% - 1px); height: 2px; transform-origin: left; }
 .chip { position: relative; margin-left: var(--elbow); display: flex; align-items: center; height: 56px; padding: 0 22px; background: var(--fg-primary); color: var(--bg);
-        font-size: clamp(16px, 1.4vw, 19px); font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+        font-size: clamp(16px, 1.4vw, 19px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; min-width: 0; max-width: calc(100% - var(--elbow) - 8px); }
+@media (max-width: 1080px) and (min-width: 761px) { .chip { padding: 0 14px; font-size: 15px; } }
 .lanes .caption { color: var(--fg-secondary); }
 /* the beat: node and title, then the elbow down and on, then the payment */
 .dl { transition: opacity .45s var(--ease-signal), transform .45s var(--ease-signal); }
@@ -379,7 +382,7 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
   .lane-bottom::before { display: none; }
   .elbow i:first-child { display: none; }
   .elbow i:last-child { left: -34px; width: 34px; }
-  .chip { margin-left: 0; }
+  .chip { margin-left: 0; max-width: 100%; }
 }
 
 /* ---------- 07 call: the last call before the form ----------
@@ -413,7 +416,6 @@ html:not(.motion) .marquee ul[aria-hidden] { display: none; }
 .send .bigmark { width: 160px; height: 160px; }
 .motion .send:not(.locked) .bigmark .ghosts { opacity: 0; }
 .send-form { display: grid; gap: 20px; min-width: 0; }
-.send-alt { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-left: 5px; }
 @media (max-width: 980px) { .send-inner { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 860px) { .send .bigmark { display: none; } }
 

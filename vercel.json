@@ -4,6 +4,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "has": [{ "type": "cookie", "key": "lang", "value": "pt" }], "destination": "/pt-br", "permanent": false },
+    { "source": "/", "has": [{ "type": "header", "key": "accept-language", "value": "^[pP][tT].*" }], "missing": [{ "type": "cookie", "key": "lang" }], "destination": "/pt-br", "permanent": false },
+    { "source": "/hire", "has": [{ "type": "cookie", "key": "lang", "value": "pt" }], "destination": "/pt-br/hire", "permanent": false },
+    { "source": "/hire", "has": [{ "type": "header", "key": "accept-language", "value": "^[pP][tT].*" }], "missing": [{ "type": "cookie", "key": "lang" }], "destination": "/pt-br/hire", "permanent": false },
+    { "source": "/work/:slug", "has": [{ "type": "cookie", "key": "lang", "value": "pt" }], "destination": "/pt-br/work/:slug", "permanent": false },
+    { "source": "/work/:slug", "has": [{ "type": "header", "key": "accept-language", "value": "^[pP][tT].*" }], "missing": [{ "type": "cookie", "key": "lang" }], "destination": "/pt-br/work/:slug", "permanent": false }
+  ],
   "headers": [
     { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
     { "source": "/cases/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }

@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef } from 'react';
-import { CALL } from '../../content/hire';
+import { useCopy } from '../../i18n/copy';
 import { gather } from '../../lib/gather';
 import { MOTION } from '../../lib/motion';
 import { useInView } from '../../lib/reveal';
@@ -8,6 +8,7 @@ import { useInView } from '../../lib/reveal';
  *  faint streaks of light that glide in from around it and fill it in (lib/gather.ts); then an arrow draws down to
  *  the form. Plays once. */
 export function Call() {
+  const CALL = useCopy().hire.call;
   const ref = useRef<HTMLElement>(null), titleRef = useRef<HTMLHeadingElement>(null);
   const stop = useRef<() => void>(() => {});
   useEffect(() => () => stop.current(), []);
