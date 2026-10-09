@@ -347,7 +347,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "In addition, the entire solution and its particularities, such as **the launch and the details of interaction with the user, were detailed in a requirements document** for the development team **with acceptance criteria** so that the solution would be approved before deploying. But it's important to clarify that this does not exclude the handover to the development team with conversations to clarify about the solution nor the follow-up as the solution is being developed."
+    "text": "In addition, the entire solution and its particularities, such as **the launch and the details of interaction with the user, were detailed in a requirements document** for the development team **with acceptance criteria** so that the solution would be approved before deploying. But it's important to clarify that this does not exclude the handover to the development team with conversations to clarify the solution nor the follow-up as the solution is being developed."
   },
   {
     "type": "h2",

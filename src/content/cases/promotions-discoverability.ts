@@ -16,7 +16,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "How we transformed the request \"we want a timer for flash promotions in the app\" into a solution that really solved the root problem, resulting in a **15% increase in add to cart event**, through improving the discoverability of promotions and products."
+    "text": "This is how we turned the request \"we want a timer for flash promotions in the app\" into a solution that solved the root problem, resulting in a **15% increase in add to cart event**, through improving the discoverability of promotions and products."
   },
   {
     "type": "p",
@@ -47,7 +47,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "After discussing with stakeholders to understand their goals, I understood that \"hidden\" objective behind that request was to **\"increase the number of orders to a minimum of XXX on a daily basis\".** _(confidential numbers)_"
+    "text": "After discussing with stakeholders to understand their goals, I understood that \"hidden\" objective behind that request was to **\"increase the number of orders to a daily target we can't share publicly\".**"
   },
   {
     "type": "p",
