@@ -63,7 +63,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "This survey is an **interception method** and was integrated with the platform by Typeform. It appears when the user makes her second edit and clicks on the save button. The editing survey, in conjunction with other surveys, **help populate Casar's Problem Space** in a continuous way, which was and is very important in understanding the user and prioritizing the pains we will solve."
+    "text": "This survey is an **interception method** and was integrated with the platform by Typeform. It appears when the user makes her second edit and clicks on the save button. The editing survey, in conjunction with other surveys, **helps populate Casar's Problem Space** in a continuous way, which was and is very important in understanding the user and prioritizing the pains we will solve."
   },
   {
     "type": "p",
@@ -182,7 +182,7 @@ export const body: CaseBody = [
     "type": "ul",
     "items": [
       "Very small, it's hard to select a face in a big photo",
-      "Inverted buttons, cause some strangeness"
+      "Inverted buttons cause some strangeness"
     ]
   },
   {
@@ -241,7 +241,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "After the ideation, **I prioritized** each of the ideas in an **impact x effort matrix** and **clusterized the ideas** so that they made sense together, thus, we could have several proposals for the final solution, from a more essential and simpler one, to one with more complicated increments, but still relevant."
+    "text": "After the ideation, **I prioritized** each of the ideas in an **impact x effort matrix** and **clustered the ideas** so that they made sense together, thus, we could have several proposals for the final solution, from a more essential and simpler one, to one with more complicated increments, but still relevant."
   },
   {
     "type": "img",
@@ -320,7 +320,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "It's important to note, that the new ones will have to use the tool when creating a new site."
+    "text": "It's important to note that the new ones will have to use the tool when creating a new site."
   },
   {
     "type": "p",
@@ -347,7 +347,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "In addition, the entire solution and its particularities, such as **the launch and the details of interaction with the user, were detailed in a requirements document** for the development team **with acceptance criteria** so that the solution would be approved before deploying. But it's important to clarify that this does not exclude the handover to the development team with conversations to clarify about the solution and neither the follow-up as the solution is being developed."
+    "text": "In addition, the entire solution and its particularities, such as **the launch and the details of interaction with the user, were detailed in a requirements document** for the development team **with acceptance criteria** so that the solution would be approved before deploying. But it's important to clarify that this does not exclude the handover to the development team with conversations to clarify about the solution nor the follow-up as the solution is being developed."
   },
   {
     "type": "h2",

@@ -73,7 +73,7 @@ export const body: CaseBody = [
   },
   {
     "type": "h2",
-    "text": "The proccess"
+    "text": "The process"
   },
   {
     "type": "p",

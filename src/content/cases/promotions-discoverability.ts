@@ -16,7 +16,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "How we transformed the request\"we want a timer for flash promotions in the app\" into a solution that really solved the root problem, resulting in a **15% increase in add to cart event**, through improving the discoverability of promotions and products."
+    "text": "How we transformed the request \"we want a timer for flash promotions in the app\" into a solution that really solved the root problem, resulting in a **15% increase in add to cart event**, through improving the discoverability of promotions and products."
   },
   {
     "type": "p",
@@ -47,7 +47,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "After discuss with stakeholders to understand their goals, I understood that \"hidden\" objective behind that request was to **\"increase the number of orders to a minimum of XXX on a daily basis\".** _(confidential numbers)_"
+    "text": "After discussing with stakeholders to understand their goals, I understood that \"hidden\" objective behind that request was to **\"increase the number of orders to a minimum of XXX on a daily basis\".** _(confidential numbers)_"
   },
   {
     "type": "p",
@@ -56,8 +56,8 @@ export const body: CaseBody = [
   {
     "type": "ul",
     "items": [
-      "It focuses on only a small numbers of great deals on products that needs to be changing everyday (**what we couldn't achieve**);",
-      "It requires a lot of **effort of the marketing team** and we was a very small company;",
+      "It focuses on only a small number of great deals on products that need to be changed every day (**what we couldn't achieve**);",
+      "It requires a lot of **effort of the marketing team** and we were a very small company;",
       "The problem it was supposed to solve was not clear at all."
     ]
   },
@@ -82,7 +82,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "By analysing the funnel, we identified a big gap on add to cart event, what could possibly indicates an opportunity to grow."
+    "text": "By analysing the funnel, we identified a big gap on add to cart event, what could possibly indicate an opportunity to grow."
   },
   {
     "type": "p",
@@ -98,7 +98,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "At the end,we had a key finding that highlighted were users were struggling the most at this step of the funnel:"
+    "text": "At the end, we had a key finding that highlighted where users were struggling the most at this step of the funnel:"
   },
   {
     "type": "p",
@@ -136,7 +136,7 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "The final solution was a bit techy, although very easy and fast to implement, what made part of this solution a real quick win."
+    "text": "The final solution was a bit techy, although very easy and fast to implement, which made part of this solution a real quick win."
   },
   {
     "type": "p",
@@ -152,11 +152,11 @@ export const body: CaseBody = [
   },
   {
     "type": "p",
-    "text": "After all, we runned A/B testing and find out the following results:"
+    "text": "After all, we ran A/B testing and found the following results:"
   },
   {
     "type": "p",
-    "text": "An increase of 15% on the add to cart convertion rate!"
+    "text": "An increase of 15% on the add to cart conversion rate!"
   },
   {
     "type": "h2",
