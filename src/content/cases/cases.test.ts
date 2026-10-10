@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { CASES } from '.';
+import { CASES as PT_CASES } from '../pt/cases';
 import { caseTags } from './types';
 
 const pub = (src: string) => join(process.cwd(), 'public', src);
@@ -9,6 +10,11 @@ describe('case studies content', () => {
   it('has unique slugs', () => {
     const slugs = CASES.map(c => c.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it('leads with the newest case, Tempo, in both languages', () => {
+    expect(CASES[0].slug).toBe('tempo-landing-page');
+    expect(PT_CASES.map(c => c.slug)).toEqual(CASES.map(c => c.slug));
   });
 
   it.each(CASES.map(c => [c.slug, c] as const))('%s: every image exists in public/', (_, c) => {
@@ -24,10 +30,10 @@ describe('case studies content', () => {
 
   it('shows chips in one order: industry, model, then platforms', () => {
     expect(CASES.map(caseTags)).toEqual([
+      ['AI SaaS', 'B2B + B2C', 'Landing page · desktop'],
       ['E-commerce', 'B2C', 'Native app', 'Web admin'],
       ['Fintech', 'B2B2C', 'Native app', 'Web · mobile + desktop'],
       ['Weddings', 'B2C', 'Web · mobile + desktop'],
-      ['AI SaaS', 'B2B + B2C', 'Landing page · desktop'],
       ['Mental health', 'B2C', 'Web · mobile + desktop'],
     ]);
   });

@@ -11,6 +11,20 @@ const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
 
 export const CASES: CaseStudy[] = [
   {
+    slug: 'tempo-landing-page',
+    title: 'Tempo New Landing Page',
+    client: 'Tempo Labs',
+    industry: 'AI SaaS', model: 'B2B + B2C', platforms: ['Landing page · desktop'],
+    summary: 'A full landing page redesign to reposition Tempo, an AI startup backed by Y Combinator, in its market.',
+    role: 'Product Designer',
+    result: 'Market repositioning',
+    problem: 'Tempo was moving from developers and founders to designers, and its landing page had to tell that new story.',
+    outcome: 'A landing page that changes how people see the brand and tells designers a clear story: build the code yourself, without the handoff.',
+    subtitle: tempo.original.subtitle,
+    meta: { ...tempo.meta },
+    card: tempo.card, cover: tempo.cover, body: tempo.body,
+  },
+  {
     slug: 'promotions-discoverability',
     title: 'Enhancing Promotions Discoverability',
     client: 'Superopa',
@@ -51,20 +65,6 @@ export const CASES: CaseStudy[] = [
     subtitle: photo.original.subtitle,
     meta: { ...photo.meta },
     card: photo.card, cover: photo.cover, body: photo.body,
-  },
-  {
-    slug: 'tempo-landing-page',
-    title: 'Tempo New Landing Page',
-    client: 'Tempo Labs',
-    industry: 'AI SaaS', model: 'B2B + B2C', platforms: ['Landing page · desktop'],
-    summary: 'A full landing page redesign to reposition Tempo, an AI startup backed by Y Combinator, in its market.',
-    role: 'Product Designer',
-    result: 'Market repositioning',
-    problem: 'Tempo was moving from developers and founders to designers, and its landing page had to tell that new story.',
-    outcome: 'A landing page that changes how people see the brand and tells designers a clear story: build the code yourself, without the handoff.',
-    subtitle: tempo.original.subtitle,
-    meta: { ...tempo.meta },
-    card: tempo.card, cover: tempo.cover, body: tempo.body,
   },
   {
     slug: 'sophia-mental-health',

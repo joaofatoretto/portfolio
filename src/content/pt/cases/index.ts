@@ -9,9 +9,21 @@ import * as tempo from './tempo-landing-page';
 import * as sophia from './sophia-mental-health';
 
 const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
-const [enPromotions, enBenefits, enPhoto, enTempo, enSophia] = EN;
+const [enTempo, enPromotions, enBenefits, enPhoto, enSophia] = EN;
 
 export const CASES: CaseStudy[] = [
+  {
+    ...enTempo,
+    title: tempo.original.title,
+    industry: 'SaaS de IA',
+    summary: 'Um redesign completo da landing page para reposicionar no mercado a Tempo, uma startup de IA apoiada pela Y Combinator.',
+    result: 'Reposicionamento de mercado',
+    problem: 'A Tempo estava trocando o foco de desenvolvedores e fundadores para designers, e a landing page precisava contar essa nova história.',
+    outcome: 'Uma landing page que muda como as pessoas veem a marca e conta aos designers uma história clara: construa o código você mesmo, sem o handoff.',
+    subtitle: tempo.original.subtitle,
+    meta: { ...tempo.meta },
+    body: tempo.body,
+  },
   {
     ...enPromotions,
     title: promotions.original.title,
@@ -47,18 +59,6 @@ export const CASES: CaseStudy[] = [
     subtitle: photo.original.subtitle,
     meta: { ...photo.meta },
     body: photo.body,
-  },
-  {
-    ...enTempo,
-    title: tempo.original.title,
-    industry: 'SaaS de IA',
-    summary: 'Um redesign completo da landing page para reposicionar no mercado a Tempo, uma startup de IA apoiada pela Y Combinator.',
-    result: 'Reposicionamento de mercado',
-    problem: 'A Tempo estava trocando o foco de desenvolvedores e fundadores para designers, e a landing page precisava contar essa nova história.',
-    outcome: 'Uma landing page que muda como as pessoas veem a marca e conta aos designers uma história clara: construa o código você mesmo, sem o handoff.',
-    subtitle: tempo.original.subtitle,
-    meta: { ...tempo.meta },
-    body: tempo.body,
   },
   {
     ...enSophia,
