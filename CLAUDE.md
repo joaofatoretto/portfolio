@@ -65,6 +65,9 @@ Read `docs/i18n.md` before touching copy, routes or the head. In short:
 - Gotcha: some class names are global (e.g. `.intro` sets `display: flex`). Prefix state classes in a section (`pieces-in`, `lanes-in`) or check base.css first.
 - Gotcha: a CSS variable used in a `calc()` must be defined on that element or an ancestor; one defined on a child makes the whole declaration invalid (the sticky track lost its height this way).
 
+## To do
+- **Benefits Card case: six images missing** (since 2026-10-10). The v2 rewrite (`../resume/master/case-studies/benefits-card-app_v2.md`) has `[IMAGE: …]` slots not yet exported from Figma: login with CPF + SMS code and the tutorial; design review annotations; the character cast; card artwork; carrier letter (front and back); activation flow. `TODO(images)` comments in `src/content/cases/benefits-card-app.ts` mark where each goes. No placeholders on the page meanwhile (João's choice). When adding one: image in `public/cases/benefits-card-app/`, alt + caption in English, the Portuguese alt + caption in `src/content/pt/cases/benefits-card-app.ts`, then remove its TODO. Remind João while this is open.
+
 ## Open decisions (ask João)
 - "7+ years" matches the resume, but Jul 2018 to now is 8+.
 - Nohemi is local-only; the site uses Sora until a web licence is confirmed and the font is self-hosted.

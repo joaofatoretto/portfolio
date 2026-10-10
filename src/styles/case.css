@@ -58,6 +58,7 @@
 .figure-frame { display: block; padding: clamp(8px, 1.2vw, 16px); border: 1px solid var(--line); cursor: zoom-in; transition: border-color var(--dur-quick) var(--ease-signal); }
 .figure-frame:hover { border-color: var(--line-strong); }
 .figure-frame img { display: block; width: 100%; height: auto; }
+.figure figcaption { margin-top: 12px; max-width: 68ch; }
 
 /* prototypes: a TV that's off until you tune in */
 .prose > [data-reveal]:has(.embed) { max-width: none; }

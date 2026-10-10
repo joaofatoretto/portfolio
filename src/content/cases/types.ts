@@ -2,7 +2,8 @@
 export type Block =
   | { type: 'h2' | 'h3' | 'p'; text: string }
   | { type: 'ul' | 'ol'; items: string[] }
-  | { type: 'img'; src: string; alt: string; w: number | null; h: number | null }
+  /** `caption`: optional plain text shown under the image */
+  | { type: 'img'; src: string; alt: string; w: number | null; h: number | null; caption?: string }
   /** `tall`: a phone prototype, shown in a tall frame (set here, never guessed from the translated label) */
   | { type: 'embed'; src: string; label: string; tall?: boolean };
 

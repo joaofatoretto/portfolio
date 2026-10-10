@@ -36,6 +36,7 @@ function BlockView({ b }: { b: Block }) {
         <a className="figure-frame stage" href={b.src} target="_blank" rel="noopener noreferrer" aria-label={fmt(ui.case.open, { alt: b.alt })}>
           <img src={b.src} alt={b.alt} width={b.w ?? undefined} height={b.h ?? undefined} loading="lazy" decoding="async" />
         </a>
+        {b.caption && <figcaption className="caption">{b.caption}</figcaption>}
       </R>
     );
     case 'embed': return <R><PrototypeEmbed src={b.src} label={b.label} tall={b.tall} /></R>;

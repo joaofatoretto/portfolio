@@ -57,6 +57,14 @@ describe('case study page', () => {
     expect(within(next).getByRole('link')).toHaveAttribute('href', `/work/${CASES[1].slug}`);
   });
 
+  it('shows an image’s caption under it', () => {
+    const c = CASES.find(x => x.body.some(b => b.type === 'img' && b.caption))!;
+    const img = c.body.find(b => b.type === 'img' && b.caption) as { alt: string; caption: string };
+    at(`/work/${c.slug}`);
+    const figure = screen.getByRole('img', { name: img.alt }).closest('figure')!;
+    expect(within(figure).getByText(img.caption)).toBeInTheDocument();
+  });
+
   it('shows no signal for an unknown case', () => {
     at('/work/not-a-case');
     expect(screen.getByRole('heading', { level: 1, name: /doesn’t exist/i })).toBeInTheDocument();

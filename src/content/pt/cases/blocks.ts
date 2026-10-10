@@ -5,7 +5,7 @@ import type { Block, CaseBody } from '../../cases/types';
 
 export type TextBlock =
   | Exclude<Block, { type: 'img' | 'embed' }>
-  | { type: 'img'; alt: string }
+  | { type: 'img'; alt: string; caption?: string }
   | { type: 'embed'; label: string };
 
 export function translateBody(en: CaseBody, pt: TextBlock[], slug: string): CaseBody {
