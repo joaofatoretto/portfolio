@@ -74,14 +74,20 @@ const DATA = [
 const KEPT = new Set([
   'English', 'Português', 'Maria', 'CV (PDF)', '{label} (Figma)', 'Desktop', 'Design system', 'Just Ship It', 'Landing pages',
   'E-commerce', 'Fintech', 'Product Designer', 'UX/UI Designer',
+  // the Sophia case: design terms João's Portuguese article keeps in English, and the team's names
+  'Benchmarking', 'Crazy Eights', 'Branding', 'Naming', 'Logo', 'Persona 1', '**Sophia.**',
+  'Paulo Ortega, Rodrigo Vicenzo', 'João Vitor Fatoretto', 'Paulo Ortega', 'Rodrigo Vicenzo',
+  'LinkedIn João Vitor Fatoretto', 'LinkedIn Paulo Ortega', 'LinkedIn Rodrigo Vicenzo',
 ]);
+/** A list item that is only a link (a name pointing to a profile) is judged by its text. */
+const linkText = (v: string) => v.replace(/^\[([^\]]+)\]\(https?:[^)]+\)$/, '$1');
 
 describe('Portuguese copy translates every English string', () => {
   it('leaves nothing in English except data and the words kept on purpose', () => {
     const mine = new Map(leaves(pt));
     const untranslated = leaves(en as Copy)
       .filter(([p, v]) => mine.get(p) === v && /\p{L}{2}/u.test(v) && !/^(\/|https?:)/.test(v))
-      .filter(([p, v]) => !DATA.some(d => d.test(p)) && !KEPT.has(v))
+      .filter(([p, v]) => !DATA.some(d => d.test(p)) && !KEPT.has(linkText(v)))
       .map(([p, v]) => `${p}: ${v}`);
     expect(untranslated).toEqual([]);
   });

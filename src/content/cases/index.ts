@@ -5,6 +5,7 @@ import * as promotions from './promotions-discoverability';
 import * as benefits from './benefits-card-app';
 import * as photo from './photo-editing';
 import * as tempo from './tempo-landing-page';
+import * as sophia from './sophia-mental-health';
 
 const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
 
@@ -64,6 +65,20 @@ export const CASES: CaseStudy[] = [
     subtitle: tempo.original.subtitle,
     meta: { ...tempo.meta },
     card: tempo.card, cover: tempo.cover, body: tempo.body,
+  },
+  {
+    slug: 'sophia-mental-health',
+    title: sophia.original.title,
+    client: 'Sophia',
+    industry: 'Mental health', model: 'B2C', platforms: ['Web · mobile + desktop'],
+    summary: 'A study project from my UX course, in a group of three. Almost 250 survey answers and 20+ interviews showed that money wasn’t what kept people from therapy: they couldn’t find a psychologist they trusted. We designed Sophia, an app that matches patients with the right psychologist, and tested it with users.',
+    role: 'UX/UI Designer',
+    result: 'Almost 250 survey answers · 20+ interviews · 5 usability tests',
+    problem: 'According to the WHO, Brazil is the most anxious country in the world, and the pandemic made it worse. What keeps Brazilians from taking care of their mental health and staying in treatment?',
+    outcome: 'Sophia, a mobile-first web app that matches patients with a psychologist they can trust and offers emergency care. Usability tests with 5 users led to four changes before the high-fidelity prototype.',
+    subtitle: sophia.original.subtitle,
+    meta: { ...sophia.meta },
+    card: sophia.card, cover: sophia.cover, body: sophia.body,
   },
 ];
 

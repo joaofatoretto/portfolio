@@ -6,9 +6,10 @@ import * as promotions from './promotions-discoverability';
 import * as benefits from './benefits-card-app';
 import * as photo from './photo-editing';
 import * as tempo from './tempo-landing-page';
+import * as sophia from './sophia-mental-health';
 
 const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
-const [enPromotions, enBenefits, enPhoto, enTempo] = EN;
+const [enPromotions, enBenefits, enPhoto, enTempo, enSophia] = EN;
 
 export const CASES: CaseStudy[] = [
   {
@@ -58,5 +59,17 @@ export const CASES: CaseStudy[] = [
     subtitle: tempo.original.subtitle,
     meta: { ...tempo.meta },
     body: tempo.body,
+  },
+  {
+    ...enSophia,
+    title: sophia.original.title,
+    industry: 'Saúde mental',
+    summary: 'Um projeto de estudo do meu curso de UX, em um grupo de três. Quase 250 respostas de questionário e mais de 20 entrevistas mostraram que o dinheiro não era o que afastava as pessoas da terapia: elas não encontravam um psicólogo em quem confiar. Desenhamos a Sophia, um app que conecta pacientes ao psicólogo certo, e testamos com usuários.',
+    result: 'Quase 250 respostas de questionário · 20+ entrevistas · 5 testes de usabilidade',
+    problem: 'Segundo a OMS, o Brasil é o país mais ansioso do mundo, e a pandemia piorou o quadro. O que impede os brasileiros de cuidar da saúde mental e seguir em tratamento?',
+    outcome: 'A Sophia, um web app pensado primeiro para o celular, que conecta pacientes a um psicólogo em quem possam confiar e oferece atendimento de emergência. Testes de usabilidade com 5 usuários levaram a quatro mudanças antes do protótipo de alta fidelidade.',
+    subtitle: sophia.original.subtitle,
+    meta: { ...sophia.meta },
+    body: sophia.body,
   },
 ];

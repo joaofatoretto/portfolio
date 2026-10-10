@@ -28,6 +28,7 @@ describe('case studies content', () => {
       ['Fintech', 'B2B2C', 'Native app', 'Web · mobile + desktop'],
       ['Weddings', 'B2C', 'Web · mobile + desktop'],
       ['AI SaaS', 'B2B + B2C', 'Landing page · desktop'],
+      ['Mental health', 'B2C', 'Web · mobile + desktop'],
     ]);
   });
 
