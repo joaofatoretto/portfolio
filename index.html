@@ -7,9 +7,11 @@
          motion state (TV off, reveals hidden) instead of flashing the content before the tune-in. Keep the two in sync. -->
     <script>try{if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)&&'IntersectionObserver'in window)document.documentElement.classList.add('motion')}catch(e){}</script>
     <!--seo:start--><!-- filled by vite-plugin-seo.ts from src/seo/meta.ts --><!--seo:end-->
-    <!-- Google tag (gtag.js) for Google Ads: a page load of /hire/thanks counts as a lead. Loads only on the live
+    <!-- Google tag (gtag.js) for Google Ads (a page load of /hire/thanks counts as a lead) and Google Analytics. Loads only on the live
          domain, so local runs and Vercel previews send nothing. Tested in src/googleTag.test.ts. -->
-    <script>if(location.hostname==='joaofatoretto.com'){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18498833833';document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','AW-18498833833')}</script>
+    <script>if(location.hostname==='joaofatoretto.com'){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18498833833';document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','AW-18498833833');gtag('config','G-REEL30T7CX')}</script>
+    <!-- Contentsquare (how visitors use the site). Live domain only, like the Google tag. Tested in src/contentsquare.test.ts. -->
+    <script>if(location.hostname==='joaofatoretto.com'){var c=document.createElement('script');c.async=true;c.src='https://t.contentsquare.net/uxa/9fb99e292e649.js';document.head.appendChild(c)}</script>
     <meta name="theme-color" content="#0A0A0B" />
     <!-- Google Search wants a raster icon in a multiple of 48px; browsers that read SVG take the last one. -->
     <link rel="icon" href="/favicon.ico" sizes="32x32" />

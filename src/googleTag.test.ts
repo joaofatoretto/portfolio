@@ -1,5 +1,5 @@
-// The Google Ads tag (gtag.js) in index.html: it counts visits to /hire/thanks as conversions. It loads only on the
-// live domain, so local runs and Vercel previews never send hits to the Ads account.
+// The Google tag (gtag.js) in index.html: Google Ads counts visits to /hire/thanks as conversions, and Google Analytics
+// (GA4) counts visits. It loads only on the live domain, so local runs and Vercel previews never send hits.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -11,6 +11,10 @@ describe('Google tag', () => {
     expect(tag).toBeTruthy();
     expect(html.indexOf(tag!)).toBeLessThan(html.indexOf('</head>'));
     expect(tag).toContain("gtag('config','AW-18498833833')");
+  });
+
+  it('also sends visits to Google Analytics', () => {
+    expect(tag).toContain("gtag('config','G-REEL30T7CX')");
   });
 
   it('loads gtag.js only on joaofatoretto.com', () => {
