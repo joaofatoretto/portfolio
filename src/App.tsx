@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { ChannelSwitch, useScrollOnNavigate } from './components/ChannelSwitch';
 import { Footer } from './components/Footer';
@@ -8,6 +9,9 @@ import { Hire } from './pages/Hire';
 import { HireThanks } from './pages/HireThanks';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
+
+/* Lab: hero explorations, on the dev server only (dropped from the production and prerender builds). */
+const HeroLab = import.meta.env.DEV ? lazy(() => import('./lab/HeroLab')) : null;
 
 function Layout() {
   useScrollOnNavigate();
@@ -31,6 +35,7 @@ export default function App() {
         <Route path="work/:slug" element={<CaseStudy />} />
         <Route path="hire" element={<Hire />} />
         <Route path="hire/thanks" element={<HireThanks />} />
+        {HeroLab && <Route path="lab/hero/:v" element={<Suspense fallback={null}><HeroLab /></Suspense>} />}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

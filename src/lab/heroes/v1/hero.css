@@ -1,0 +1,119 @@
+/* Lab variant 1: the channel corridor. Everything scoped under .hv1. */
+.hv1 {
+  --hv1-u: 1; --hv1-ux: 1; --hv1-uy: 1;               /* size, wall distance and height scale per viewport */
+  --hv1-cw: calc(var(--hv1-ux) * 1000px);               /* half the corridor's width */
+  --hv1-ch: calc(var(--hv1-uy) * 460px);               /* half its height */
+  --hv1-sec: 700px;
+  --hv1-line: rgba(255, 255, 255, .24);
+  --hv1-final-w: min(94vw, calc((100svh - var(--navh) - 64px) * 1.311));
+  position: relative; background: var(--ink); color: var(--fg-primary);
+}
+@media (max-width: 1200px) { .hv1 { --hv1-u: .85; --hv1-ux: .85; --hv1-uy: .9; } }
+@media (max-width: 900px) { .hv1 { --hv1-u: .7; --hv1-ux: .7; --hv1-uy: .9; } }
+@media (max-width: 640px) { .hv1 { --hv1-u: .66; --hv1-ux: .4; --hv1-uy: .95; --hv1-final-w: 94vw; } }
+
+.hv1-track { position: relative; }
+html.motion .hv1 .hv1-track { height: 280svh; }
+.hv1-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--ink); isolation: isolate; }
+
+/* ---- the 3D view ---- */
+.hv1-view { position: absolute; inset: var(--navh) 0 0 0; perspective: 1000px; perspective-origin: 50% 40%; }
+@media (max-width: 640px) { .hv1-view { perspective: 760px; } }
+.hv1-cam, .hv1-world { position: absolute; inset: 0; transform-style: preserve-3d; }
+html.motion .hv1 .hv1-world { opacity: 0; }
+.hv1-world { will-change: transform; }
+
+/* the vanishing point, glowing faintly at the end of the corridor */
+.hv1-glow { position: absolute; left: 50%; top: 40%; width: min(90vmin, 760px); aspect-ratio: 1; margin: calc(min(90vmin, 760px) / -2) 0 0 calc(min(90vmin, 760px) / -2);
+  background: radial-gradient(closest-side, rgba(238, 240, 255, .42), rgba(150, 160, 255, .16) 38%, rgba(60, 60, 110, .07) 65%, transparent 100%);
+  pointer-events: none; }
+.hv1-glow::after { content: ''; position: absolute; left: 50%; top: 50%; width: 3px; height: 3px; margin: -1px 0 0 -1px; border-radius: 50%;
+  background: #fff; box-shadow: -3px 0 6px rgba(255, 61, 110, .45), 3px 0 6px rgba(34, 184, 255, .45), 0 0 40px 14px rgba(255, 255, 255, .35); }
+
+/* tunnel sections: floor and ceiling carry a grid, the walls a rib and a skirting line */
+.hv1-sec { position: absolute; left: 50%; top: 50%; pointer-events: none; }
+.hv1-floor, .hv1-ceil {
+  width: calc(var(--hv1-cw) * 2); height: var(--hv1-sec); margin: calc(var(--hv1-sec) / -2) 0 0 calc(var(--hv1-cw) * -1);
+  border-top: 1px solid var(--hv1-line);
+  background:
+    linear-gradient(90deg, transparent calc(50% - 90px), rgba(255, 255, 255, .09) 50%, transparent calc(50% + 90px)),
+    linear-gradient(90deg, var(--hv1-line) 1px, transparent 1px) 0 0 / calc(100% / 8) 100%;
+  box-shadow: inset -1px 0 0 var(--hv1-line), inset 1px 0 0 var(--hv1-line);
+}
+.hv1-floor { transform: translate3d(0, var(--hv1-ch), var(--hv1-zmid)) rotateX(90deg); }
+.hv1-ceil { transform: translate3d(0, calc(var(--hv1-ch) * -1), var(--hv1-zmid)) rotateX(90deg); }
+.hv1-wl, .hv1-wr {
+  width: var(--hv1-sec); height: calc(var(--hv1-ch) * 2); margin: calc(var(--hv1-ch) * -1) 0 0 calc(var(--hv1-sec) / -2);
+  border-left: 1px solid var(--hv1-line);
+  background: linear-gradient(180deg, transparent 86%, rgba(255, 255, 255, .13) 86%, rgba(255, 255, 255, .13) calc(86% + 2px), transparent calc(86% + 2px)),
+              linear-gradient(180deg, transparent 14%, rgba(255, 255, 255, .06) 14%, rgba(255, 255, 255, .06) calc(14% + 1px), transparent calc(14% + 1px));
+}
+.hv1-wl { transform: translate3d(calc(var(--hv1-cw) * -1), 0, var(--hv1-zmid)) rotateY(90deg); }
+.hv1-wr { transform: translate3d(var(--hv1-cw), 0, var(--hv1-zmid)) rotateY(90deg); }
+
+/* ---- a screen on the wall ---- */
+.hv1-sc { --hv1-sz: var(--hv1-z); position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: 0; transform-style: preserve-3d; pointer-events: none; }
+.hv1-plane { position: absolute; left: 0; top: 0; translate: -50% -50%; }
+.hv1-glass { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 8px; background: #0b0b10;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 0 0 5px rgba(255, 255, 255, .035), 0 40px 90px rgba(0, 0, 0, .65), 0 0 70px rgba(150, 150, 255, .10); }
+.hv1-tall .hv1-glass { border-radius: calc(var(--hv1-u) * 30px); }
+.hv1-glass::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: linear-gradient(115deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, .04)); }
+.hv1-img { position: absolute; display: block; max-width: none; height: auto; user-select: none; }
+.hv1-noise { position: absolute; inset: 0; width: 100%; height: 100%; display: none; image-rendering: pixelated; z-index: 3; pointer-events: none; }
+html.motion .hv1 .hv1-noise { display: block; opacity: 0; }
+
+/* off: dark glass with faint static. on: the picture. burst: the tune-in. */
+html.motion .hv1 .hv1-sc:not([data-on]) .hv1-img { opacity: 0; }
+html.motion .hv1 .hv1-sc:not([data-on]) .hv1-noise { opacity: .2; }
+html.motion .hv1 .hv1-sc:not([data-on]) .hv1-cap { opacity: 0; }
+html.motion .hv1 .hv1-sc[data-on] .hv1-cap { transition: opacity .5s ease .15s; }
+.hv1-burst .hv1-img { animation: hv1-pic .43s steps(14, end) both; }
+.hv1-burst .hv1-noise { animation: hv1-snow .43s linear both; }
+.hv1-burst .hv1-glass { animation: hv1-split .43s linear both; }
+@keyframes hv1-pic { 0% { opacity: 0; transform: translateX(-4%) scaleY(1.04); } 30% { opacity: .55; transform: translateX(3%); } 55% { opacity: .9; transform: translateX(-1%); } 100% { opacity: 1; transform: none; } }
+@keyframes hv1-snow { 0% { opacity: .95; } 55% { opacity: .5; } 100% { opacity: 0; } }
+/* the rose/cyan split as fringes on the glass edge (box-shadow, not filter: filters and blend modes inside a 3D scene
+   make Chrome re-composite everything over it, which made the headline blink on real GPUs) */
+@keyframes hv1-split { 0% { box-shadow: -12px 0 0 rgba(255, 61, 110, .75), 12px 0 0 rgba(34, 184, 255, .75); }
+  60% { box-shadow: -5px 0 0 rgba(255, 61, 110, .6), 5px 0 0 rgba(34, 184, 255, .6); }
+  100% { box-shadow: 0 0 0 rgba(255, 61, 110, 0), 0 0 0 rgba(34, 184, 255, 0); } }
+
+.hv1-cap { position: absolute; left: 2px; top: calc(100% + 12px); max-width: 100%; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 400 12px/16px var(--font-mono); letter-spacing: .03em; color: var(--grey-400); }
+.hv1-tall .hv1-cap { left: 4px; max-width: calc(100% + 40px); }
+
+/* the last screen: framed like a TV */
+.hv1-final .hv1-plane { width: var(--hv1-final-w); }
+.hv1-bezel { padding: clamp(8px, 1.1vw, 16px); border-radius: 26px; background: linear-gradient(160deg, #1b1b1f, #0e0e10);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 0 0 7px rgba(255, 255, 255, .03), 0 60px 140px rgba(0, 0, 0, .8), 0 0 160px rgba(140, 140, 255, .12); }
+.hv1-bezel .hv1-glass { border-radius: 14px; aspect-ratio: 2048 / 1562; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.hv1-scan { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: .09; background: repeating-linear-gradient(to bottom, transparent 0 2px, #000 2px 3px); }
+.hv1-scan::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, .55)); }
+.hv1-osd { position: absolute; left: 16px; bottom: 16px; z-index: 6; display: flex; align-items: center; gap: 12px; margin: 0; padding: 8px 14px 6px; background: rgba(10, 10, 11, .72); border: 1px solid rgba(255, 255, 255, .14); font: 400 12px/1 var(--font-mono); letter-spacing: .04em; color: var(--grey-200); }
+.hv1-osd span { font: 400 28px/1 var(--font-osd); letter-spacing: .06em; color: var(--white); }
+
+/* ---- the words, up front ---- */
+.hv1-textwrap { position: absolute; inset: var(--navh) 0 0 0; display: grid; place-items: end center; pointer-events: none; z-index: 10; padding: 0 var(--g) clamp(36px, 7vh, 72px); }
+.hv1-text { position: relative; transform-origin: 50% 100%; will-change: opacity, transform; display: grid; justify-items: center; gap: clamp(18px, 3vh, 30px); text-align: center; pointer-events: auto; }
+html.motion .hv1 .hv1-text { opacity: 0; }
+.hv1-text::before { content: ''; position: absolute; inset: -24% -34%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse closest-side, rgba(10, 10, 11, .72), rgba(10, 10, 11, .4) 55%, transparent); }
+.hv1-eyebrow { margin: 0; }
+.hv1-title { margin: 0; font-weight: 700; font-size: clamp(46px, 7vw, 112px); line-height: .92; letter-spacing: -0.03em; max-width: 8.6em; text-wrap: balance;
+  text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
+.hv1-lede { max-width: 32ch; margin: 0; }
+.hv1-ctas { justify-content: center; }
+@media (max-width: 640px) { .hv1-title { font-size: clamp(46px, 14vw, 64px); } .hv1-lede { max-width: 26ch; } }
+@media (max-height: 760px) and (min-width: 641px) { .hv1-eyebrow { display: none; } }
+
+.hv1-cue { position: absolute; right: var(--g); bottom: 24px; display: grid; justify-items: center; gap: 8px; z-index: 11; pointer-events: none;
+  font: 400 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--grey-500); }
+.hv1-cue i { width: 1px; height: 28px; background: linear-gradient(var(--grey-500), transparent); }
+
+/* phones: fewer screens */
+@media (max-width: 640px) { .hv1-sc { --hv1-sz: var(--hv1-pz); } .hv1-sc[data-more] { display: none; } .hv1-osd { left: 8px; bottom: 8px; padding: 6px 10px 4px; gap: 8px; font-size: 9px; white-space: nowrap; } .hv1-osd span { font-size: 20px; } .hv1-cap { font-size: 10px; } }
+
+@media (max-width: 640px) { .hv1 .hv1-view { perspective-origin: 50% 30%; } .hv1 .hv1-glow { top: 30%; } }
+/* no "scroll" hint (design.md §2): the moving corridor is the invitation */
+.hv1 .hv1-cue { display: none; }

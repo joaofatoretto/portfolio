@@ -1,0 +1,91 @@
+/* Lab variant 5: noise to signal. Everything scoped under .hv5.
+   The picture is a canvas of points behind plain 2D HTML. The frame is an empty box the layout places; the script reads
+   its rectangle and lays the points out inside it. */
+.hv5 {
+  --hv5-lit: 1; --hv5-progress: 0;
+  --hv5-gut: max(var(--g), calc((100vw - var(--maxw)) / 2 + var(--g)));
+  position: relative; background: var(--ink); color: var(--fg-primary);
+}
+.hv5-track { position: relative; }
+html.motion .hv5 .hv5-track { height: 300svh; }
+.hv5-stage { position: sticky; top: 0; height: 100svh; min-height: 600px; overflow: hidden; background: var(--ink); isolation: isolate; }
+html:not(.motion) .hv5-stage { position: relative; }
+
+.hv5-canvas { position: absolute; inset: 0; z-index: 0; }
+.hv5-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* a dark gradient behind the words so the snow and the picture never fight them */
+.hv5-shade { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(10, 10, 11, .96) 0%, rgba(10, 10, 11, .86) 26%, rgba(10, 10, 11, .4) 38%, transparent 44%),
+    linear-gradient(180deg, rgba(10, 10, 11, .9) 0, rgba(10, 10, 11, 0) calc(var(--navh) + 40px)); }
+
+.hv5-grid { position: relative; z-index: 2; height: 100%; box-sizing: border-box; display: grid; align-items: center;
+  grid-template-columns: minmax(0, 4.5fr) minmax(0, 7.5fr); gap: 32px 48px;
+  max-width: var(--maxw); margin-inline: auto; padding: calc(var(--navh) + 12px) var(--g) 28px; }
+
+.hv5-copy { display: grid; gap: clamp(20px, 3.4vh, 32px); justify-items: start; min-width: 0; }
+.hv5-title { margin: 0; font-weight: 700; font-size: clamp(44px, 6.2vw, 104px); line-height: .92; letter-spacing: -0.03em; max-width: 10ch; text-wrap: balance; }
+@media (min-width: 1040px) {
+  /* display type of 64px and more may carry the rose / cyan split */
+  .hv5-title { text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
+}
+.hv5-lede { margin: 0; max-width: 30ch; }
+
+.hv5-view { margin: 0; display: grid; gap: 14px; min-width: 0; justify-items: end; align-content: center; }
+.hv5-frame { position: relative; box-sizing: border-box; aspect-ratio: 8 / 5; width: min(100%, calc((100svh - var(--navh) - 190px) * 1.6)); max-width: 100%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .09); }
+.hv5-frame .hv5-corner { position: absolute; width: 18px; height: 18px; border: 0 solid rgba(255, 255, 255, .5); opacity: calc(.35 + .65 * var(--hv5-lit)); }
+.hv5-c1 { left: -7px; top: -7px; border-left-width: 1px; border-top-width: 1px; }
+.hv5-c2 { right: -7px; top: -7px; border-right-width: 1px; border-top-width: 1px; }
+.hv5-c3 { left: -7px; bottom: -7px; border-left-width: 1px; border-bottom-width: 1px; }
+.hv5-c4 { right: -7px; bottom: -7px; border-right-width: 1px; border-bottom-width: 1px; }
+
+/* the sharp picture: the real screenshot, resolved over the mosaic once the points have locked. The cursor's lens
+   opens a hole in it (--hv5-lens is 0 when the lens is off, so the mask is solid). Without motion, the first one shows. */
+.hv5-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; pointer-events: none; user-select: none;
+  --hv5-hole: radial-gradient(circle var(--hv5-lens, 0px) at var(--hv5-mx, 50%) var(--hv5-my, 50%), transparent 35%, #000 100%);
+  -webkit-mask-image: var(--hv5-hole); mask-image: var(--hv5-hole); }
+.hv5-shot[data-k="0"] { opacity: 1; }
+html.motion .hv5 .hv5-shot { opacity: 0; }
+
+/* the case's name, in mono under the picture, lit only while a picture is formed */
+.hv5-cap { width: min(100%, calc((100svh - var(--navh) - 190px) * 1.6)); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; min-height: 44px;
+  font: 400 12px/1.5 var(--font-mono); letter-spacing: .08em; color: var(--grey-300); opacity: var(--hv5-lit); }
+.hv5-ch { font: 400 24px/1 var(--font-osd); letter-spacing: .06em; color: var(--white); }
+.hv5-who { color: var(--white); }
+.hv5-work { color: var(--grey-300); }
+.hv5-res { flex-basis: 100%; color: var(--grey-500); letter-spacing: .04em; text-transform: none; }
+
+.hv5-ticks { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; width: min(100%, calc((100svh - var(--navh) - 190px) * 1.6)); justify-content: flex-start; }
+.hv5-ticks li { width: 28px; height: 2px; background: var(--grey-750); transition: background var(--dur-base) var(--ease-signal), width var(--dur-base) var(--ease-signal); }
+.hv5[data-scene='0'] .hv5-ticks li:nth-child(1), .hv5[data-scene='1'] .hv5-ticks li:nth-child(2),
+.hv5[data-scene='2'] .hv5-ticks li:nth-child(3), .hv5[data-scene='3'] .hv5-ticks li:nth-child(4) { background: var(--white); width: 44px; }
+
+/* load: the words tune in with the picture (a one-time rose / cyan split that closes) */
+html.motion .hv5 .hv5-title { animation: hv5-tune 1500ms var(--ease-lock) 350ms backwards; }
+html.motion .hv5 .hv5-lede { animation: hv5-rise 900ms var(--ease-signal) 900ms backwards; }
+html.motion .hv5 .hv5-ctas { animation: hv5-rise 900ms var(--ease-signal) 1100ms backwards; }
+@keyframes hv5-tune {
+  0% { opacity: 0; text-shadow: -.09em 0 0 var(--rose-400), .09em 0 0 var(--cyan-400); }
+  35% { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes hv5-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* phones: the picture on top, full width; the words under it */
+@media (max-width: 820px) {
+  .hv5-shade { background: linear-gradient(180deg, rgba(10, 10, 11, .9) 0, rgba(10, 10, 11, 0) calc(var(--navh) + 20px)),
+    linear-gradient(180deg, transparent 38%, rgba(10, 10, 11, .88) 56%); }
+  .hv5-grid { grid-template-columns: minmax(0, 1fr); align-content: start; align-items: start; gap: 16px; padding: calc(var(--navh) + 8px) var(--g) 20px; }
+  .hv5-view { order: -1; gap: 10px; margin-inline: calc(-1 * var(--g)); justify-items: stretch; }
+  .hv5-frame { aspect-ratio: 7 / 5; width: 100%; box-shadow: none; }
+  .hv5-frame .hv5-corner { display: none; }
+  .hv5-cap, .hv5-ticks { width: auto; padding-inline: var(--g); }
+  .hv5-cap { min-height: 36px; gap: 2px 12px; font-size: 11px; }
+  .hv5-ch { font-size: 20px; }
+  .hv5-ticks { display: none; }
+  .hv5-copy { gap: 18px; }
+  .hv5-title { font-size: clamp(40px, 12vw, 58px); max-width: 12ch; }
+  .hv5-lede { font-size: 17px; line-height: 1.45; max-width: 32ch; }
+}
+@media (max-width: 820px) and (max-height: 700px) { .hv5-res { display: none; } .hv5-lede { font-size: 16px; } }

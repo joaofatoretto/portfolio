@@ -1,0 +1,59 @@
+/* Lab variant 3 · Anaglyph depth. Everything scoped under .hv3. */
+.hv3 { position: relative; height: 160svh; background: var(--ink); }
+.hv3-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; isolation: isolate;
+  --hv3-split: 3px; --hv3-prog: 0; --hv3-top: calc(var(--navh) + 5vh);
+  background: radial-gradient(120% 90% at 70% 45%, #17171a 0%, var(--ink) 62%); }
+/* faint grain so the dark has a surface */
+.hv3-stage::after { content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* ---- planes ---- */
+.hv3-scene { position: absolute; inset: var(--hv3-top) 0 0; perspective: 1100px; perspective-origin: 60% 40%; pointer-events: none; }
+.hv3-back { z-index: 1; }
+.hv3-near { z-index: 3; }
+.hv3-card { position: absolute; margin: 0; pointer-events: auto;
+  left: calc(var(--hv3-x) * 100%); top: calc(var(--hv3-y) * 100%); width: calc(var(--hv3-w) * 1vw);
+  transform: rotate(var(--hv3-r)); transform-origin: 50% 50%; }
+.hv3-card img { display: block; width: 100%; height: auto; object-fit: cover; border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, .08); outline-offset: -1px;
+  box-shadow: 0 calc(20px + var(--hv3-depth) * 40px) calc(40px + var(--hv3-depth) * 60px) rgba(0, 0, 0, calc(.35 + var(--hv3-depth) * .35));
+  filter: grayscale(1) contrast(1.08) brightness(calc(.45 + var(--hv3-depth) * .45));
+  transition: filter 420ms var(--ease-signal); }
+.hv3-card figcaption { position: absolute; left: 0; top: calc(100% + 10px); white-space: nowrap;
+  font: 400 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary);
+  opacity: 0; transform: translateY(-4px); transition: opacity var(--dur-quick) var(--ease-signal), transform var(--dur-quick) var(--ease-signal); }
+.hv3-card:hover img, .hv3-card.hv3-lit img { filter: none; }
+.hv3-card:hover figcaption { opacity: 1; transform: none; }
+html.motion .hv3-card { opacity: 0; }
+
+/* ---- type ---- */
+.hv3-copy { position: absolute; inset: var(--hv3-top) var(--g) auto; z-index: 2; pointer-events: none;
+  max-width: var(--maxw); margin-inline: auto; transform: translateY(calc(var(--hv3-prog) * -4vh)); }
+.hv3-title { margin: 0; max-width: 6.4em; pointer-events: auto; outline: none;
+  font: 700 clamp(56px, 11.4vw, 184px)/.84 var(--font-display); letter-spacing: -0.045em; color: var(--white);
+  text-shadow: calc(-1 * var(--hv3-split)) 0 0 var(--anaglyph-left), var(--hv3-split) 0 0 var(--anaglyph-right); }
+html.motion .hv3-title { animation: hv3-in 900ms var(--ease-signal) both; }
+@keyframes hv3-in { from { opacity: 0; letter-spacing: 0; filter: blur(6px); } to { opacity: 1; } }
+
+.hv3-copy-foot { inset: auto var(--g) clamp(28px, 7vh, 72px); z-index: 4; transform: translateY(calc(var(--hv3-prog) * -6vh)); }
+.hv3-foot { display: grid; gap: 24px; justify-items: start; max-width: 34ch; pointer-events: auto;
+  padding: 22px 24px 24px 0; }
+.hv3-lede { margin: 0; max-width: 30ch; text-shadow: 0 1px 18px var(--ink), 0 0 2px var(--ink); }
+html.motion .hv3-foot { animation: hv3-in 900ms 450ms var(--ease-signal) both; }
+
+/* ---- phones: four or five cards on two planes, the headline still huge ---- */
+@media (max-width: 640px) {
+  .hv3 { height: 140svh; }
+  .hv3-stage { --hv3-top: calc(var(--navh) + 20px); }
+  .hv3-wide { display: none; }
+  .hv3-card { left: calc(var(--hv3-mx, var(--hv3-x)) * 100%); top: calc(var(--hv3-my, var(--hv3-y)) * 100%);
+    width: calc(var(--hv3-mw, var(--hv3-w)) * 1vw); }
+  .hv3-title { font-size: clamp(52px, 16vw, 72px); max-width: 5.6em; }
+  .hv3-copy-foot { bottom: 20px; }
+  .hv3-foot { gap: 18px; padding: 16px 0 0; background: linear-gradient(transparent, var(--ink) 30%); margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); max-width: none; }
+  .hv3-scene { perspective: 700px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv3-card img { transition: none; }
+}

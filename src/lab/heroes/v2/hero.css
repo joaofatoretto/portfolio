@@ -1,0 +1,128 @@
+/* Hero variant 2 · Napkin to app. Everything is scoped under .hv2.
+   State lives in custom properties on .hv2 (Hero.tsx writes them while the hero is on screen):
+   --hv2-e (0 collapsed … 1 exploded), --hv2-rx/ry/rz (camera), --hv2-tx/ty (pointer tilt), --hv2-fan, --hv2-lit, ...
+   Defaults below are the finished still (exploded, labels visible) used with reduced motion and before JS runs. */
+.hv2 {
+  --hv2-e: 1; --hv2-rx: 58deg; --hv2-ry: 0deg; --hv2-rz: -40deg; --hv2-tx: 0deg; --hv2-ty: 0deg;
+  --hv2-fit: .8; --hv2-scale: .8; --hv2-shift: -50px; --hv2-lift: 0px; --hv2-gap: 130;
+  --hv2-ghost: 1; --hv2-fan: 0; --hv2-fanvis: hidden; --hv2-lit: .1; --hv2-hl: 120; --hv2-px: 0; --hv2-py: 0;
+  --hv2-content: 1; --hv2-snow: 0; --hv2-cap1: 1; --hv2-cap2: 0;
+  --hv2-fanx: 66px; --hv2-fana: 19deg; --hv2-w: 300px; --hv2-h: 628px; --hv2-r: 48px; --hv2-sw: 400px; --hv2-sh: 548px;
+  position: relative; height: 260svh; background: var(--ink);
+}
+/* the starting look under motion (the effect takes over right away) */
+html.motion .hv2 { --hv2-e: 0; --hv2-rx: 12deg; --hv2-ry: -26deg; --hv2-rz: 5deg; --hv2-ghost: 0; --hv2-content: 0; --hv2-snow: 1; --hv2-cap1: 1; --hv2-shift: 0px; --hv2-lit: .1; }
+html.motion .hv2 .hv2-lab, html.motion .hv2 .hv2-pin { opacity: 0; }
+
+.hv2-stage { position: sticky; top: 0; height: 100vh; height: 100svh; padding: var(--navh) var(--g) 0; box-sizing: border-box; overflow: clip;
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: minmax(0, 1fr); gap: 0 clamp(16px, 3vw, 48px);
+  max-width: calc(var(--maxw) + 48px); margin: 0 auto; }
+
+/* ---- text ---- */
+.hv2-text { align-self: center; display: grid; gap: clamp(18px, 3.2vh, 30px); justify-items: start; min-width: 0; padding-bottom: 4vh; position: relative; z-index: 2; }
+.hv2 .hv2-eyebrow { margin: 0; }
+.hv2-title { font-weight: 700; font-size: clamp(44px, 6.2vw, 104px); line-height: .92; letter-spacing: -0.03em; max-width: 10ch; text-wrap: balance; margin: 0; }
+@media (min-width: 1040px) {
+  .hv2-title { text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
+}
+.hv2-lede { max-width: 30ch; margin: 0; }
+
+/* ---- scene ---- */
+.hv2-scene { position: relative; min-width: 0; min-height: 0; align-self: stretch; }
+.hv2-world { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 50% 46%; }
+.hv2-obj { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d;
+  transform: translate3d(var(--hv2-shift), var(--hv2-lift), 0) rotateY(var(--hv2-ty)) rotateX(var(--hv2-tx)) scale(var(--hv2-scale))
+             rotateY(var(--hv2-ry)) rotateX(var(--hv2-rx)) rotateZ(var(--hv2-rz)); }
+.hv2-obj > * { position: absolute; display: block; transform-style: preserve-3d; }
+
+/* floor: a lit disc with a fine dot grid, the soft shadow and the end-state glow */
+.hv2-floor { left: -620px; top: -620px; width: 1240px; height: 1240px; border-radius: 50%; transform: translateZ(-44px);
+  background: radial-gradient(closest-side, rgba(255,255,255,.085), rgba(255,255,255,.035) 55%, rgba(255,255,255,0) 100%);
+  transform-style: flat; }
+.hv2-floor::after { content: ''; position: absolute; inset: 0; border-radius: 50%; opacity: .55;
+  background-image: radial-gradient(rgba(255,255,255,.55) 1px, transparent 1.3px); background-size: 34px 34px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); }
+.hv2-fshadow { left: calc(var(--hv2-w) / -2 + 10px); top: calc(var(--hv2-h) / -2 + 10px); width: var(--hv2-w); height: var(--hv2-h); border-radius: var(--hv2-r);
+  background: #000; opacity: .85; filter: blur(30px); transform-style: flat;
+  transform: translateZ(-43px) scale(calc(1.02 + var(--hv2-e) * .55)); }
+.hv2-glow { left: -520px; top: -520px; width: 1040px; height: 1040px; border-radius: 50%; transform-style: flat; opacity: var(--hv2-lit);
+  background: radial-gradient(closest-side, rgba(255,255,255,.3), rgba(255,255,255,.1) 45%, rgba(255,255,255,0) 100%); transform: translateZ(-41px); }
+
+/* ---- the layers (bottom to top: sketch, research, wireframe, design, device) ---- */
+.hv2-layer { transform-style: flat; opacity: var(--hv2-ghost);
+  transform: translateZ(calc((var(--hv2-i) * var(--hv2-e) * var(--hv2-gap) + var(--hv2-i) * .3) * 1px)); }
+.hv2-layer.hv2-design { opacity: 1; }
+.hv2-sheet { left: calc(var(--hv2-sw) / -2); top: calc(var(--hv2-sh) / -2); width: var(--hv2-sw); height: var(--hv2-sh); border-radius: 6px; background: #ebe9e4;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 30px 60px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.4); }
+.hv2-notes, .hv2-wire { left: calc(var(--hv2-w) / -2); top: calc(var(--hv2-h) / -2); width: var(--hv2-w); height: var(--hv2-h); background: #fff;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 30px 60px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.4); }
+.hv2-notes { border-radius: 22px; }
+.hv2-wire { border-radius: var(--hv2-r); }
+.hv2-design { left: calc(var(--hv2-w) / -2 + 9px); top: calc(var(--hv2-h) / -2 + 9px); width: calc(var(--hv2-w) - 18px); height: calc(var(--hv2-h) - 18px); border-radius: calc(var(--hv2-r) - 9px);
+  background: #0b0b0f; box-shadow: 0 30px 60px rgba(0,0,0,.55); }
+.hv2-crop { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; display: block; }
+.hv2-crop img { position: absolute; display: block; max-width: none; height: auto; user-select: none; -webkit-user-drag: none; }
+.hv2-ui { opacity: var(--hv2-content); filter: brightness(calc(.92 + var(--hv2-lit) * .12)) saturate(calc(.96 + var(--hv2-lit) * .1)); }
+.hv2-snow { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: var(--hv2-snow); border-radius: inherit; pointer-events: none; }
+.hv2-anchor { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; pointer-events: none; visibility: hidden; }
+
+/* ---- the device: metal edge (stacked rings), black bezel, glass ---- */
+.hv2-dev { position: absolute; left: calc(var(--hv2-w) / -2); top: calc(var(--hv2-h) / -2); width: var(--hv2-w); height: var(--hv2-h); transform-style: preserve-3d; }
+.hv2-main { transform: translateZ(calc(4 * var(--hv2-e) * var(--hv2-gap) * 1px + 14px)); }
+.hv2-ring { position: absolute; inset: 0; box-sizing: border-box; border: 3px solid; border-radius: var(--hv2-r); transform: translateZ(calc(var(--hv2-k) * -1px)); }
+.hv2-bezel { position: absolute; inset: 3px; box-sizing: border-box; border: 6px solid #050507; border-radius: calc(var(--hv2-r) - 3px); transform: translateZ(.6px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.1), 0 0 0 1px rgba(0,0,0,.5); }
+.hv2-glass { position: absolute; inset: 9px; border-radius: calc(var(--hv2-r) - 9px); overflow: hidden; pointer-events: none; transform: translateZ(1.2px);
+  background: linear-gradient(158deg, rgba(255,255,255,.16), rgba(255,255,255,.03) 34%, rgba(255,255,255,0) 52%, rgba(255,255,255,.05)); }
+.hv2-sheen { position: absolute; top: -20%; bottom: -20%; left: -10%; width: 44%; transform: translateX(calc(var(--hv2-hl) * 1px)) skewX(-17deg);
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.16) 46%, rgba(255,255,255,.05) 62%, rgba(255,255,255,0)); }
+.hv2-island { position: absolute; left: 50%; top: 11px; width: 86px; height: 25px; margin-left: -43px; border-radius: 13px; background: #000; box-shadow: 0 0 0 1px rgba(255,255,255,.06); }
+.hv2-dshadow { position: absolute; inset: 8px -6px -12px 10px; border-radius: var(--hv2-r); background: #000; opacity: calc(.12 + .45 * (1 - var(--hv2-e))); filter: blur(26px); transform: translateZ(-21px); }
+.hv2-sbtn { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #80848d, #3b3d43); transform: translateZ(-5px); }
+.hv2-sbtn-a { left: -3px; top: 122px; height: 30px; } .hv2-sbtn-b { left: -3px; top: 168px; height: 56px; } .hv2-sbtn-c { right: -3px; top: 190px; height: 82px; }
+.hv2-screen { position: absolute; inset: 9px; border-radius: calc(var(--hv2-r) - 9px); overflow: hidden; transform: translateZ(-1px); background: #f4f4f8; }
+
+/* ---- fan: two more finished screens slide out from behind the phone ---- */
+.hv2-fancard { left: 0; top: 0; width: 0; height: 0; visibility: var(--hv2-fanvis);
+  transform: translate3d(calc(var(--hv2-fan) * var(--hv2-dir) * var(--hv2-fanx)), calc(var(--hv2-fan) * 4px), calc(-52px - var(--hv2-fan) * 8px))
+             rotateZ(calc(var(--hv2-fan) * var(--hv2-dir) * var(--hv2-fana))); transform-origin: 0 calc(var(--hv2-h) * .5); }
+
+/* ---- dashed verticals tying the layers' corners together ---- */
+.hv2-vline { left: 0; top: 0; width: 0; transform-origin: 0 0; border-left: 1px dashed rgba(255,255,255,.3); opacity: calc(var(--hv2-e) * var(--hv2-e));
+  height: calc((4 * var(--hv2-e) * var(--hv2-gap) + 14) * 1px); transform-style: flat;
+  transform: translate3d(var(--hv2-vx), var(--hv2-vy), .5px) rotateX(90deg); }
+.hv2-vline-a { --hv2-vx: calc(var(--hv2-w) / -2); --hv2-vy: calc(var(--hv2-h) / -2); }
+.hv2-vline-b { --hv2-vx: calc(var(--hv2-w) / 2); --hv2-vy: calc(var(--hv2-h) / -2); }
+.hv2-vline-c { --hv2-vx: calc(var(--hv2-w) / -2); --hv2-vy: calc(var(--hv2-h) / 2); }
+.hv2-vline-d { --hv2-vx: calc(var(--hv2-w) / 2); --hv2-vy: calc(var(--hv2-h) / 2); }
+
+/* ---- leader lines and labels (2D, positioned from the projected corners) ---- */
+.hv2-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.hv2-pin { opacity: 1; }
+.hv2-pin line { stroke: rgba(255,255,255,.6); stroke-width: 1; shape-rendering: crispEdges; }
+.hv2-pin circle { fill: var(--white); }
+.hv2-pin .hv2-ring-dot { fill: none; stroke: rgba(255,255,255,.4); stroke-width: 1; }
+.hv2-lab { position: absolute; left: 0; top: 0; display: inline-flex; gap: 8px; align-items: center; height: 20px; padding-left: 2px; white-space: nowrap;
+  font: 500 12px/20px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--white); pointer-events: none; }
+.hv2-lab b { font-weight: 400; color: var(--grey-500); }
+.hv2-cap { position: absolute; left: 0; right: 0; text-align: center; bottom: clamp(10px, 3vh, 28px); margin: 0; font: 400 12px/18px var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--fg-secondary); pointer-events: none; }
+.hv2-cap1 { opacity: var(--hv2-cap1); }
+.hv2-cap2 { opacity: var(--hv2-cap2); }
+
+/* ---- phones ---- */
+@media (max-width: 640px) {
+  .hv2 { --hv2-gap: 112; --hv2-sw: 340px; --hv2-sh: 466px; --hv2-rz: -7deg; --hv2-rx: 64deg; --hv2-fanx: 12px; --hv2-fana: 12deg; }
+  .hv2-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); padding-top: calc(var(--navh) + 22px); }
+  .hv2-eyebrow { display: none; }
+  .hv2-text { padding-bottom: 0; gap: 14px; }
+  .hv2-title { font-size: clamp(40px, 11.6vw, 52px); max-width: 12ch; }
+  .hv2-lede { font-size: 17px; max-width: 28ch; }
+  .hv2-text .btn { min-height: 52px; }
+  .hv2-cap { font-size: 11px; bottom: auto; top: 4px; left: 0; right: auto; width: 100%; text-align: left; letter-spacing: .03em; }
+  .hv2-lab { font-size: 11px; letter-spacing: .03em; } .hv2-lab b { display: none; }
+}
+@media (max-height: 760px) and (min-width: 641px) {
+  .hv2-text { gap: 14px; }
+  .hv2-title { font-size: clamp(44px, min(6.2vw, 10.5vh), 104px); }
+}
+@media (prefers-reduced-motion: reduce) { .hv2 * { transition: none !important; animation: none !important; } }

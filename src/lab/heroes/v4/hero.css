@@ -1,0 +1,152 @@
+/* Lab variant 4: the channel drum. Everything scoped under .hv4.
+   Inside the 3D scene (.hv4-view and below) there is no filter, mix-blend-mode or backdrop-filter: falloff is an ink
+   overlay's opacity, the rose/cyan split is fringes and tints. The text is outside it, in plain 2D. */
+.hv4 {
+  --hv4-n: 12; --hv4-step: 30deg; --hv4-k: 1.866;                 /* faces, angle between them, radius per face width */
+  --hv4-w: clamp(300px, min(45vw, 74svh), 800px);                  /* a face's width */
+  --hv4-ar: 1.6; --hv4-rail: clamp(10px, 1.3vw, 18px);
+  --hv4-r: calc(var(--hv4-w) * var(--hv4-k));
+  --hv4-fh: calc(var(--hv4-w) / var(--hv4-ar) + var(--hv4-rail) * 2);
+  --hv4-persp: calc(var(--hv4-w) * 2);
+  --hv4-pitch: -15deg;
+  --hv4-spin: 0;
+  --hv4-gut: max(var(--g), calc((100vw - var(--maxw)) / 2 + var(--g)));
+  --hv4-cy: calc(var(--navh) + (100svh - var(--navh)) * .685);     /* the drum's centre, from the top of the stage */
+  position: relative; background: var(--ink); color: var(--fg-primary);
+}
+@media (max-width: 900px) {
+  .hv4 { --hv4-n: 8; --hv4-step: 45deg; --hv4-k: 1.207; --hv4-w: min(66vw, 36svh); --hv4-ar: 1.15; --hv4-rail: 11px;
+    --hv4-persp: calc(var(--hv4-w) * 2.3); --hv4-pitch: -9deg; --hv4-cy: calc(var(--navh) + 39svh); }
+}
+
+.hv4-track { position: relative; }
+html.motion .hv4 .hv4-track { height: 300svh; }
+.hv4-stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--ink); isolation: isolate; }
+html:not(.motion) .hv4 .hv4-stage { position: relative; }
+
+/* a faint cool light behind the drum, so the dark has a depth */
+.hv4-glow { position: absolute; left: 50%; top: var(--hv4-cy); width: 150vmax; height: 90vmax; translate: -50% -50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(120, 124, 190, .15), rgba(60, 60, 110, .06) 52%, transparent 100%); }
+
+/* ---- the scene ---- */
+.hv4-view { position: absolute; inset: 0; perspective: var(--hv4-persp); perspective-origin: 50% var(--hv4-cy); z-index: 1; touch-action: pan-y; }
+.hv4[data-fine] .hv4-view { cursor: grab; }
+.hv4-grab .hv4-view { cursor: grabbing; }
+.hv4-tilt, .hv4-drum { position: absolute; width: 0; height: 0; transform-style: preserve-3d; }
+.hv4-tilt { left: 50%; top: var(--hv4-cy); transform: rotateX(var(--hv4-pitch)); }
+.hv4-drum { left: 0; top: 0; transform: translateZ(calc(var(--hv4-r) * -1)); will-change: transform; }
+
+.hv4-face { --hv4-idx: var(--hv4-i); --hv4-dimc: var(--hv4-dim12); --hv4-dimxc: var(--hv4-dimx12); --hv4-flipc: var(--hv4-flip12);
+  position: absolute; margin: calc(var(--hv4-fh) / -2) 0 0 calc(var(--hv4-w) / -2); width: var(--hv4-w); height: var(--hv4-fh);
+  transform-style: preserve-3d; transform: rotateY(calc(var(--hv4-step) * var(--hv4-idx))) translateZ(var(--hv4-r)); }
+@media (max-width: 900px) { .hv4-face { --hv4-idx: var(--hv4-pi); --hv4-dimc: var(--hv4-dim8); --hv4-dimxc: var(--hv4-dimx8); --hv4-flipc: var(--hv4-flip8); } .hv4-face[data-more] { display: none; } }
+
+/* outside of the drum: the glass and the rails (knurled, like the edge of a dial) */
+.hv4-out { position: absolute; inset: 0; backface-visibility: hidden; background: #08080a; }
+.hv4-rail { position: absolute; left: 0; right: 0; height: var(--hv4-rail); z-index: 2;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .12) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg, #34343b, #17171b 55%, #101013);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); }
+.hv4-rail-top { top: 0; }
+.hv4-rail-bot { bottom: 0; background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .12) 0 2px, transparent 2px 14px),
+    linear-gradient(0deg, #34343b, #17171b 55%, #101013);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .18); }
+.hv4-screen { position: absolute; left: 0; right: 0; top: var(--hv4-rail); bottom: var(--hv4-rail); background: #0b0b0e; }
+.hv4-pic { position: absolute; inset: 0; overflow: hidden; border-left: 2px solid #050506; border-right: 2px solid #050506; background: #0b0b0e; }
+.hv4-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--hv4-at); display: block; user-select: none; }
+/* the ink overlay: the lights falling off with the angle (opacity only, so it composites) */
+.hv4-dim { position: absolute; inset: 0; z-index: 4; background: #07070a; opacity: var(--hv4-dimc); pointer-events: none; }
+.hv4-dim2 { background: linear-gradient(90deg, transparent, #07070a); opacity: var(--hv4-dimxc); transform: scaleX(var(--hv4-flipc)); }
+.hv4-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 55%; pointer-events: none; transform: translateX(170%);
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .10) 45%, rgba(255, 255, 255, .17) 52%, transparent 78%); }
+html:not(.motion) .hv4-sheen { transform: translateX(40%); }
+.hv4-pic::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 60px rgba(0, 0, 0, .38), inset 0 0 0 1px rgba(255, 255, 255, .06); }
+
+/* on air: the corner label, in the TV's on-screen font */
+.hv4-osd { position: absolute; left: 12px; top: 12px; z-index: 3; display: flex; align-items: center; gap: 10px; margin: 0; padding: 7px 12px 5px;
+  background: rgba(8, 8, 10, .78); border: 1px solid rgba(255, 255, 255, .16);
+  font: 400 11px/1 var(--font-mono); letter-spacing: .08em; color: var(--grey-200); white-space: nowrap; opacity: var(--hv4-osd); }
+.hv4-osd span { font: 400 clamp(20px, 2.2vw, 30px)/1 var(--font-osd); letter-spacing: .06em; color: var(--white); }
+
+/* tune-in motion while it spins: scan lines, edge tints and the rose/cyan fringes. Gone when it stops. */
+.hv4-scan { position: absolute; inset: 0; pointer-events: none; opacity: calc(var(--hv4-spin) * .55);
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, .75) 2px 3px); }
+.hv4-tint { position: absolute; inset: 0; pointer-events: none; opacity: calc(var(--hv4-spin) * .85);
+  background: linear-gradient(90deg, rgba(255, 61, 110, .55), transparent 20%, transparent 80%, rgba(34, 184, 255, .55)); }
+.hv4-fringe { position: absolute; inset: 0; pointer-events: none; opacity: calc(var(--hv4-spin) * 1.4); }
+.hv4-fringe-rose { box-shadow: inset 0 0 0 3px rgba(255, 61, 110, .85); transform: translateX(calc(var(--hv4-spin) * -16px)); }
+.hv4-fringe-cyan { box-shadow: inset 0 0 0 3px rgba(34, 184, 255, .85); transform: translateX(calc(var(--hv4-spin) * 16px)); }
+
+/* inside of the drum, seen across it: the far faces' backs, dark and dimmed, with the rails running round */
+.hv4-in { position: absolute; inset: 0; transform: rotateY(180deg); backface-visibility: hidden; background: #0c0c0f; }
+.hv4-in-pic { position: absolute; left: 0; right: 0; top: var(--hv4-rail); bottom: var(--hv4-rail); overflow: hidden; border-inline: 2px solid #050506; }
+.hv4-in-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--hv4-at); display: block; opacity: .42; }
+.hv4-in-pic::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 8, 10, .92), rgba(8, 8, 10, .55) 60%, rgba(8, 8, 10, .78)); }
+.hv4-in i { position: absolute; left: 0; right: 0; height: var(--hv4-rail); background:
+  repeating-linear-gradient(90deg, rgba(255, 255, 255, .08) 0 2px, transparent 2px 14px), linear-gradient(180deg, #25252b, #131316); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); }
+.hv4-in-top { top: 0; }
+.hv4-in-bot { bottom: 0; }
+
+/* ---- the words: flat 2D, above the scene ---- */
+.hv4-veil { position: absolute; inset: 0; z-index: 2; background: var(--ink); pointer-events: none; opacity: 0; }
+html.motion .hv4 .hv4-veil { opacity: 1; }
+html.motion .hv4[data-live] .hv4-veil { opacity: 0; transition: opacity .9s var(--ease-signal) .1s; }
+html.motion .hv4 .hv4-title, html.motion .hv4 .hv4-copy, html.motion .hv4 .hv4-now { opacity: 0; }
+html.motion .hv4[data-live] .hv4-title { animation: hv4-in .9s var(--ease-signal) .25s both; }
+html.motion .hv4[data-live] .hv4-copy { animation: hv4-in .8s var(--ease-signal) .9s both; }
+html.motion .hv4[data-live] .hv4-now { animation: hv4-in .8s var(--ease-signal) 1.2s both; }
+@keyframes hv4-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.hv4-title { position: absolute; z-index: 3; left: var(--hv4-gut); right: var(--hv4-gut); top: calc(var(--navh) + clamp(10px, 2.6svh, 28px)); margin: 0; pointer-events: none; outline: none;
+  font: 700 clamp(52px, min(8.7vw, 14.4svh), 156px)/.9 var(--font-display); letter-spacing: -0.035em; color: var(--white);
+  text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
+.hv4-line { display: block; will-change: transform; }
+.hv4-line + .hv4-line { padding-left: 0; }
+
+.hv4-copy { position: absolute; z-index: 3; left: var(--hv4-gut); bottom: clamp(24px, 5.2svh, 56px); display: grid; gap: clamp(16px, 2.6svh, 26px); justify-items: start; width: max(270px, min(345px, 25vw)); }
+.hv4-copy::before { content: ''; position: absolute; z-index: -1; inset: -56px -96px calc(-1 * clamp(24px, 5.2svh, 56px)) calc(-1 * var(--hv4-gut)); pointer-events: none;
+  background: linear-gradient(90deg, rgba(10, 10, 11, .98), rgba(10, 10, 11, .95) 72%, rgba(10, 10, 11, 0));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 56px); mask-image: linear-gradient(to bottom, transparent, #000 56px); }
+.hv4-lede { margin: 0; max-width: 28ch; }
+
+.hv4-now { position: absolute; z-index: 3; right: var(--hv4-gut); top: calc(var(--navh) + clamp(22px, 5.4svh, 56px)); width: min(30ch, 24vw); display: grid; justify-items: end; gap: 6px; text-align: right; pointer-events: none;
+  font: 400 12px/1.45 var(--font-mono); letter-spacing: .05em; color: var(--grey-400); }
+.hv4-now p { margin: 0; }
+.hv4-now-name { font-size: 12px; letter-spacing: .14em; color: var(--white); }
+.hv4-now-work { color: var(--grey-300); }
+.hv4-now-result { color: var(--grey-500); text-wrap: balance; }
+.hv4-ticks { display: flex; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.hv4-tick { width: 2px; height: 14px; background: var(--grey-700); transition: height .25s var(--ease-signal), background-color .25s var(--ease-signal); align-self: flex-end; }
+.hv4-tick[data-on] { height: 26px; background: var(--white); }
+
+/* a short laptop: tuck things in */
+@media (max-height: 760px) and (min-width: 641px) { .hv4-now-result { display: none; } }
+
+/* ---- phones and small tablets (up to 900px): smaller drum, 8 faces, headline above, lede and CTA below ---- */
+@media (max-width: 900px) {
+  .hv4-stage { min-height: 600px; }
+  .hv4-title { font-size: clamp(38px, 12.4vw, 62px); letter-spacing: -0.03em; top: calc(var(--navh) + 14px); }
+  .hv4-line { white-space: nowrap; }
+  .hv4-copy { left: var(--g); right: var(--g); width: auto; bottom: 22px; gap: 18px; }
+  .hv4-copy::before { inset: -30px -24px -22px; background: linear-gradient(0deg, rgba(10, 10, 11, .96) 60%, transparent); }
+  .hv4-lede { max-width: 30ch; font-size: 17px; line-height: 1.5; }
+  .hv4-now { right: 0; left: 0; bottom: auto; top: calc(var(--hv4-cy) + var(--hv4-fh) / 2 + 20px); width: auto; justify-items: center; text-align: center; }
+  .hv4-now-name, .hv4-now-work, .hv4-now-result { display: none; }
+  .hv4-ticks { margin: 0; }
+  .hv4-tick[data-more] { display: none; }
+  .hv4-osd { left: 8px; top: 8px; gap: 8px; padding: 5px 9px 4px; font-size: 9px; }
+  .hv4-osd span { font-size: 20px; }
+}
+
+@media (min-width: 641px) and (max-width: 900px) { .hv4-title { font-size: clamp(54px, 10vw, 84px); } .hv4-osd span { font-size: 26px; } .hv4-osd { font-size: 11px; } }
+@media (max-width: 900px) and (max-height: 720px) {
+  .hv4 { --hv4-w: min(62vw, 30svh); --hv4-cy: calc(var(--navh) + 33svh); }
+  .hv4-ticks { display: none; }
+  .hv4-lede { font-size: 16px; }
+  .hv4-title { font-size: clamp(36px, 11.6vw, 54px); }
+}
+
+/* reduced motion: the drum stands still, Tempo on the front face, labels visible. The stage is just one screen. */
+html:not(.motion) .hv4 .hv4-tilt { transform: rotateX(var(--hv4-pitch)); }
+html:not(.motion) .hv4 .hv4-ticks .hv4-tick { transition: none; }
