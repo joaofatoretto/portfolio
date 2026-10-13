@@ -25,7 +25,7 @@ export const TRUST: typeof EN_TRUST = {
     { ...s7, what: 'anos criando produtos que as pessoas usam' },
     { ...s30, what: 'empresas e times para quem já criei' },
     { ...s2x, what: 'mais downloads do app virando vendas' },
-    { ...s3mo, n: '<\u00a03 meses', what: 'de uma ideia a um produto no ar' },
+    { ...s3mo, n: '<\u00a03 meses', what: 'de uma ideia a um produto no ar, liderando o design' },
   ],
 };
 
@@ -78,8 +78,8 @@ export const PROOF: typeof EN_PROOF = {
   cardLabel: '{n} {what}. Case: {client}',
   cards: [
     { ...c15, what: 'mais itens no carrinho depois que redesenhei como as pessoas encontram as promoções', kind: 'App de supermercado' },
-    { ...c3mo, n: '<\u00a03 meses', what: 'de uma ideia a um produto no ar, para pagamentos seguros na venda de carros', kind: 'Negócio novo' },
-    { ...c500, what: 'funcionários: o tamanho dos novos clientes que o app de benefícios trouxe', kind: 'Cartões de benefícios' },
+    { ...c3mo, n: '<\u00a03 meses', what: 'de uma ideia a um produto no ar para pagamentos seguros na venda de carros, liderando o design', kind: 'Negócio novo' },
+    { ...c500, what: 'funcionários: o tamanho dos novos clientes conquistados pelo app de benefícios que desenhei', kind: 'Cartões de benefícios' },
   ],
   /** hidden until a real client quote is confirmed (same as English) */
   quote: EN_PROOF.quote,

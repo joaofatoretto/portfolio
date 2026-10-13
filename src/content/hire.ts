@@ -46,7 +46,7 @@ export const TRUST = {
     { n: '7+', what: 'years making products people use' },
     { n: '30+', what: 'businesses and teams I’ve built for' },
     { n: '2×', what: 'more app downloads turned into sales', src: 'Superopa' },
-    { n: '< 3 mo', what: 'from an idea to a launched product', src: 'Transferência Segura' },
+    { n: '< 3 mo', what: 'from an idea to a launched product, leading the design', src: 'Transferência Segura' },
   ],
 };
 
@@ -94,8 +94,8 @@ export const PROOF = {
   cardLabel: '{n} {what}. {client} case study',
   cards: [
     { n: '+15%', what: 'more add-to-cart after I redesigned how people find promotions', client: 'Superopa', kind: 'Grocery app', slug: 'promotions-discoverability' },
-    { n: '< 3 mo', what: 'from an idea to a launched product, for safe car-sale payments', client: 'Transferência Segura', kind: 'New business' },
-    { n: '500+', what: 'employees: the size of the new clients the benefits app brought in', client: 'Foodpass', kind: 'Benefits cards', slug: 'benefits-card-app' },
+    { n: '< 3 mo', what: 'from an idea to a launched product for safe car-sale payments, leading the design', client: 'Transferência Segura', kind: 'New business' },
+    { n: '500+', what: 'employees: the size of the new clients won by the benefits app I designed', client: 'Foodpass', kind: 'Benefits cards', slug: 'benefits-card-app' },
   ],
   /** placeholder until a client quote is confirmed: null hides the quote */
   quote: null as null | { text: string; who: string },
