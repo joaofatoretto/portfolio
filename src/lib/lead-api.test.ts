@@ -96,4 +96,91 @@ describe('POST /api/lead', () => {
     fetchMock.mockResolvedValue(new Response('{"message":"bad"}', { status: 422 }));
     expect((await post(lead)).status).toBe(502);
   });
+
+  describe('receipt to the lead', () => {
+    const from = 'João Fatoretto <hello@joaofatoretto.com>';
+    const second = () => JSON.parse(fetchMock.mock.calls[1][1]!.body as string);
+    const fail = () => new Response('nope', { status: 500 });
+    const okRes = () => new Response('{"id":"1"}', { status: 200 });
+
+    it('sends none without RECEIPT_FROM', async () => {
+      await post(lead);
+      expect(fetchMock).toHaveBeenCalledOnce();
+    });
+
+    it('replaces João’s own email for a lead who left an email: one receipt, with João copied', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      expect((await post(lead)).status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledOnce();
+      expect(fetchMock.mock.calls[0][0]).toBe('https://api.resend.com/emails');
+      expect(sent().to).toEqual(['"Tom" <tom@clinic.example>']);
+      expect(sent().from).toBe(from);
+      // João gets the receipt in the same thread and answers it with Reply all
+      expect(sent().cc).toEqual(['jvitorfatto@gmail.com']);
+      expect(sent().reply_to).toBe('jvitorfatto@gmail.com');
+      expect(sent().subject).toBe('Got it, Tom. Your idea is in my inbox.');
+      expect(sent().html).toContain('Hi Tom,');
+      expect(sent().text).toContain('Hi Tom,');
+    });
+
+    it('keeps the full name in the To line, so João’s copy loses nothing his own email had', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      await post({ ...lead, name: 'Tom Baker' });
+      expect(sent().to).toEqual(['"Tom Baker" <tom@clinic.example>']);
+      // characters that would break the address header are dropped
+      fetchMock.mockClear();
+      await post({ ...lead, name: 'Tom "T" <Baker>\\' });
+      expect(sent().to).toEqual(['"Tom T Baker" <tom@clinic.example>']);
+    });
+
+    it('replies to and copies LEAD_TO when it is set', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      vi.stubEnv('LEAD_TO', 'inbox@joaofatoretto.com');
+      await post(lead);
+      expect(sent().reply_to).toBe('inbox@joaofatoretto.com');
+      expect(sent().cc).toEqual(['inbox@joaofatoretto.com']);
+    });
+
+    it('is Portuguese for the Portuguese form', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      await post({ ...lead, lang: 'pt' });
+      expect(sent().subject).toBe('Pronto, Tom. Sua ideia chegou até mim.');
+    });
+
+    it('sends João’s own email for a phone-only lead (there is no receipt to copy him on)', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      await post({ ...lead, contact: '+1 555 010 0199', lang: 'pt' });
+      expect(fetchMock).toHaveBeenCalledOnce();
+      expect(sent().to).toEqual(['jvitorfatto@gmail.com']);
+      expect(sent().subject).toMatch(/^\[PT\] /);
+    });
+
+    it('falls back to João’s own email when the receipt fails, so no lead is lost', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      fetchMock.mockResolvedValueOnce(fail()).mockResolvedValueOnce(okRes());
+      expect((await post(lead)).status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(second().to).toEqual(['jvitorfatto@gmail.com']);
+      expect(second().reply_to).toBe('tom@clinic.example');
+
+      fetchMock.mockReset().mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce(okRes());
+      expect((await post(lead)).status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('fails only when both the receipt and the fallback fail', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      fetchMock.mockResolvedValue(fail());
+      expect((await post(lead)).status).toBe(502);
+    });
+
+    it('sends a plain form post to the thank-you page after the receipt', async () => {
+      vi.stubEnv('RECEIPT_FROM', from);
+      const res = await POST(new Request('https://joaofatoretto.com/api/lead', {
+        method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(lead).toString(),
+      }));
+      expect(res.status).toBe(303);
+      expect(fetchMock).toHaveBeenCalledOnce();
+    });
+  });
 });

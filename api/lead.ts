@@ -1,7 +1,11 @@
 /* Vercel Function: POST /api/lead. Validates a lead from the hire page and emails it to João through Resend.
    Env: RESEND_API_KEY and RESEND_EMAIL_DOMAIN (from the Resend integration), optional LEAD_TO and LEAD_FROM.
+   RECEIPT_FROM (e.g. `João Fatoretto <hello@joaofatoretto.com>`, an address on a domain verified in Resend) turns on the
+   confirmation email to leads who left an email address, with João copied (cc). That copy is João's notice of the lead,
+   so his own lead email is only sent when there's no receipt (phone-only lead, RECEIPT_FROM unset) or the receipt fails.
    Imports use .js extensions because Node loads them as ES modules at runtime. */
 import { contactKind, leadEmail, validateLead, type LeadLocale } from '../src/lib/lead.js';
+import { receiptEmail } from '../src/lib/email.js';
 import { localize } from '../src/i18n/locales.js';
 import { PROFILE } from '../src/content/profile.js';
 
@@ -10,6 +14,12 @@ const json = (status: number, body: object) => Response.json(body, { status });
  *  else Resend's test sender, which only delivers to the Resend account's own email. */
 const sender = () => process.env.LEAD_FROM
   || (process.env.RESEND_EMAIL_DOMAIN ? `João’s site <leads@${process.env.RESEND_EMAIL_DOMAIN}>` : 'Portfolio leads <onboarding@resend.dev>');
+/** `"Full Name" <email>`: the lead's full name rides in the To line, so João's cc copy keeps it (the greeting uses the first
+ *  name only). Quotes, backslashes, angle brackets and line breaks are dropped so the name can't break the header. */
+const mailbox = (name: string, email: string) => {
+  const n = name.replace(/["\\<>\r\n]/g, '').replace(/\s+/g, ' ').trim();
+  return n ? `"${n}" <${email}>` : email;
+};
 /** The language the form was filled in: the page sends `lang` ("pt" on /pt-br/...); anything else is English. */
 const langOf = (body: unknown): LeadLocale => (body && typeof body === 'object' && /^pt(?![a-z])/i.test(String((body as Record<string, unknown>).lang ?? '')) ? 'pt' : 'en');
 /** For a plain form post (JavaScript off or not loaded yet): a minimal page instead of JSON. */
@@ -34,20 +44,38 @@ export async function POST(request: Request): Promise<Response> {
   const failed = (status: number, error: string) => reply(status, { error }, 'That didn’t send', `Please email me at ${PROFILE.email}.`);
   if (!key) { console.error('lead: RESEND_API_KEY is not set'); return failed(500, 'not_configured'); }
 
-  const mail = leadEmail(r.lead);
-  // João reads the lead in his inbox: the tag says to answer in Portuguese
-  if (locale === 'pt') mail.subject = `[PT] ${mail.subject}`;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const inbox = process.env.LEAD_TO || PROFILE.email;
+  const send = async (payload: object, what: string) => {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return true;
+      console.error(`lead: Resend refused the ${what}`, res.status, await res.text());
+    } catch (e) { console.error(`lead: the ${what} failed`, e); }
+    return false;
+  };
+
+  // the receipt to the lead, with João copied: he gets it in the lead's thread and answers with Reply all
+  const receiptFrom = process.env.RECEIPT_FROM;
+  const receipted = !!receiptFrom && contactKind(r.lead.contact) === 'email'
+    && await send({ from: receiptFrom, to: [mailbox(r.lead.name, r.lead.contact)], cc: [inbox], reply_to: inbox, ...receiptEmail(r.lead, locale) }, 'receipt');
+
+  // otherwise João's own lead email, so no lead is lost
+  if (!receipted) {
+    const mail = leadEmail(r.lead);
+    // João reads the lead in his inbox: the tag says to answer in Portuguese
+    if (locale === 'pt') mail.subject = `[PT] ${mail.subject}`;
+    const ok = await send({
       from: sender(),
-      to: [process.env.LEAD_TO || PROFILE.email],
+      to: [inbox],
       ...(contactKind(r.lead.contact) === 'email' ? { reply_to: r.lead.contact } : {}),
       ...mail,
-    }),
-  });
-  if (!res.ok) { console.error('lead: Resend refused the email', res.status, await res.text()); return failed(502, 'send_failed'); }
+    }, 'lead email');
+    if (!ok) return failed(502, 'send_failed');
+  }
   // a plain form post lands on the same thank-you page as the browser's (the Google Ads conversion URL), in the visitor's language
   return isForm ? Response.redirect(new URL(localize('/hire/thanks', locale), request.url), 303) : json(200, { ok: true });
 }

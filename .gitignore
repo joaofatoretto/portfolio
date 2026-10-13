@@ -31,3 +31,7 @@ Thumbs.db
 
 # Contentsquare verifier reports
 .cs-wizard/
+
+# Sales and ads material lives in the private sales repo (../sales), never here
+/docs/sales/
+/docs/google-ads/

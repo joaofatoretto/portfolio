@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
+    "emails": "node scripts/email-preview.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
