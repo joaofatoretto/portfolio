@@ -106,12 +106,12 @@ describe('hire page: the story', () => {
     expect(list.compareDocumentPosition(lede) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('names the pieces as numbered sprints with short plain names, and bills each sprint', () => {
+  it('names the pieces as numbered pieces with short plain names, and bills each piece', () => {
     PAY.pieces.forEach((pc, i) => {
-      expect(pc.label).toBe(`Sprint ${i + 1}`);
+      expect(pc.label).toBe(`Piece ${i + 1}`);
       expect(pc.title.split(' ').length).toBeLessThanOrEqual(4);
     });
-    expect(PAY.receipt).toBe('You pay this sprint');
+    expect(PAY.receipt).toBe('You pay this piece');
   });
 
   it('ends with a short last call that points to the form', () => {

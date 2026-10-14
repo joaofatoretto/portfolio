@@ -105,14 +105,14 @@ export const PAY = {
   title: 'You pay as I deliver.',
   lede: 'Nothing upfront. Each payment comes after something real is shipped.',
   pieces: [
-    { label: 'Sprint 1', title: 'Landing page done' },
-    { label: 'Sprint 2', title: 'Orders & payments ready' },
-    { label: 'Sprint 3', title: 'Launched' },
+    { label: 'Piece 1', title: 'Landing page done' },
+    { label: 'Piece 2', title: 'Orders & payments ready' },
+    { label: 'Piece 3', title: 'Launched' },
   ],
   /** the two lanes of the timeline: what I deliver, then what you pay */
   lanes: { deliver: 'Delivery', pay: 'Payment' },
   /** the message of the section: each payment, placed after its piece is delivered */
-  receipt: 'You pay this sprint',
+  receipt: 'You pay this piece',
 };
 
 /** The last call before the form: a nudge, then the promise, then an arrow down to the form. */

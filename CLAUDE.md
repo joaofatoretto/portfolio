@@ -77,6 +77,5 @@ Read `docs/i18n.md` before touching copy, routes or the head. In short:
 - **Maybe later: an inbox for hello@joaofatoretto.com** (noted 2026-10-13, not urgent). The lead confirmation is sent from that address, but nothing receives mail there: the domain has no MX record (DNS is at Hostinger), so an email typed to it bounces. Replies to the confirmation are fine, since they go to Gmail. Preferred fix, free: a forwarder such as ImprovMX sending hello@ to jvitorfatto@gmail.com (MX and SPF records at Hostinger), then Gmail "Send mail as" hello@joaofatoretto.com through Resend's SMTP (smtp.resend.com, port 465, user `resend`, an API key as the password); set up the forwarding first, because Gmail confirms the alias by sending a code to hello@. Other options: Resend inbound plus a forwarding function in `api/` (more code), or a real inbox (Zoho Mail free plan, Google Workspace about US$7 per user a month, or Hostinger email if the domain includes it). Needs Hostinger DNS access or João adding the records.
 
 ## Open decisions (ask João)
-- "7+ years" matches the resume, but Jul 2018 to now is 8+.
 - Nohemi is local-only; the site uses Sora until a web licence is confirmed and the font is self-hosted.
 - The case text has typos from the original site (e.g. "convertion", "runned", "proccess", "we was"); fix them only with João's OK.
