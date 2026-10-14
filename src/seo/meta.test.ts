@@ -44,6 +44,8 @@ describe('one page per URL, for search engines', () => {
     expect(hire.title).toMatch(/websites?/i);
     expect(hire.title).toMatch(/apps?/i);
     expect(hire.title).toMatch(/small business/i);
+    expect(hire.title).toMatch(/AI agents/i);
+    expect(hire.description).toMatch(/AI agents/i);
     expect(hire.title.length).toBeLessThanOrEqual(60);
     expect(hire.description.length).toBeLessThanOrEqual(160);
   });

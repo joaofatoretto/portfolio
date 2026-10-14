@@ -6,7 +6,7 @@
 
 export const HERO = {
   title: 'Let’s make your idea real.',
-  lede: 'Websites and apps for small businesses and new founders. Designed and built by me.',
+  lede: 'Websites, apps and AI agents for small businesses and new founders. Designed and built by me.',
   cta: 'Get in touch',
   /** the hero's name for screen readers */
   label: 'Let’s make your idea real',
