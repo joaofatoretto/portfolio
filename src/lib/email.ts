@@ -42,7 +42,7 @@ const COPY = {
   en: {
     lang: 'en',
     wrote: 'You wrote',
-    role: 'Websites, apps and AI agents, designed and built by me',
+    role: 'Websites, apps, AI agents, automations and custom digital solutions, designed and built by me',
     closing: 'Talk soon,',
     footer: 'You’re getting this because you sent the form at joaofatoretto.com/hire. It’s a one-time receipt, not a newsletter.',
     withMessage: {
@@ -62,7 +62,7 @@ const COPY = {
   pt: {
     lang: 'pt-BR',
     wrote: 'Você escreveu',
-    role: 'Sites, aplicativos e agentes de IA, pensados e construídos por mim',
+    role: 'Sites, aplicativos, agentes de IA, automações e soluções digitais sob medida, pensados e construídos por mim',
     closing: 'Até breve,',
     footer: 'Você está recebendo isto porque enviou o formulário em joaofatoretto.com/pt-br/hire. É um recibo único, não uma newsletter.',
     withMessage: {

@@ -8,7 +8,7 @@ import {
 
 export const HERO: typeof EN_HERO = {
   title: 'Vamos tirar sua ideia do papel.',
-  lede: 'Sites, aplicativos e agentes de IA para pequenas empresas e novos empreendedores. Pensados e construídos por mim.',
+  lede: 'Sites, apps, agentes de IA, automações e soluções digitais sob medida para pequenas empresas e empreendedores. Pensados e construídos por mim.',
   cta: 'Entre em contato',
   /** the hero's name for screen readers */
   label: 'Vamos tirar sua ideia do papel',

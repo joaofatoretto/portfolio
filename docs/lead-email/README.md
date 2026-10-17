@@ -50,7 +50,7 @@ Want to add something before we talk? Just reply to this email. A link to your w
 Talk soon,
 
 João Fatoretto
-Websites, apps and AI agents, designed and built by me
+Websites, apps, AI agents, automations and custom digital solutions, designed and built by me
 joaofatoretto.com
 
 You’re getting this because you sent the form at joaofatoretto.com/hire. It’s a one-time receipt, not a newsletter.
@@ -73,7 +73,7 @@ If you’d like, reply with a line or two about what you have in mind. A link to
 Talk soon,
 
 João Fatoretto
-Websites, apps and AI agents, designed and built by me
+Websites, apps, AI agents, automations and custom digital solutions, designed and built by me
 joaofatoretto.com
 
 You’re getting this because you sent the form at joaofatoretto.com/hire. It’s a one-time receipt, not a newsletter.
@@ -122,7 +122,7 @@ Quer acrescentar algo antes de a gente conversar? É só responder este e-mail. 
 Até breve,
 
 João Fatoretto
-Sites, aplicativos e agentes de IA, pensados e construídos por mim
+Sites, aplicativos, agentes de IA, automações e soluções digitais sob medida, pensados e construídos por mim
 joaofatoretto.com
 
 Você está recebendo isto porque enviou o formulário em joaofatoretto.com/pt-br/hire. É um recibo único, não uma newsletter.
@@ -145,7 +145,7 @@ Se quiser, responda com uma ou duas linhas sobre o que você tem em mente. Um li
 Até breve,
 
 João Fatoretto
-Sites, aplicativos e agentes de IA, pensados e construídos por mim
+Sites, aplicativos, agentes de IA, automações e soluções digitais sob medida, pensados e construídos por mim
 joaofatoretto.com
 
 Você está recebendo isto porque enviou o formulário em joaofatoretto.com/pt-br/hire. É um recibo único, não uma newsletter.
