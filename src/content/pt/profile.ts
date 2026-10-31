@@ -67,7 +67,7 @@ export const HOME: typeof EN_HOME = {
   },
   proof: { label: 'Resultados', clients: 'Times e clientes' },
   work: {
-    label: 'Cases', title: 'O problema, a minha parte e o que mudou',
+    label: 'Cases', title: 'Do problema ao resultado',
     lede: 'Cada case abre com um resumo curto: o problema, o meu papel, o time e o resultado. O processo completo vem depois.',
   },
   method: {

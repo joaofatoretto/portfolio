@@ -69,7 +69,7 @@ export const HOME = {
   },
   proof: { label: 'Results', clients: 'Teams and clients' },
   work: {
-    label: 'Case studies', title: 'The problem, my part and what changed',
+    label: 'Case studies', title: 'From problem to result',
     lede: 'Each case opens with a short summary: the problem, my role, the team and the result. The full process comes after.',
   },
   method: {
