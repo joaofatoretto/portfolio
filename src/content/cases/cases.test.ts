@@ -43,6 +43,7 @@ describe('case studies content', () => {
   });
 
   it('ships the CV', () => {
-    expect(existsSync(pub('/cv/joao-fatoretto-cv.pdf'))).toBe(true);
+    for (const f of ['joao-fatoretto-cv', 'joao-fatoretto-cv-design-engineer'])
+      expect(existsSync(pub(`/cv/${f}.pdf`)), f).toBe(true);
   });
 });

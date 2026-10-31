@@ -22,6 +22,8 @@ describe('home', () => {
     at('/');
     const links = screen.getAllByRole('link', { name: /download cv/i });
     expect(links[0]).toHaveAttribute('href', '/cv/joao-fatoretto-cv.pdf');
+    expect(screen.getByRole('link', { name: /product designer cv/i })).toHaveAttribute('href', '/cv/joao-fatoretto-cv.pdf');
+    expect(screen.getByRole('link', { name: /design engineer cv/i })).toHaveAttribute('href', '/cv/joao-fatoretto-cv-design-engineer.pdf');
     expect(links[0]).toHaveAttribute('download');
   });
 });

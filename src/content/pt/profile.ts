@@ -86,6 +86,7 @@ export const HOME: typeof EN_HOME = {
     quote: 'Eu desenho e construo o produto, da pesquisa ao código em produção.',
     p1: 'Comecei como desenvolvedor em 2017 e migrei para UX/UI em 2018. Desde então, desenhei para startups, uma empresa de IA apoiada pela Y Combinator, clientes da Fortune 500 e uma empresa global de saúde, em B2B e B2C, na web e em apps nativos.',
     p2: 'Liderei e fui mentor de designers, criei design systems que os desenvolvedores de fato usaram e trabalhei no dia a dia com times de dados. Também dei aula para mais de 30 alunos como tutor de UX/UI na Coderhouse.',
-    cv: 'Baixar CV (PDF)',
+    cv: 'CV de Product Designer (PDF)',
+    cvEngineer: 'CV de Design Engineer (PDF)',
   },
 };

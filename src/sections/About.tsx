@@ -15,6 +15,7 @@ export function About() {
           <R as="p" d={340}>{t.p2}</R>
           <R className="ctas" d={400} style={{ paddingInline: 0, marginTop: 8 }}>
             <a className="btn ghost" href={PROFILE.cv} download>{t.cv}</a>
+            <a className="btn ghost" href={PROFILE.cvEngineer} download>{t.cvEngineer}</a>
           </R>
         </div>
         <dl className="facts">

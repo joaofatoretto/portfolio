@@ -4,6 +4,7 @@ export const PROFILE = {
   email: 'jvitorfatto@gmail.com',
   linkedin: 'https://www.linkedin.com/in/joaovitorfatoretto/',
   cv: '/cv/joao-fatoretto-cv.pdf',
+  cvEngineer: '/cv/joao-fatoretto-cv-design-engineer.pdf',
 };
 
 export const PROOF = [
@@ -88,6 +89,7 @@ export const HOME = {
     quote: 'I design and build the product, from research to production code.',
     p1: 'I started as a developer in 2017 and moved into UX/UI in 2018. Since then I’ve designed for startups, an AI company backed by Y Combinator, Fortune 500 clients and a global healthcare company, in B2B and B2C, on the web and in native mobile apps.',
     p2: 'I’ve led and mentored designers, built design systems that developers actually used, and worked day to day with data teams. I also taught 30+ students as a UX/UI tutor at Coderhouse.',
-    cv: 'Download CV (PDF)',
+    cv: 'Product Designer CV (PDF)',
+    cvEngineer: 'Design Engineer CV (PDF)',
   },
 };
