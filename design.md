@@ -164,7 +164,7 @@ The system is **98% black and white**. The only colours are the anaglyph pair (r
 | Token | Hex | Role |
 |---|---|---|
 | `ink` | `#0A0A0B` | Stage background, text on Paper |
-| `paper` | `#F7F9FD` | The room around the home hero (cool off-white) |
+| `paper` | `#F7F9FD` | The room around the home hero (cool off-white). On screen only, never the page of a printed PDF |
 | `white` | `#FFFFFF` | Text on Stage, primary CTA fill |
 | `grey-100` | `#ECEEF3` | Hover fill on Paper |
 | `grey-150` | `#E5E5E5` | Intro text on Stage |
@@ -189,6 +189,8 @@ The system is **98% black and white**. The only colours are the anaglyph pair (r
 **Dark mode is the standard:** Stage is the default theme for every page and section. Paper is an exception, used once.
 
 Two surfaces: **Stage** (the default page and every black card, where the brand speaks) and **Paper** (the room around the home hero: it frames the TV as it closes into the card, and holds the results section; nothing else). A Stage card on the Stage page (contact, case header) is framed by a 1px `line` border.
+
+**Printed documents are pure white.** A PDF that may be printed (contracts first, also proposals, letters and resumes) in the light theme uses `white` (#FFFFFF) as the page background, never Paper: an off-white prints as a faint tint and looks like a scanning error. Ink, the greys and the hairlines stay the same. This is for print only: screens, interfaces, posts and anything dark keep Stage and Paper as above.
 
 | Semantic token | Stage | Paper |
 |---|---|---|
