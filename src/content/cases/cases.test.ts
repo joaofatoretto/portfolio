@@ -31,6 +31,7 @@ describe('case studies content', () => {
   it('shows chips in one order: industry, model, then platforms', () => {
     expect(CASES.map(caseTags)).toEqual([
       ['AI SaaS', 'B2B + B2C', 'Landing page · desktop'],
+      ['Roofing', 'B2B', 'Web · desktop'],
       ['E-commerce', 'B2C', 'Native app', 'Web admin'],
       ['Fintech', 'B2B2C', 'Native app', 'Web · mobile + desktop'],
       ['Weddings', 'B2C', 'Web · mobile + desktop'],

@@ -5,6 +5,7 @@ import * as promotions from './promotions-discoverability';
 import * as benefits from './benefits-card-app';
 import * as photo from './photo-editing';
 import * as tempo from './tempo-landing-page';
+import * as roofsilo from './roofsilo';
 import * as sophia from './sophia-mental-health';
 
 const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
@@ -23,6 +24,20 @@ export const CASES: CaseStudy[] = [
     subtitle: tempo.original.subtitle,
     meta: { ...tempo.meta },
     card: tempo.card, cover: tempo.cover, body: tempo.body,
+  },
+  {
+    slug: 'roofsilo',
+    title: roofsilo.original.title,
+    client: 'RoofSilo',
+    industry: 'Roofing', model: 'B2B', platforms: ['Web · desktop'],
+    summary: 'RoofSilo is a CRM for roofers where AI answers and makes calls in the roofer’s name. The client came to Tempo with a vibe-coded prototype, and with a junior designer and a developer, I turned it into a complete product, live in production.',
+    role: 'Senior Product Designer',
+    result: 'From vibe-coded prototype to an AI CRM in production',
+    problem: 'The prototype proved the idea, but it looked like vibe coding, and several flows weren’t easy to use. Some important parts of the product weren’t there at all.',
+    outcome: 'A complete CRM in production with its own design system (shadcn/ui adapted to the RoofSilo brand): dashboard, pipelines, conversations, calendar, reports, automations, onboarding and the SiloPilot AI settings.',
+    subtitle: roofsilo.original.subtitle,
+    meta: { ...roofsilo.meta },
+    card: roofsilo.card, cover: roofsilo.cover, body: roofsilo.body,
   },
   {
     slug: 'promotions-discoverability',

@@ -6,10 +6,11 @@ import * as promotions from './promotions-discoverability';
 import * as benefits from './benefits-card-app';
 import * as photo from './photo-editing';
 import * as tempo from './tempo-landing-page';
+import * as roofsilo from './roofsilo';
 import * as sophia from './sophia-mental-health';
 
 const strip = (s: string) => s.replace(/^@/, '').replace(/ @/g, ' ');
-const [enTempo, enPromotions, enBenefits, enPhoto, enSophia] = EN;
+const [enTempo, enRoofsilo, enPromotions, enBenefits, enPhoto, enSophia] = EN;
 
 export const CASES: CaseStudy[] = [
   {
@@ -23,6 +24,19 @@ export const CASES: CaseStudy[] = [
     subtitle: tempo.original.subtitle,
     meta: { ...tempo.meta },
     body: tempo.body,
+  },
+  {
+    ...enRoofsilo,
+    title: roofsilo.original.title,
+    industry: 'Telhados',
+    summary: 'A RoofSilo é um CRM para empresas de telhados em que a IA atende e faz ligações em nome da empresa. O cliente chegou à Tempo com um protótipo feito no vibe coding e, com um designer júnior e um desenvolvedor, eu o transformei em um produto completo, em produção.',
+    role: 'Product Designer Sênior',
+    result: 'De protótipo feito no vibe coding a um CRM com IA em produção',
+    problem: 'O protótipo provava a ideia, mas tinha cara de vibe coding, e vários fluxos não eram fáceis de usar. Algumas partes importantes do produto nem existiam.',
+    outcome: 'Um CRM completo em produção com design system próprio (shadcn/ui adaptado à marca RoofSilo): dashboard, pipelines, conversas, calendário, relatórios, automações, onboarding e as configurações da IA SiloPilot.',
+    subtitle: roofsilo.original.subtitle,
+    meta: { ...roofsilo.meta },
+    body: roofsilo.body,
   },
   {
     ...enPromotions,
