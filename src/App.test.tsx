@@ -26,6 +26,61 @@ describe('home', () => {
     expect(screen.getByRole('link', { name: /design engineer cv/i })).toHaveAttribute('href', '/cv/joao-fatoretto-cv-design-engineer.pdf');
     expect(links[0]).toHaveAttribute('download');
   });
+
+  it('lists education in time order, oldest first, each with its years, what and where', () => {
+    at('/');
+    const edu = within(document.getElementById('about')!).getByRole('region', { name: 'Education' });
+    const items = within(edu).getAllByRole('listitem').filter(li => li.parentElement!.classList.contains('edu-list'));
+    expect(items.map(li => li.textContent)).toEqual([
+      expect.stringMatching(/^2017–2022.*BSc Computer Science.*UNICAMP.*University of Campinas, Brazil/),
+      expect.stringMatching(/^2020–2021.*User Experience Design.*UX Unicórnio/),
+      expect.stringMatching(/^2023–2025.*MBA in UX Research and Design Leadership.*UNIFATEC/),
+      expect.stringMatching(/^2024–2027.*In progress.*Product Master.*PM3/),
+    ]);
+    expect(items.map(li => within(li).getByRole('heading').textContent)).toEqual([
+      'BSc Computer Science', 'User Experience Design', 'MBA in UX Research and Design Leadership', 'Product Master',
+    ]);
+  });
+
+  it('backs UNICAMP with its two #1 rankings from João\'s years there, each linked to its source', () => {
+    at('/');
+    const ranks = within(document.getElementById('about')!).getByRole('list', { name: /unicamp rankings while i studied there/i });
+    const items = within(ranks).getAllByRole('listitem');
+    expect(items.map(li => li.textContent)).toEqual([
+      expect.stringMatching(/#1.*University in Latin America.*Times Higher Education · 2017 & 2018/),
+      expect.stringMatching(/#1.*Computing program in Brazil.*Folha University Ranking · 2018 & 2019/),
+    ]);
+    const the = within(items[0]).getByRole('link', { name: /times higher education/i });
+    expect(the).toHaveAttribute('href', expect.stringContaining('agenciabrasil.ebc.com.br'));
+    const ruf = within(items[1]).getByRole('link', { name: /folha university ranking/i });
+    expect(ruf).toHaveAttribute('href', expect.stringContaining('unicamp.br'));
+    for (const a of [ruf, the]) expect(a).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('backs the MBA with who taught it', () => {
+    at('/');
+    const faculty = within(document.getElementById('about')!).getByRole('list', { name: /taught by/i });
+    expect(within(faculty).getAllByRole('listitem').map(li => li.textContent)).toEqual([
+      expect.stringMatching(/Leandro Rezende.*Nielsen Norman Group/),
+      expect.stringMatching(/Lucas Hirata.*Google/),
+      expect.stringMatching(/Bernard De Luna.*Thoughtworks/),
+    ]);
+  });
+
+  it('shows the same education in Portuguese on the Portuguese home', () => {
+    atPt('/');
+    const edu = within(document.getElementById('about')!).getByRole('region', { name: 'Formação' });
+    const items = within(edu).getAllByRole('listitem').filter(li => li.parentElement!.classList.contains('edu-list'));
+    expect(items.map(li => li.textContent)).toEqual([
+      expect.stringMatching(/^2017–2022.*Bacharelado em Ciência da Computação.*UNICAMP/),
+      expect.stringMatching(/^2020–2021.*Design de Experiência do Usuário.*UX Unicórnio/),
+      expect.stringMatching(/^2023–2025.*MBA em UX Research e Liderança em Design/),
+      expect.stringMatching(/^2024–2027.*Em andamento.*Product Master.*PM3/),
+    ]);
+    const ranks = within(edu).getByRole('list', { name: /rankings da unicamp enquanto eu estudava lá/i });
+    expect(within(ranks).getAllByRole('listitem')[1]).toHaveTextContent(/Curso de Computação do Brasil.*Ranking Universitário Folha · 2018 e 2019/);
+    expect(within(within(edu).getByRole('list', { name: /com aulas de/i })).getAllByRole('listitem')[1]).toHaveTextContent('Design Lead no Google');
+  });
 });
 
 describe('theme', () => {

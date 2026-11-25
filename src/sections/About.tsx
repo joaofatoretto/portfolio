@@ -1,6 +1,7 @@
 import { PROFILE } from '../content/profile';
 import { useCopy } from '../i18n/copy';
 import { R } from '../lib/reveal';
+import { Education } from './Education';
 
 export function About() {
   const { profile } = useCopy(), t = profile.home.about;
@@ -27,6 +28,7 @@ export function About() {
           ))}
         </dl>
       </div>
+      <Education />
     </section>
   );
 }

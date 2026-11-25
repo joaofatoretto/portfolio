@@ -66,14 +66,14 @@ describe('Portuguese copy has the English copy’s structure', () => {
 
 /** Leaves that hold data, not copy: the same in both languages by design. */
 const DATA = [
-  /\.(slug|client|src|type|company|year|model|logo|color|clock)$/, /\.platforms\[\d+\]$/,
-  /^hire\.trust\.clients\[\d+\]\.name$/, /^profile\.products\[\d+\]\.name$/,
+  /\.(slug|client|src|type|company|year|model|logo|color|clock|source|school)$/, /\.platforms\[\d+\]$/,
+  /^hire\.trust\.clients\[\d+\]\.name$/, /^profile\.products\[\d+\]\.name$/, /^profile\.education\.items\[\d+\]\.faculty\.list\[\d+\]\.name$/,
   /^profile\.channels\.\w+\[0\]$/, /* channel numbers */ /^hire\.picture\.screens\.reach\.feed\[\d+\]\[0\]$/, /* initials */
 ];
 /** Copy that reads the same in Portuguese, kept on purpose (brand and product words, names, the language names). */
 const KEPT = new Set([
   'English', 'Português', 'Maria', 'CV (PDF)', '{label} (Figma)', 'Desktop', 'Design system', 'Just Ship It', 'Landing pages',
-  'E-commerce', 'Fintech', 'Product Designer', 'UX/UI Designer',
+  'E-commerce', 'Fintech', 'Product Designer', 'UX/UI Designer', 'Product Master',
   // the Sophia case: design terms João's Portuguese article keeps in English, and the team's names
   'Benchmarking', 'Crazy Eights', 'Branding', 'Naming', 'Logo', 'Persona 1', '**Sophia.**',
   'Paulo Ortega, Rodrigo Vicenzo', 'João Vitor Fatoretto', 'Paulo Ortega', 'Rodrigo Vicenzo',

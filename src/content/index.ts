@@ -5,12 +5,12 @@
    The English modules keep their own exports (PROFILE, CASES, HERO, ...) for data and for tests. */
 import { CASES } from './cases';
 import { CALL, HERO, PATH, PAY, PICTURE, PROOF as HIRE_PROOF, SEND, TEMPO, TRUST } from './hire';
-import { CHANNELS, FACTS, HOME, LOOP, PRODUCTS, PROOF, STEPS } from './profile';
+import { CHANNELS, EDUCATION, FACTS, HOME, LOOP, PRODUCTS, PROOF, STEPS } from './profile';
 import { SEO } from './seo';
 import { UI } from './ui';
 
 export const en = {
-  profile: { home: HOME, proof: PROOF, steps: STEPS, products: PRODUCTS, loop: LOOP, facts: FACTS, channels: CHANNELS },
+  profile: { home: HOME, proof: PROOF, steps: STEPS, products: PRODUCTS, loop: LOOP, facts: FACTS, education: EDUCATION, channels: CHANNELS },
   hire: { hero: HERO, trust: TRUST, path: PATH, picture: PICTURE, proof: HIRE_PROOF, pay: PAY, call: CALL, send: SEND, tempo: TEMPO },
   ui: UI,
   seo: SEO,

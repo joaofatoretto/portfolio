@@ -46,8 +46,44 @@ export const FACTS: [string, string][] = [
   ['Work', 'Remote, with US and Canadian teams'],
   ['Languages', 'English (fluent) · Portuguese (native)'],
   ['Domains', 'Healthcare · Fintech · E-commerce · AI SaaS · Enterprise'],
-  ['Education', 'BSc Computer Science, UNICAMP · MBA in UX Research and Design Leadership'],
 ];
+
+/** The education block under About (sections/Education.tsx). Every claim is in career.md (Education).
+ *  UNICAMP: readers abroad don't know it, so it shows its two #1 rankings from the years João studied there (THE #1
+ *  in 2017 and 2018; RUF #1 in 2018 and 2019, 3rd in 2017, so never "2017–19").
+ *  MBA: the university isn't the point, the teachers are. Three of the six João confirmed, picked for the names a
+ *  reader abroad knows (NN/g, Google, Thoughtworks); the others are in career.md. Roles as the MBA's page lists them. */
+type Rank = { n: string; what: string; source: string; when: string; cite: string; href: string };
+/** One row of the education timeline. `ranks` or `faculty` is the proof under it, when there is one; `status` marks
+ *  one still in progress (hollow marker). */
+export type EduItem = {
+  years: string; status?: string; title: string; school: string; note: string;
+  ranks?: { label: string; list: Rank[] };
+  faculty?: { label: string; list: { name: string; role: string }[] };
+};
+/** Oldest first, so the timeline reads as the story it is. */
+export const EDUCATION: { label: string; items: EduItem[] } = {
+  label: 'Education',
+  items: [
+    { years: '2017–2022', title: 'BSc Computer Science', school: 'UNICAMP', note: 'University of Campinas, Brazil',
+      ranks: { label: 'UNICAMP rankings while I studied there', list: [
+        { n: '#1', what: 'University in Latin America', source: 'Times Higher Education', when: '2017 & 2018',
+          cite: 'Source: Times Higher Education Latin America University Rankings, 2017 and 2018',
+          href: 'https://agenciabrasil.ebc.com.br/en/internacional/noticia/2018-07/brazil-heads-ranking-latin-american-universities' },
+        { n: '#1', what: 'Computing program in Brazil', source: 'Folha University Ranking', when: '2018 & 2019',
+          cite: 'Source: Folha University Ranking (RUF), 2018 and 2019',
+          href: 'https://www2.unicamp.br/estatico-2023/noticias/2019/10/08/unicamp-e-2a-melhor-universidade-do-pais-em-ranking-da-folha/' },
+      ] } },
+    { years: '2020–2021', title: 'User Experience Design', school: 'UX Unicórnio', note: 'Course' },
+    { years: '2023–2025', title: 'MBA in UX Research and Design Leadership', school: 'UNIFATEC', note: 'with Toronto School of Management',
+      faculty: { label: 'Taught by', list: [
+        { name: 'Leandro Rezende', role: 'UX Master, Nielsen Norman Group' },
+        { name: 'Lucas Hirata', role: 'Design Lead, Google' },
+        { name: 'Bernard De Luna', role: 'Head of Product, Thoughtworks' },
+      ] } },
+    { years: '2024–2027', status: 'In progress', title: 'Product Master', school: 'PM3', note: 'Product management certification' },
+  ],
+};
 
 /** Nav destinations are channels (design.md §1, "The TV tune-in"). Case pages are CH 02·n. */
 export const CHANNELS: Record<string, [string, string]> = {

@@ -1,6 +1,6 @@
 /* Portuguese mirror of ../profile.ts. Text only: numbers, sources, names and channel numbers come from the English file.
    Every claim comes from ../resume/master/career.md; don't add one that isn't there. */
-import { CHANNELS as EN_CHANNELS, FACTS as EN_FACTS, HOME as EN_HOME, LOOP as EN_LOOP, PRODUCTS as EN_PRODUCTS, PROOF as EN_PROOF, STEPS as EN_STEPS } from '../profile';
+import { CHANNELS as EN_CHANNELS, EDUCATION as EN_EDUCATION, FACTS as EN_FACTS, HOME as EN_HOME, LOOP as EN_LOOP, PRODUCTS as EN_PRODUCTS, PROOF as EN_PROOF, STEPS as EN_STEPS } from '../profile';
 
 const [p2x, p15, pMinutes, pMonths] = EN_PROOF;
 export const PROOF: typeof EN_PROOF = [
@@ -43,9 +43,36 @@ const FACTS_TEXT: [string, string][] = [
   ['Trabalho', 'Remoto, com times dos EUA e do Canadá'],
   ['Idiomas', 'Inglês (fluente) · Português (nativo)'],
   ['Áreas', 'Saúde · Fintech · E-commerce · SaaS de IA · Corporativo'],
-  ['Formação', 'Bacharelado em Ciência da Computação, UNICAMP · MBA em UX Research e Liderança em Design'],
 ];
 export const FACTS: typeof EN_FACTS = EN_FACTS.map((_, i) => FACTS_TEXT[i]);
+
+/** Text per row, in the same order as the English items; years, schools, sources, links and names come from there. */
+const EDU_TEXT: { title: string; note: string; status?: string; label?: string; texts?: { what?: string; source?: string; when?: string; cite?: string; role?: string }[] }[] = [
+  { title: 'Bacharelado em Ciência da Computação', note: 'Universidade Estadual de Campinas',
+    label: 'Rankings da UNICAMP enquanto eu estudava lá', texts: [
+      { what: 'Universidade da América Latina', source: 'Times Higher Education', when: '2017 e 2018',
+        cite: 'Fonte: ranking da América Latina da Times Higher Education, 2017 e 2018' },
+      { what: 'Curso de Computação do Brasil', source: 'Ranking Universitário Folha', when: '2018 e 2019',
+        cite: 'Fonte: Ranking Universitário Folha (RUF), 2018 e 2019' },
+    ] },
+  { title: 'Design de Experiência do Usuário', note: 'Curso' },
+  { title: 'MBA em UX Research e Liderança em Design', note: 'com a Toronto School of Management',
+    label: 'Com aulas de', texts: [
+      { role: 'UX Master pela Nielsen Norman Group' }, { role: 'Design Lead no Google' }, { role: 'Head of Product na Thoughtworks' },
+    ] },
+  { title: 'Product Master', note: 'Certificação em gestão de produto', status: 'Em andamento' },
+];
+export const EDUCATION: typeof EN_EDUCATION = {
+  label: 'Formação',
+  items: EN_EDUCATION.items.map((item, i) => {
+    const t = EDU_TEXT[i];
+    return {
+      ...item, title: t.title, note: t.note, ...(item.status ? { status: t.status } : {}),
+      ...(item.ranks ? { ranks: { label: t.label!, list: item.ranks.list.map((r, j) => ({ ...r, ...t.texts![j] })) } } : {}),
+      ...(item.faculty ? { faculty: { label: t.label!, list: item.faculty.list.map((f, j) => ({ ...f, role: t.texts![j].role! })) } } : {}),
+    };
+  }),
+};
 
 const CHANNEL_NAMES: Record<keyof typeof EN_CHANNELS, string> = {
   top: 'Início', work: 'Cases', build: 'Como eu construo', about: 'Sobre', contact: 'Contato', hire: 'Comece um projeto',
