@@ -156,51 +156,58 @@ html:not(.motion) .hero-ch { opacity: 0; }
 .fact + .fact { border-top: 1px solid var(--line); }
 .fact dd { margin: 0; font-size: 15px; line-height: 1.5; }
 @media (max-width: 420px) { .fact { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
-/* Education (sections/Education.tsx): one timeline, oldest first. Each row: years | marker on a rail | title (all the
-   same size) → where → proof. The only large type is UNICAMP's #1s (display ≥ 64px, so they may carry the anaglyph,
-   §4). Filled marker = done, hollow = in progress. --rail is the rail's x: the years column plus half the gap. */
-.edu { --when: 112px; --gap: 48px; --rail: calc(var(--when) + var(--gap) / 2);
-  margin-top: 72px; padding: clamp(24px, 4.4vw, 56px); background: var(--surface); border: 1px solid var(--line); }
-.edu-list { display: grid; margin: 40px 0 0; padding: 0; list-style: none; }
-.edu-item { position: relative; display: grid; grid-template-columns: var(--when) minmax(0, 1fr); column-gap: var(--gap); padding-bottom: 48px; }
-.edu-item:last-child { padding-bottom: 0; }
-.edu-item::before { content: ''; position: absolute; left: var(--rail); top: 22px; bottom: -6px; width: 1px; background: var(--line-strong); }
-.edu-item:last-child::before { display: none; }
-.edu-item::after { content: ''; position: absolute; left: calc(var(--rail) - 5px); top: 10px; width: 11px; height: 11px; background: var(--fg-primary); }
-.edu-item.open::after { background: var(--surface); border: 1px solid var(--fg-primary); }
-.edu-when { display: grid; gap: 2px; align-content: start; justify-items: end; padding-top: 6px; text-align: right; font-family: var(--font-mono); font-size: 13px; line-height: 20px;
+/* Education (sections/Education.tsx): a table under About, oldest first. Three columns that can each be scanned alone:
+   when | what and where | the proof (a label, then UNICAMP's #1s or the MBA's teachers). Years, titles and proof labels
+   share a first line. The only large type is the #1s (display ≥ 64px, so they may carry the anaglyph, §4). */
+.edu { --when: 136px; --col: clamp(24px, 3.4vw, 48px); display: grid; gap: 20px; margin-top: clamp(24px, 4vw, 48px); }
+.edu-list { display: grid; margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.edu-item { display: grid; grid-template-columns: var(--when) minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--col); align-items: start;
+  padding-block: 32px; border-top: 1px solid var(--line); }
+.edu-when { display: grid; gap: 8px; justify-items: start; padding-top: 6px; font-family: var(--font-mono); font-size: 13px; line-height: 20px;
   font-weight: 500; letter-spacing: .01em; color: var(--fg-secondary); font-variant-numeric: tabular-nums; }
-.edu-status { font-size: 12px; text-transform: uppercase; color: var(--fg-tertiary); }
-.edu-what { display: grid; gap: 4px; align-content: start; min-width: 0; }
-.edu-what .h-3 { text-wrap: pretty; }
+.edu-status { padding: 2px 8px; border: 1px solid var(--line-strong); font-size: 12px; line-height: 18px; text-transform: uppercase; white-space: nowrap; }
+.edu-what { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.edu-what .h-3 { text-wrap: balance; }
 .edu-where { color: var(--fg-secondary); font-size: 16px; line-height: 1.5; }
 .edu-where b { color: var(--fg-primary); font-weight: 600; }
-.edu-ranks { display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: 32px 40px; margin: 28px 0 0; padding: 0; list-style: none; }
-.edu-ranks li { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.edu-proof { display: grid; gap: 20px; align-content: start; min-width: 0; }
+.edu-proof > .label { padding-top: 6px; }
+.edu-ranks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.edu-ranks li { display: grid; gap: 10px; align-content: start; min-width: 0; padding-inline: 24px; border-left: 1px solid var(--line); }
+.edu-ranks li:first-child { padding-left: 0; border-left: 0; }
 .edu-ranks .num { font-size: clamp(64px, 5.6vw, 80px); font-weight: 700; line-height: .9; letter-spacing: -0.03em;
   text-shadow: calc(-1 * max(2px, .02em)) 0 0 var(--anaglyph-left), max(2px, .02em) 0 0 var(--anaglyph-right); }
-.edu-ranks p { font-size: 18px; line-height: 1.3; font-weight: 600; }
+.edu-ranks p { margin-top: 6px; font-size: 18px; line-height: 1.3; font-weight: 600; text-wrap: balance; }
 .edu-src { justify-self: start; font-family: var(--font-mono); font-size: 12px; line-height: 18px; letter-spacing: .01em; color: var(--fg-tertiary);
   text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px;
   transition: color var(--dur-base) var(--ease-signal), text-decoration-color var(--dur-base) var(--ease-signal); }
+/* if the source has to wrap, the years stay together */
+.edu-yrs { white-space: nowrap; }
 .edu-src:hover, .edu-src:focus-visible { color: var(--fg-primary); text-decoration-color: currentColor; }
-.edu-faculty { display: grid; gap: 10px; margin-top: 20px; }
-.edu-faculty ul { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 0; padding: 0; list-style: none; }
-.edu-faculty li { display: grid; gap: 2px; }
-.edu-faculty b { font-size: 16px; line-height: 1.4; font-weight: 600; }
-.edu-faculty li span { color: var(--fg-secondary); font-size: 14px; line-height: 1.45; }
-/* the marker and rail arrive with their row (html.motion only) */
-.motion .edu-item::before, .motion .edu-item::after { transition: opacity .5s var(--ease-signal); }
-.motion .edu-item:not(.in)::before, .motion .edu-item:not(.in)::after { opacity: 0; }
-@media (max-width: 720px) {
-  .edu { --rail: 5px; margin-top: 56px; }
-  .edu-item { grid-template-columns: minmax(0, 1fr); row-gap: 6px; padding: 0 0 40px 32px; }
-  .edu-item::before { top: 18px; }
-  .edu-item::after { top: 5px; }
-  .edu-when { display: flex; flex-wrap: wrap; gap: 4px 12px; padding-top: 0; text-align: left; }
-  .edu-when .edu-status { line-height: 20px; }
+.edu-faculty { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.edu-faculty li { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); column-gap: 24px; font-size: 16px; line-height: 1.5; }
+.edu-faculty b { font-weight: 600; }
+.edu-faculty span { color: var(--fg-secondary); }
+/* narrower: the proof moves under what it proves */
+@media (max-width: 1100px) {
+  .edu-item { grid-template-columns: var(--when) minmax(0, 1fr); }
+  .edu-proof { grid-column: 2; margin-top: 20px; }
 }
-@media (max-width: 480px) { .edu-ranks { grid-template-columns: minmax(0, 1fr); } }
+/* phones: one column; the years become the row's first line */
+@media (max-width: 640px) {
+  .edu-item { grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding-block: 28px; }
+  .edu-when { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding-top: 0; }
+  .edu-proof { grid-column: 1; margin-top: 16px; gap: 16px; }
+  .edu-proof > .label { padding-top: 0; }
+  .edu-faculty li { grid-template-columns: minmax(0, 1fr); }
+}
+/* small phones: each #1 sits beside what it stands for */
+@media (max-width: 520px) {
+  .edu-ranks { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .edu-ranks li { grid-template-columns: auto minmax(0, 1fr); gap: 6px 20px; padding-inline: 0; border-left: 0; }
+  .edu-ranks .num { grid-row: 1 / span 2; align-self: center; }
+  .edu-ranks p { margin-top: 0; align-self: end; }
+}
 @media (prefers-reduced-motion: reduce) {
   .scroll-tip .track i { animation: none; transform: translateY(14px); }
   .case h3 span { transition: none; }

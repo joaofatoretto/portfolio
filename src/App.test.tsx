@@ -42,6 +42,14 @@ describe('home', () => {
     ]);
   });
 
+  it('says in words what each proof is: the rankings and the teachers carry a visible label', () => {
+    at('/');
+    const edu = within(document.getElementById('about')!).getByRole('region', { name: 'Education' });
+    const items = within(edu).getAllByRole('listitem').filter(li => li.parentElement!.classList.contains('edu-list'));
+    expect(within(items[0]).getByText('UNICAMP rankings while I studied there')).toBeVisible();
+    expect(within(items[2]).getByText('Taught by')).toBeVisible();
+  });
+
   it('backs UNICAMP with its two #1 rankings from João\'s years there, each linked to its source', () => {
     at('/');
     const ranks = within(document.getElementById('about')!).getByRole('list', { name: /unicamp rankings while i studied there/i });
